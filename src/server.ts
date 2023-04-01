@@ -3,13 +3,15 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+console.log("sdf");
+
 const app: Express = express();
 const port = process.env.PORT;
 
 app.get("/", (req: Request, res: Response) => {
-	res.send("Hello, this is Express + TypeScript");
+  res.send("Hello, this is Express + TypeScript");
 });
 
 app.listen(port, () => {
-	console.log(`[⚡Server⚡]: Server is running at https://localhost:${port}`);
+  console.log(`[⚡Server⚡]: Server is running at https://localhost:${port}`);
 });
