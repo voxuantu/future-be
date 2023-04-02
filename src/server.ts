@@ -1,8 +1,9 @@
-import express, { Express, Request, Response } from "express";
-import swaggerUi from "swagger-ui-express";
+import express, { Express } from "express";
 import { RegisterRoutes } from "./routes";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
+import initSwagger from "./config/swagger";
+import initMongoDB from "./config/mongodb";
 
 dotenv.config();
 
@@ -16,15 +17,22 @@ app.use(
 );
 app.use(bodyParser.json());
 
-app.use("/docs", swaggerUi.serve, async (_req: Request, res: Response) => {
-  return res.send(swaggerUi.generateHTML(await import("./swagger.json")));
-});
+initMongoDB()
+  .then(() => {
+    console.log("⚡[Server]: Connect to database success");
 
-RegisterRoutes(app);
+    initSwagger(app);
 
-app.listen(port, () => {
-  console.log(`⚡[Server]: Server is running at https://localhost:${port}`);
-  console.log(
-    `⚡️[swagger]: Swagger is running at http://localhost:${port}/docs`
-  );
-});
+    RegisterRoutes(app);
+
+    app.listen(port, () => {
+      console.log(`⚡[Server]: Server is running at https://localhost:${port}`);
+      console.log(
+        `⚡️[Swagger]: Swagger is running at http://localhost:${port}/docs`
+      );
+    });
+  })
+  .catch((error) => {
+    console.log("⚠️[Server]: Cannot connect to database ");
+    console.log(error);
+  });

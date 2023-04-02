@@ -6,37 +6,21 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
-			"User": {
+			"FlattenMaps_T_": {
+				"properties": {},
+				"type": "object"
+			},
+			"IUserModel": {
+				"$ref": "#/components/schemas/FlattenMaps_T_"
+			},
+			"ICreateUser": {
 				"properties": {
-					"id": {
-						"type": "number",
-						"format": "double"
-					},
-					"email": {
-						"type": "string"
-					},
 					"name": {
 						"type": "string"
-					},
-					"status": {
-						"type": "string",
-						"enum": [
-							"Happy",
-							"Sad"
-						]
-					},
-					"phoneNumbers": {
-						"items": {
-							"type": "string"
-						},
-						"type": "array"
 					}
 				},
 				"required": [
-					"id",
-					"email",
-					"name",
-					"phoneNumbers"
+					"name"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -71,43 +55,33 @@
 				},
 				"security": [],
 				"parameters": []
-			}
-		},
-		"/users/{userId}": {
-			"get": {
-				"operationId": "GetUser",
+			},
+			"post": {
+				"operationId": "CreateUser",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"$ref": "#/components/schemas/User"
+									"$ref": "#/components/schemas/IUserModel"
 								}
 							}
 						}
 					}
 				},
 				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "userId",
-						"required": true,
-						"schema": {
-							"format": "double",
-							"type": "number"
-						}
-					},
-					{
-						"in": "query",
-						"name": "name",
-						"required": false,
-						"schema": {
-							"type": "string"
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ICreateUser"
+							}
 						}
 					}
-				]
+				}
 			}
 		}
 	},

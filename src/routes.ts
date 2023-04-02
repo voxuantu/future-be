@@ -18,24 +18,24 @@ import type { RequestHandler, Router } from "express";
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
-  User: {
+  FlattenMaps_T_: {
+    dataType: "refAlias",
+    type: {
+      dataType: "nestedObjectLiteral",
+      nestedProperties: {},
+      validators: {},
+    },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IUserModel: {
+    dataType: "refAlias",
+    type: { ref: "FlattenMaps_T_", validators: {} },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  ICreateUser: {
     dataType: "refObject",
     properties: {
-      id: { dataType: "double", required: true },
-      email: { dataType: "string", required: true },
       name: { dataType: "string", required: true },
-      status: {
-        dataType: "union",
-        subSchemas: [
-          { dataType: "enum", enums: ["Happy"] },
-          { dataType: "enum", enums: ["Sad"] },
-        ],
-      },
-      phoneNumbers: {
-        dataType: "array",
-        array: { dataType: "string" },
-        required: true,
-      },
     },
     additionalProperties: false,
   },
@@ -77,20 +77,18 @@ export function RegisterRoutes(app: Router) {
     }
   );
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  app.get(
-    "/api/v1/users/:userId",
+  app.post(
+    "/api/v1/users",
     ...fetchMiddlewares<RequestHandler>(UsersController),
-    ...fetchMiddlewares<RequestHandler>(UsersController.prototype.getUser),
+    ...fetchMiddlewares<RequestHandler>(UsersController.prototype.createUser),
 
-    function UsersController_getUser(request: any, response: any, next: any) {
+    function UsersController_createUser(
+      request: any,
+      response: any,
+      next: any
+    ) {
       const args = {
-        userId: {
-          in: "path",
-          name: "userId",
-          required: true,
-          dataType: "double",
-        },
-        name: { in: "query", name: "name", dataType: "string" },
+        dto: { in: "body", name: "dto", required: true, ref: "ICreateUser" },
       };
 
       // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -101,7 +99,7 @@ export function RegisterRoutes(app: Router) {
 
         const controller = new UsersController();
 
-        const promise = controller.getUser.apply(
+        const promise = controller.createUser.apply(
           controller,
           validatedArgs as any
         );

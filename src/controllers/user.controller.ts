@@ -1,16 +1,7 @@
 // src/users/usersController.ts
-import {
-  Body,
-  Controller,
-  Get,
-  Path,
-  Post,
-  Query,
-  Route,
-  SuccessResponse,
-} from "tsoa";
-import { User } from "../schemas/user";
-import { UsersService, UserCreationParams } from "../services";
+import { Body, Controller, Get, Post, Route } from "tsoa";
+import { UsersService } from "../services";
+import { ICreateUser } from "../dto/request/user.dto";
 
 @Route("users")
 export class UsersController extends Controller {
@@ -18,11 +9,9 @@ export class UsersController extends Controller {
   public async getTest(): Promise<string> {
     return "test";
   }
-  @Get("{userId}")
-  public async getUser(
-    @Path() userId: number,
-    @Query() name?: string
-  ): Promise<User> {
-    return new UsersService().get(userId, name);
+
+  @Post()
+  public async createUser(@Body() dto: ICreateUser) {
+    return UsersService.create(dto);
   }
 }
