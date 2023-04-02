@@ -12,4 +12,9 @@ export class UsersService {
 
     return user;
   }
+
+  static async findUserById(userId: string) {
+    const user = await User.findById(userId);
+    return user;
+  }
 }
