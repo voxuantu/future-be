@@ -34,16 +34,6 @@
     call-me-maybe "^1.0.1"
     z-schema "^5.0.1"
 
-"@automapper/classes@^8.7.7":
-  version "8.7.7"
-  resolved "https://registry.yarnpkg.com/@automapper/classes/-/classes-8.7.7.tgz#2194ba66d4e7689bec23289b56efc5eb69358c9d"
-  integrity sha512-FSbvt6QE8XnhKKQZA3kpKLuLrr9x1iW+lNYTrawVLjxQ05zsCGccLxe7moMNrg1wFAVAouQKupFgCGQ7XRjmJw==
-
-"@automapper/core@^8.7.7":
-  version "8.7.7"
-  resolved "https://registry.yarnpkg.com/@automapper/core/-/core-8.7.7.tgz#b48dd0260d188e6036fafd7ac03727d9295175ab"
-  integrity sha512-YfpDJ/xqwUuC0S+BLNk81ZJfeL7CmjirUX/Gk9eQyx146DKvneBZgeZ9v5rDB51Ti14jTxVHis+5JuT7W/q0TA==
-
 "@babel/code-frame@^7.0.0":
   version "7.21.4"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.21.4.tgz#d0fa9e4413aca81f2b23b9442797bda1826edb39"
