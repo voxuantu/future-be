@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import initSwagger from "./config/swagger";
 import initMongoDB from "./config/mongodb";
+import { errorHandler } from "./utils/error-handler";
 
 dotenv.config();
 
@@ -24,6 +25,8 @@ initMongoDB()
     initSwagger(app);
 
     RegisterRoutes(app);
+
+    app.use(errorHandler);
 
     app.listen(port, () => {
       console.log(`⚡[Server]: Server is running at https://localhost:${port}`);

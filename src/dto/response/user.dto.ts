@@ -1,7 +1,6 @@
-import { AutoMap } from "@automapper/classes";
 import { ICreateUser } from "../request/user.dto";
 
 export class UserResDTO implements ICreateUser {
+  _id: string;
   name: string;
-  createdAt: string;
 }

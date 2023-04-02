@@ -1,5 +1,14 @@
 // src/users/usersController.ts
-import { Body, Controller, Get, Post, Route, Security, Request } from "tsoa";
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Route,
+  Security,
+  Request,
+  Path,
+} from "tsoa";
 import { UsersService } from "../services";
 import { ICreateUser } from "../dto/request/user.dto";
 import * as jwt from "jsonwebtoken";
@@ -27,5 +36,10 @@ export class UsersController extends Controller {
       { userId: "6428e46887f2e8e51a172d85", role: ["admin"] },
       process.env.JWT_SECRET || ""
     );
+  }
+
+  @Get("/{userId}")
+  public findUserById(@Path() userId: string) {
+    return UsersService.findUserById(userId);
   }
 }

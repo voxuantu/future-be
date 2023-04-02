@@ -21,18 +21,13 @@ import type { RequestHandler, Router } from "express";
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
-  FlattenMaps_T_: {
-    dataType: "refAlias",
-    type: {
-      dataType: "nestedObjectLiteral",
-      nestedProperties: {},
-      validators: {},
+  UserResDTO: {
+    dataType: "refObject",
+    properties: {
+      name: { dataType: "string", required: true },
+      _id: { dataType: "string", required: true },
     },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  IUserModel: {
-    dataType: "refAlias",
-    type: { ref: "FlattenMaps_T_", validators: {} },
+    additionalProperties: false,
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   ICreateUser: {
@@ -142,6 +137,44 @@ export function RegisterRoutes(app: Router) {
         const controller = new UsersController();
 
         const promise = controller.signJwtToken.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
+    "/api/v1/users/:userId",
+    ...fetchMiddlewares<RequestHandler>(UsersController),
+    ...fetchMiddlewares<RequestHandler>(UsersController.prototype.findUserById),
+
+    function UsersController_findUserById(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        userId: {
+          in: "path",
+          name: "userId",
+          required: true,
+          dataType: "string",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new UsersController();
+
+        const promise = controller.findUserById.apply(
           controller,
           validatedArgs as any
         );
