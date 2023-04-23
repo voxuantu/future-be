@@ -13,3 +13,9 @@ export enum HttpStatus {
   BAD_GATWAGE = 502,
   SERVICE_UNAVAILABLE = 503,
 }
+
+export enum OrderStatus {
+  Pending = "pending",
+  Delivering = "delivering",
+  Completed = "completed",
+}

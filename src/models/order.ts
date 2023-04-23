@@ -8,12 +8,15 @@ import mongoose, {
 import { IUserModel } from "./user";
 import { IAddressModel } from "./address";
 import { IOrderItemModel } from "./order-item";
+import { OrderStatus } from "../constances/enum";
 
 export interface IOrder {
   user: string | IUserModel;
   address: string | IAddressModel;
   orderItems: string[] | IOrderItemModel[];
   total: number;
+  status: OrderStatus;
+  shortId: string;
 }
 
 export interface IOrderModel extends IOrder, Document, SchemaTimestampsConfig {}
@@ -25,7 +28,14 @@ export const OrderSchema: Schema = new Schema(
     orderItems: [
       { type: Schema.Types.ObjectId, require: true, ref: "OrderItem" },
     ],
-    total: { type: Number },
+    total: { type: Number, require: true },
+    status: {
+      type: String,
+      enum: OrderStatus,
+      default: OrderStatus.Pending,
+      require: true,
+    },
+    shortId: { type: String, require: true },
   },
   { timestamps: true }
 );
