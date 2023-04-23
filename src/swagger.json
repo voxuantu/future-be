@@ -6,9 +6,28 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"FlattenMaps_T_": {
+				"properties": {},
+				"type": "object"
+			},
+			"IProductModel": {
+				"$ref": "#/components/schemas/FlattenMaps_T_"
+			},
 			"UserResDTO": {
 				"properties": {
 					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"username": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"avatar": {
 						"type": "string"
 					},
 					"_id": {
@@ -17,6 +36,10 @@
 				},
 				"required": [
 					"name",
+					"email",
+					"username",
+					"password",
+					"avatar",
 					"_id"
 				],
 				"type": "object",
@@ -26,10 +49,26 @@
 				"properties": {
 					"name": {
 						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"username": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"avatar": {
+						"type": "string"
 					}
 				},
 				"required": [
-					"name"
+					"name",
+					"email",
+					"username",
+					"password",
+					"avatar"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -53,6 +92,51 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
+		"/products": {
+			"post": {
+				"operationId": "CreateProduct",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IProductModel"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Products"
+				],
+				"security": [],
+				"parameters": []
+			},
+			"get": {
+				"operationId": "GetProducts",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"items": {
+										"$ref": "#/components/schemas/IProductModel"
+									},
+									"type": "array"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Products"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
 		"/users": {
 			"get": {
 				"operationId": "GetTest",
@@ -68,6 +152,9 @@
 						}
 					}
 				},
+				"tags": [
+					"Users"
+				],
 				"security": [
 					{
 						"jwt": [
@@ -108,6 +195,9 @@
 						}
 					}
 				},
+				"tags": [
+					"Users"
+				],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -137,6 +227,9 @@
 						}
 					}
 				},
+				"tags": [
+					"Users"
+				],
 				"security": [],
 				"parameters": []
 			}
@@ -173,6 +266,48 @@
 						}
 					}
 				},
+				"tags": [
+					"Users"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/users/{userId}/wish-list": {
+			"get": {
+				"operationId": "Wishlist",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"items": {
+												"$ref": "#/components/schemas/IProductModel"
+											},
+											"type": "array"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
 				"security": [],
 				"parameters": [
 					{

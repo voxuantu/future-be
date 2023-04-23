@@ -8,12 +8,14 @@ import {
   Security,
   Request,
   Path,
+  Tags,
 } from "tsoa";
 import { UsersService } from "../services";
 import { ICreateUser } from "../dto/request/user.dto";
 import * as jwt from "jsonwebtoken";
 import { IGetUserAuthInfoRequest } from "../types/express";
 
+@Tags("Users")
 @Route("users")
 export class UsersController extends Controller {
   @Security("jwt", ["admin"])
@@ -41,5 +43,10 @@ export class UsersController extends Controller {
   @Get("/{userId}")
   public findUserById(@Path() userId: string) {
     return UsersService.findUserById(userId);
+  }
+
+  @Get("/{userId}/wish-list")
+  public wishlist(@Path() userId: string) {
+    return UsersService.wishlistProduct(userId);
   }
 }
