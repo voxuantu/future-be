@@ -5,6 +5,7 @@ import bodyParser from "body-parser";
 import initSwagger from "./config/swagger";
 import initMongoDB from "./config/mongodb";
 import { errorHandler } from "./utils/error-handler";
+import cors from "cors";
 
 dotenv.config();
 
@@ -17,6 +18,7 @@ app.use(
   })
 );
 app.use(bodyParser.json());
+app.use(cors());
 
 initMongoDB()
   .then(() => {
