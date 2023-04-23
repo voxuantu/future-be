@@ -35,9 +35,15 @@ export class UsersController extends Controller {
   @Get("/sign-jwt-token")
   public signJwtToken() {
     return jwt.sign(
-      { userId: "6428e46887f2e8e51a172d85", role: ["admin"] },
+      { userId: "6444a053801515f786434080", role: ["user"] },
       process.env.JWT_SECRET || ""
     );
+  }
+
+  @Security("jwt", ["user"])
+  @Get("/addresses")
+  public async getMyAddresses(@Request() request: IGetUserAuthInfoRequest) {
+    return UsersService.getMyAddresses(request.user.userId);
   }
 
   @Get("/{userId}")

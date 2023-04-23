@@ -12,6 +12,8 @@ import {
   fetchMiddlewares,
 } from "@tsoa/runtime";
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { AddressController } from "./controllers/address.controller";
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ProductsController } from "./controllers/product.controller";
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UsersController } from "./controllers/user.controller";
@@ -23,6 +25,65 @@ import type { RequestHandler, Router } from "express";
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
 const models: TsoaRoute.Models = {
+  AddressRes: {
+    dataType: "refObject",
+    properties: {
+      province: { dataType: "string", required: true },
+      district: { dataType: "string", required: true },
+      ward: { dataType: "string", required: true },
+      specificAddress: { dataType: "string", required: true },
+      phone: { dataType: "string", required: true },
+      receiver: { dataType: "string", required: true },
+      _id: { dataType: "string", required: true },
+      default: { dataType: "boolean", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  CreateAddressDTO: {
+    dataType: "refObject",
+    properties: {
+      province: { dataType: "string", required: true },
+      district: { dataType: "string", required: true },
+      ward: { dataType: "string", required: true },
+      specificAddress: { dataType: "string", required: true },
+      phone: { dataType: "string", required: true },
+      receiver: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  Partial_CreateAddressDTO_: {
+    dataType: "refAlias",
+    type: {
+      dataType: "nestedObjectLiteral",
+      nestedProperties: {
+        province: { dataType: "string" },
+        district: { dataType: "string" },
+        ward: { dataType: "string" },
+        specificAddress: { dataType: "string" },
+        phone: { dataType: "string" },
+        receiver: { dataType: "string" },
+      },
+      validators: {},
+    },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  UpdateAddressDTO: {
+    dataType: "refAlias",
+    type: {
+      dataType: "intersection",
+      subSchemas: [
+        { ref: "Partial_CreateAddressDTO_" },
+        {
+          dataType: "nestedObjectLiteral",
+          nestedProperties: { default: { dataType: "boolean" } },
+        },
+      ],
+      validators: {},
+    },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   FlattenMaps_T_: {
     dataType: "refAlias",
     type: {
@@ -72,6 +133,122 @@ export function RegisterRoutes(app: Router) {
   //  NOTE: If you do not see routes for all of your controllers in this file, then you might not have informed tsoa of where to look
   //      Please look into the "controllerPathGlobs" config option described in the readme: https://github.com/lukeautry/tsoa
   // ###########################################################################################################
+  app.post(
+    "/api/v1/addresses",
+    ...fetchMiddlewares<RequestHandler>(AddressController),
+    ...fetchMiddlewares<RequestHandler>(
+      AddressController.prototype.createAddress
+    ),
+
+    function AddressController_createAddress(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        dto: {
+          in: "body",
+          name: "dto",
+          required: true,
+          ref: "CreateAddressDTO",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new AddressController();
+
+        const promise = controller.createAddress.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.put(
+    "/api/v1/addresses/:id",
+    ...fetchMiddlewares<RequestHandler>(AddressController),
+    ...fetchMiddlewares<RequestHandler>(
+      AddressController.prototype.updateAddress
+    ),
+
+    function AddressController_updateAddress(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        id: { in: "path", name: "id", required: true, dataType: "string" },
+        dto: {
+          in: "body",
+          name: "dto",
+          required: true,
+          ref: "UpdateAddressDTO",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new AddressController();
+
+        const promise = controller.updateAddress.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.delete(
+    "/api/v1/addresses/:id",
+    ...fetchMiddlewares<RequestHandler>(AddressController),
+    ...fetchMiddlewares<RequestHandler>(
+      AddressController.prototype.deleteAddress
+    ),
+
+    function AddressController_deleteAddress(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        id: { in: "path", name: "id", required: true, dataType: "string" },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new AddressController();
+
+        const promise = controller.deleteAddress.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   app.post(
     "/api/v1/products",
     ...fetchMiddlewares<RequestHandler>(ProductsController),
@@ -227,6 +404,47 @@ export function RegisterRoutes(app: Router) {
         const controller = new UsersController();
 
         const promise = controller.signJwtToken.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
+    "/api/v1/users/addresses",
+    authenticateMiddleware([{ jwt: ["user"] }]),
+    ...fetchMiddlewares<RequestHandler>(UsersController),
+    ...fetchMiddlewares<RequestHandler>(
+      UsersController.prototype.getMyAddresses
+    ),
+
+    function UsersController_getMyAddresses(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        request: {
+          in: "request",
+          name: "request",
+          required: true,
+          dataType: "object",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new UsersController();
+
+        const promise = controller.getMyAddresses.apply(
           controller,
           validatedArgs as any
         );

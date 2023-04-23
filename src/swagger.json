@@ -6,6 +6,117 @@
 		"requestBodies": {},
 		"responses": {},
 		"schemas": {
+			"AddressRes": {
+				"properties": {
+					"province": {
+						"type": "string"
+					},
+					"district": {
+						"type": "string"
+					},
+					"ward": {
+						"type": "string"
+					},
+					"specificAddress": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"receiver": {
+						"type": "string"
+					},
+					"_id": {
+						"type": "string"
+					},
+					"default": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"province",
+					"district",
+					"ward",
+					"specificAddress",
+					"phone",
+					"receiver",
+					"_id",
+					"default"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CreateAddressDTO": {
+				"properties": {
+					"province": {
+						"type": "string"
+					},
+					"district": {
+						"type": "string"
+					},
+					"ward": {
+						"type": "string"
+					},
+					"specificAddress": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"receiver": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"province",
+					"district",
+					"ward",
+					"specificAddress",
+					"phone",
+					"receiver"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_CreateAddressDTO_": {
+				"properties": {
+					"province": {
+						"type": "string"
+					},
+					"district": {
+						"type": "string"
+					},
+					"ward": {
+						"type": "string"
+					},
+					"specificAddress": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"receiver": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"UpdateAddressDTO": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/Partial_CreateAddressDTO_"
+					},
+					{
+						"properties": {
+							"default": {
+								"type": "boolean"
+							}
+						},
+						"type": "object"
+					}
+				]
+			},
 			"FlattenMaps_T_": {
 				"properties": {},
 				"type": "object"
@@ -92,6 +203,159 @@
 	},
 	"openapi": "3.0.0",
 	"paths": {
+		"/addresses": {
+			"post": {
+				"operationId": "CreateAddress",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/AddressRes"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Addresses"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/CreateAddressDTO"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/addresses/{id}": {
+			"put": {
+				"operationId": "UpdateAddress",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/AddressRes"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Addresses"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateAddressDTO"
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"operationId": "DeleteAddress",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"type": "string"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Addresses"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
 		"/products": {
 			"post": {
 				"operationId": "CreateProduct",
@@ -231,6 +495,54 @@
 					"Users"
 				],
 				"security": [],
+				"parameters": []
+			}
+		},
+		"/users/addresses": {
+			"get": {
+				"operationId": "GetMyAddresses",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/AddressRes"
+													},
+													"type": "array"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
 				"parameters": []
 			}
 		},
