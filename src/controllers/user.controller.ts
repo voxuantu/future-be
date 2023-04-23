@@ -40,6 +40,12 @@ export class UsersController extends Controller {
     );
   }
 
+  @Security("jwt", ["user"])
+  @Get("/addresses")
+  public async getMyAddresses(@Request() request: IGetUserAuthInfoRequest) {
+    return UsersService.getMyAddresses(request.user.userId);
+  }
+
   @Get("/{userId}")
   public findUserById(@Path() userId: string) {
     return UsersService.findUserById(userId);

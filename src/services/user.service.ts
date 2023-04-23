@@ -2,9 +2,11 @@
 import {
   CREATE_USER_SUCCESS,
   ERROR_CREATE_USER,
+  ERROR_GET_MY_ADDRESSES,
   ERROR_GET_USER_BY_ID,
   ERROR_USER_NOT_FOUND,
   FIND_USER_BY_ID_SUCCESS,
+  GET_MY_ADDRESSES_SUCCESS,
 } from "../constances";
 import { HttpStatus } from "../constances/enum";
 import { ICreateUser } from "../dto/request/user.dto";
@@ -12,6 +14,7 @@ import { UserResDTO } from "../dto/response/user.dto";
 import { IProductModel } from "../models/product";
 import User from "../models/user";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
+import { AddressService } from "./address.service";
 
 export class UsersService {
   static async create(userCreationParams: ICreateUser) {
@@ -72,6 +75,19 @@ export class UsersService {
       return result;
     } catch (error) {
       console.log("error: ", error);
+    }
+  }
+
+  static async getMyAddresses(userId: string) {
+    try {
+      const user = await User.findById(userId);
+      const addresses = await AddressService.getMany(
+        user?.addresses as string[]
+      );
+
+      return handlerResSuccess(GET_MY_ADDRESSES_SUCCESS, addresses);
+    } catch (error) {
+      return handleResFailure(ERROR_GET_MY_ADDRESSES, HttpStatus.BAD_REQUEST);
     }
   }
 }
