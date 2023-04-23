@@ -8,7 +8,7 @@ import {
   ERROR_UPDATE_ADDRESS,
   UPDATE_ADDRESS_SUCCESS,
 } from "../constances/address-res-message";
-import { HttpStatus } from "../constances/status-code";
+import { HttpStatus } from "../constances/enum";
 import { CreateAddressDTO, UpdateAddressDTO } from "../dto/request";
 import { AddressRes } from "../dto/response/address.dto";
 import Address from "../models/address";

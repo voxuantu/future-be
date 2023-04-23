@@ -8,7 +8,7 @@ import {
   FIND_USER_BY_ID_SUCCESS,
   GET_MY_ADDRESSES_SUCCESS,
 } from "../constances";
-import { HttpStatus } from "../constances/status-code";
+import { HttpStatus } from "../constances/enum";
 import { ICreateUser } from "../dto/request/user.dto";
 import { UserResDTO } from "../dto/response/user.dto";
 import { IProductModel } from "../models/product";
