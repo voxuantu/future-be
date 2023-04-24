@@ -11,7 +11,7 @@ import {
   Tags,
 } from "tsoa";
 import { UsersService } from "../services";
-import { ICreateUser } from "../dto/request/user.dto";
+import { ICreateUser, ISignJWT } from "../dto/request/user.dto";
 import * as jwt from "jsonwebtoken";
 import { IGetUserAuthInfoRequest } from "../types/express";
 
@@ -32,10 +32,10 @@ export class UsersController extends Controller {
     return UsersService.create(dto);
   }
 
-  @Get("/sign-jwt-token")
-  public signJwtToken() {
+  @Post("/sign-jwt-token")
+  public signJwtToken(@Body() dto: ISignJWT) {
     return jwt.sign(
-      { userId: "6444a053801515f786434080", role: ["user"] },
+      { userId: dto.userId, role: [dto.role] },
       process.env.JWT_SECRET || ""
     );
   }

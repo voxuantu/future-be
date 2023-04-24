@@ -121,8 +121,127 @@
 				"properties": {},
 				"type": "object"
 			},
+			"IOrderModel": {
+				"$ref": "#/components/schemas/FlattenMaps_T_"
+			},
 			"IProductModel": {
 				"$ref": "#/components/schemas/FlattenMaps_T_"
+			},
+			"IOrderItem": {
+				"properties": {
+					"product": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"$ref": "#/components/schemas/IProductModel"
+							}
+						]
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"product",
+					"price",
+					"quantity"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ICreateOrder": {
+				"properties": {
+					"orderItems": {
+						"items": {
+							"$ref": "#/components/schemas/IOrderItem"
+						},
+						"type": "array"
+					},
+					"address": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"orderItems",
+					"address"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IOrderHistoryRes": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"shortId": {
+						"type": "string"
+					},
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"firstProduct": {
+						"properties": {
+							"price": {
+								"type": "number",
+								"format": "double"
+							},
+							"quantity": {
+								"type": "number",
+								"format": "double"
+							},
+							"thumbnail": {
+								"type": "string"
+							},
+							"name": {
+								"type": "string"
+							},
+							"_id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"price",
+							"quantity",
+							"thumbnail",
+							"name",
+							"_id"
+						],
+						"type": "object"
+					},
+					"orderItemsLength": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"_id",
+					"shortId",
+					"total",
+					"createdAt",
+					"firstProduct",
+					"orderItemsLength"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"OrderStatus": {
+				"enum": [
+					"pending",
+					"delivering",
+					"completed"
+				],
+				"type": "string"
 			},
 			"UserResDTO": {
 				"properties": {
@@ -180,6 +299,22 @@
 					"username",
 					"password",
 					"avatar"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ISignJWT": {
+				"properties": {
+					"userId": {
+						"type": "string"
+					},
+					"role": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"userId",
+					"role"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -362,6 +497,118 @@
 				]
 			}
 		},
+		"/orders": {
+			"post": {
+				"operationId": "CreateOrder",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/IOrderModel"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Orders"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ICreateOrder"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/orders/history": {
+			"get": {
+				"operationId": "GetOrderHistoryfollowStatus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/IOrderHistoryRes"
+													},
+													"type": "array"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Orders"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "status",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/OrderStatus"
+						}
+					}
+				]
+			}
+		},
 		"/products": {
 			"post": {
 				"operationId": "CreateProduct",
@@ -483,7 +730,7 @@
 			}
 		},
 		"/users/sign-jwt-token": {
-			"get": {
+			"post": {
 				"operationId": "SignJwtToken",
 				"responses": {
 					"200": {
@@ -501,7 +748,17 @@
 					"Users"
 				],
 				"security": [],
-				"parameters": []
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ISignJWT"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/users/addresses": {

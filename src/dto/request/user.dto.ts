@@ -5,3 +5,8 @@ export interface ICreateUser {
   password: string;
   avatar: string;
 }
+
+export interface ISignJWT {
+  userId: string;
+  role: string;
+}

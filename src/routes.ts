@@ -14,6 +14,8 @@ import {
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AddressController } from "./controllers/address.controller";
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { OrdersController } from "./controllers/order.controller";
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ProductsController } from "./controllers/product.controller";
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UsersController } from "./controllers/user.controller";
@@ -93,9 +95,69 @@ const models: TsoaRoute.Models = {
     },
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IOrderModel: {
+    dataType: "refAlias",
+    type: { ref: "FlattenMaps_T_", validators: {} },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   IProductModel: {
     dataType: "refAlias",
     type: { ref: "FlattenMaps_T_", validators: {} },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IOrderItem: {
+    dataType: "refObject",
+    properties: {
+      product: {
+        dataType: "union",
+        subSchemas: [{ dataType: "string" }, { ref: "IProductModel" }],
+        required: true,
+      },
+      price: { dataType: "double", required: true },
+      quantity: { dataType: "double", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  ICreateOrder: {
+    dataType: "refObject",
+    properties: {
+      orderItems: {
+        dataType: "array",
+        array: { dataType: "refObject", ref: "IOrderItem" },
+        required: true,
+      },
+      address: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IOrderHistoryRes: {
+    dataType: "refObject",
+    properties: {
+      _id: { dataType: "string", required: true },
+      shortId: { dataType: "string", required: true },
+      total: { dataType: "double", required: true },
+      createdAt: { dataType: "string", required: true },
+      firstProduct: {
+        dataType: "nestedObjectLiteral",
+        nestedProperties: {
+          price: { dataType: "double", required: true },
+          quantity: { dataType: "double", required: true },
+          thumbnail: { dataType: "string", required: true },
+          name: { dataType: "string", required: true },
+          _id: { dataType: "string", required: true },
+        },
+        required: true,
+      },
+      orderItemsLength: { dataType: "double", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  OrderStatus: {
+    dataType: "refEnum",
+    enums: ["pending", "delivering", "completed"],
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   UserResDTO: {
@@ -119,6 +181,15 @@ const models: TsoaRoute.Models = {
       username: { dataType: "string", required: true },
       password: { dataType: "string", required: true },
       avatar: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  ISignJWT: {
+    dataType: "refObject",
+    properties: {
+      userId: { dataType: "string", required: true },
+      role: { dataType: "string", required: true },
     },
     additionalProperties: false,
   },
@@ -246,6 +317,93 @@ export function RegisterRoutes(app: Router) {
         const controller = new AddressController();
 
         const promise = controller.deleteAddress.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.post(
+    "/api/v1/orders",
+    authenticateMiddleware([{ jwt: ["user"] }]),
+    ...fetchMiddlewares<RequestHandler>(OrdersController),
+    ...fetchMiddlewares<RequestHandler>(OrdersController.prototype.createOrder),
+
+    function OrdersController_createOrder(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        body: { in: "body", name: "body", required: true, ref: "ICreateOrder" },
+        request: {
+          in: "request",
+          name: "request",
+          required: true,
+          dataType: "object",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new OrdersController();
+
+        const promise = controller.createOrder.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
+    "/api/v1/orders/history",
+    authenticateMiddleware([{ jwt: ["user"] }]),
+    ...fetchMiddlewares<RequestHandler>(OrdersController),
+    ...fetchMiddlewares<RequestHandler>(
+      OrdersController.prototype.getOrderHistoryfollowStatus
+    ),
+
+    function OrdersController_getOrderHistoryfollowStatus(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        status: {
+          in: "query",
+          name: "status",
+          required: true,
+          ref: "OrderStatus",
+        },
+        request: {
+          in: "request",
+          name: "request",
+          required: true,
+          dataType: "object",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new OrdersController();
+
+        const promise = controller.getOrderHistoryfollowStatus.apply(
           controller,
           validatedArgs as any
         );
@@ -390,7 +548,7 @@ export function RegisterRoutes(app: Router) {
     }
   );
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  app.get(
+  app.post(
     "/api/v1/users/sign-jwt-token",
     ...fetchMiddlewares<RequestHandler>(UsersController),
     ...fetchMiddlewares<RequestHandler>(UsersController.prototype.signJwtToken),
@@ -400,7 +558,9 @@ export function RegisterRoutes(app: Router) {
       response: any,
       next: any
     ) {
-      const args = {};
+      const args = {
+        dto: { in: "body", name: "dto", required: true, ref: "ISignJWT" },
+      };
 
       // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
