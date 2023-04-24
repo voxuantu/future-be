@@ -13,9 +13,10 @@ import { CreateAddressDTO, UpdateAddressDTO } from "../dto/request";
 import { AddressRes } from "../dto/response/address.dto";
 import Address from "../models/address";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
+import User from "../models/user";
 
 export class AddressService {
-  static async create(dto: CreateAddressDTO) {
+  static async create(dto: CreateAddressDTO, userId: string) {
     try {
       const newAddress = await Address.create({
         ...dto,
@@ -31,6 +32,13 @@ export class AddressService {
         specificAddress: newAddress.specificAddress,
         ward: newAddress.ward,
       };
+
+      await User.findOneAndUpdate(
+        { _id: userId },
+        {
+          $push: { addresses: newAddress._id },
+        }
+      );
 
       return handlerResSuccess(CREATE_ADDRESS_SUCCESS, response);
     } catch (error) {

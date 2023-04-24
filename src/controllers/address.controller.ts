@@ -1,13 +1,29 @@
-import { Body, Controller, Delete, Path, Post, Put, Route, Tags } from "tsoa";
+import {
+  Body,
+  Controller,
+  Delete,
+  Path,
+  Post,
+  Request,
+  Put,
+  Route,
+  Security,
+  Tags,
+} from "tsoa";
 import { CreateAddressDTO, UpdateAddressDTO } from "../dto/request";
 import { AddressService } from "../services/address.service";
+import { IGetUserAuthInfoRequest } from "../types/express";
 
 @Tags("Addresses")
 @Route("addresses")
 export class AddressController extends Controller {
+  @Security("jwt", ["user"])
   @Post()
-  public async createAddress(@Body() dto: CreateAddressDTO) {
-    return AddressService.create(dto);
+  public async createAddress(
+    @Body() dto: CreateAddressDTO,
+    @Request() request: IGetUserAuthInfoRequest
+  ) {
+    return AddressService.create(dto, request.user.userId);
   }
 
   @Put("/{id}")

@@ -238,7 +238,13 @@
 				"tags": [
 					"Addresses"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
 				"parameters": [],
 				"requestBody": {
 					"required": true,

@@ -135,6 +135,7 @@ export function RegisterRoutes(app: Router) {
   // ###########################################################################################################
   app.post(
     "/api/v1/addresses",
+    authenticateMiddleware([{ jwt: ["user"] }]),
     ...fetchMiddlewares<RequestHandler>(AddressController),
     ...fetchMiddlewares<RequestHandler>(
       AddressController.prototype.createAddress
@@ -151,6 +152,12 @@ export function RegisterRoutes(app: Router) {
           name: "dto",
           required: true,
           ref: "CreateAddressDTO",
+        },
+        request: {
+          in: "request",
+          name: "request",
+          required: true,
+          dataType: "object",
         },
       };
 
