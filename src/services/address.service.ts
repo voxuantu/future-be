@@ -3,6 +3,7 @@ import {
   CREATE_ADDRESS_SUCCESS,
   DELETE_ADDRESS_SUCCESS,
   ERROR_ADDRESS_NOT_FOUND,
+  ERROR_CHANGE_DEFAULT_ADDRESS,
   ERROR_CREATE_ADDRESS,
   ERROR_DELETE_ADDRESS,
   ERROR_UPDATE_ADDRESS,
@@ -18,8 +19,11 @@ import User from "../models/user";
 export class AddressService {
   static async create(dto: CreateAddressDTO, userId: string) {
     try {
+      const user = await User.findById(userId);
+
       const newAddress = await Address.create({
         ...dto,
+        default: user?.addresses.length === 0 ? true : false,
       });
 
       const response: AddressRes = {
@@ -46,11 +50,29 @@ export class AddressService {
     }
   }
 
-  static async update(id: string, dto: UpdateAddressDTO) {
+  static async update(id: string, dto: UpdateAddressDTO, userId: string) {
     try {
       const address = await Address.findById(id);
       if (!address) {
         return handleResFailure(ERROR_ADDRESS_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+
+      if (address.default === true && dto.default === false) {
+        return handleResFailure(
+          ERROR_CHANGE_DEFAULT_ADDRESS,
+          HttpStatus.NOT_ACCEPTABLE
+        );
+      }
+
+      if (dto.default === true && address.default === false) {
+        const addressesId = (await User.findById(userId))
+          ?.addresses as string[];
+        console.log("addressesId: ", addressesId);
+
+        await Address.updateMany(
+          { _id: { $in: addressesId } },
+          { $set: { default: false } }
+        );
       }
 
       if (dto.district) {
@@ -84,7 +106,7 @@ export class AddressService {
         phone: address.phone,
         province: address.province,
         receiver: address.receiver,
-        specificAddress: address.receiver,
+        specificAddress: address.specificAddress,
         ward: address.ward,
       };
 
@@ -97,7 +119,7 @@ export class AddressService {
     }
   }
 
-  static async delete(id: string) {
+  static async delete(id: string, userId: string) {
     try {
       const address = await Address.findById(id);
       if (!address) {
@@ -106,6 +128,8 @@ export class AddressService {
 
       address.deleted = true;
       await address.save();
+
+      await User.updateOne({ _id: userId }, { $pull: { addresses: id } });
 
       return handlerResSuccess(DELETE_ADDRESS_SUCCESS, id);
     } catch (error: any) {
@@ -129,7 +153,7 @@ export class AddressService {
         phone: item.phone,
         province: item.province,
         receiver: item.receiver,
-        specificAddress: item.receiver,
+        specificAddress: item.specificAddress,
         ward: item.ward,
       });
     }

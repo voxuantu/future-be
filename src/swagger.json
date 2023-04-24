@@ -428,7 +428,13 @@
 				"tags": [
 					"Addresses"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
@@ -484,7 +490,13 @@
 				"tags": [
 					"Addresses"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",

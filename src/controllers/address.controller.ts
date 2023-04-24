@@ -9,6 +9,7 @@ import {
   Route,
   Security,
   Tags,
+  Response,
 } from "tsoa";
 import { CreateAddressDTO, UpdateAddressDTO } from "../dto/request";
 import { AddressService } from "../services/address.service";
@@ -26,16 +27,22 @@ export class AddressController extends Controller {
     return AddressService.create(dto, request.user.userId);
   }
 
+  @Security("jwt", ["user"])
   @Put("/{id}")
   public async updateAddress(
     @Path() id: string,
-    @Body() dto: UpdateAddressDTO
+    @Body() dto: UpdateAddressDTO,
+    @Request() request: IGetUserAuthInfoRequest
   ) {
-    return AddressService.update(id, dto);
+    return AddressService.update(id, dto, request.user.userId);
   }
 
+  @Security("jwt", ["user"])
   @Delete("/{id}")
-  public async deleteAddress(@Path() id: string) {
-    return AddressService.delete(id);
+  public async deleteAddress(
+    @Path() id: string,
+    @Request() request: IGetUserAuthInfoRequest
+  ) {
+    return AddressService.delete(id, request.user.userId);
   }
 }
