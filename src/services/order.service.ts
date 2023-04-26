@@ -64,7 +64,7 @@ export class OrderService {
       });
       await newOrder.save();
 
-      return handlerResSuccess<IOrderModel>(CREATE_ORDER_SUCCESS, newOrder);
+      return handlerResSuccess<string>(CREATE_ORDER_SUCCESS, "");
     } catch (error) {
       return handleResFailure(ERROR_CREATE_ORDER, HttpStatus.BAD_REQUEST);
     }
@@ -84,7 +84,9 @@ export class OrderService {
       const orders = await Order.find({
         user: userId,
         status: orderStatus,
-      }).populate("orderItems");
+      })
+        .populate("orderItems")
+        .sort({ createdAt: -1 });
       for (let i = 0; i < orders.length; i++) {
         const order = orders[i];
         const firstProd = await Product.findById(

@@ -121,9 +121,6 @@
 				"properties": {},
 				"type": "object"
 			},
-			"IOrderModel": {
-				"$ref": "#/components/schemas/FlattenMaps_T_"
-			},
 			"IProductModel": {
 				"$ref": "#/components/schemas/FlattenMaps_T_"
 			},
@@ -523,7 +520,7 @@
 										{
 											"properties": {
 												"data": {
-													"$ref": "#/components/schemas/IOrderModel"
+													"type": "string"
 												},
 												"message": {
 													"type": "string"
