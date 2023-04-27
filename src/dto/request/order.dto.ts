@@ -33,5 +33,6 @@ export interface IQueryZaloPayOrderStatus {
 
 export interface ICreateZaloPayOrder {
   amount: number;
+  order_id: string;
   bank_code: string;
 }

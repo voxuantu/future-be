@@ -17,6 +17,7 @@ import {
   ICreateOrder,
   ICreateZaloPayOrder,
   IDataCallbackZalopay,
+  IQueryZaloPayOrderStatus,
 } from "../dto/request";
 import {
   IOrderHistoryRes,
@@ -81,7 +82,7 @@ export class OrderService {
       });
       await newOrder.save();
 
-      return handlerResSuccess<string>(CREATE_ORDER_SUCCESS, "");
+      return handlerResSuccess<string>(CREATE_ORDER_SUCCESS, newOrder.id);
     } catch (error) {
       return handleResFailure(ERROR_CREATE_ORDER, HttpStatus.BAD_REQUEST);
     }
@@ -157,7 +158,7 @@ export class OrderService {
       };
 
       const items: any = [];
-      const transID = Math.floor(Math.random() * 1000000);
+      const transID = dto.order_id;
       const order: any = {
         app_id: config.app_id,
         app_user: "ZaloPayDemo",
@@ -250,6 +251,8 @@ export class OrderService {
 
   static async queryZalopayOrderStatus(app_trans_id: string) {
     try {
+      const order_id = app_trans_id.split("_")[1];
+
       const config = {
         app_id: process.env.APP_ID,
         key1: process.env.KEY1 as string,
@@ -276,6 +279,17 @@ export class OrderService {
       };
 
       const response = await axios(postConfig);
+
+      if (response.data.return_code !== 1) {
+        const order = await Order.findByIdAndDelete(order_id);
+        if (order) {
+          for (let i = 0; i < order.orderItems.length; i++) {
+            const orderItemId = order.orderItems[i];
+            await OrderItem.findByIdAndDelete(orderItemId);
+          }
+        }
+      }
+
       return handlerResSuccess<IQueryZaloPayOrderStatusRes>(
         QUERY_ORDER_STATUS_ZALOPAY_SUCCESS,
         {

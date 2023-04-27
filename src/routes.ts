@@ -159,6 +159,7 @@ const models: TsoaRoute.Models = {
     dataType: "refObject",
     properties: {
       amount: { dataType: "double", required: true },
+      order_id: { dataType: "string", required: true },
       bank_code: { dataType: "string", required: true },
     },
     additionalProperties: false,

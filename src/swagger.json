@@ -246,12 +246,16 @@
 						"type": "number",
 						"format": "double"
 					},
+					"order_id": {
+						"type": "string"
+					},
 					"bank_code": {
 						"type": "string"
 					}
 				},
 				"required": [
 					"amount",
+					"order_id",
 					"bank_code"
 				],
 				"type": "object",
