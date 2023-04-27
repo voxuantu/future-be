@@ -12,3 +12,13 @@ export interface IOrderHistoryRes {
   };
   orderItemsLength: number;
 }
+
+export interface ICreateMAC {
+  app_id: number;
+  app_trans_id: string;
+  app_user: string;
+  amount: number;
+  app_time: number;
+  embed_data: JSON;
+  item: JSON[];
+}

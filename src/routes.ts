@@ -155,6 +155,24 @@ const models: TsoaRoute.Models = {
     enums: ["pending", "delivering", "completed"],
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  ICallBackZaloPay: {
+    dataType: "refObject",
+    properties: {
+      data: { dataType: "string", required: true },
+      mac: { dataType: "string", required: true },
+      type: { dataType: "double", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IQueryZaloPayOrderStatus: {
+    dataType: "refObject",
+    properties: {
+      app_trans_id: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   UserResDTO: {
     dataType: "refObject",
     properties: {
@@ -413,6 +431,119 @@ export function RegisterRoutes(app: Router) {
         const controller = new OrdersController();
 
         const promise = controller.getOrderHistoryfollowStatus.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
+    "/api/v1/orders/pay-with-zalopay",
+    ...fetchMiddlewares<RequestHandler>(OrdersController),
+    ...fetchMiddlewares<RequestHandler>(
+      OrdersController.prototype.payWithZalopay
+    ),
+
+    function OrdersController_payWithZalopay(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {};
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new OrdersController();
+
+        const promise = controller.payWithZalopay.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.post(
+    "/api/v1/orders/callback-zalo-pay",
+    ...fetchMiddlewares<RequestHandler>(OrdersController),
+    ...fetchMiddlewares<RequestHandler>(
+      OrdersController.prototype.callbackZaloPay
+    ),
+
+    function OrdersController_callbackZaloPay(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        dto: {
+          in: "body",
+          name: "dto",
+          required: true,
+          ref: "ICallBackZaloPay",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new OrdersController();
+
+        const promise = controller.callbackZaloPay.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.post(
+    "/api/v1/orders/query-zalopay-order-status",
+    ...fetchMiddlewares<RequestHandler>(OrdersController),
+    ...fetchMiddlewares<RequestHandler>(
+      OrdersController.prototype.queryZalopayOrderStatus
+    ),
+
+    function OrdersController_queryZalopayOrderStatus(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        dto: {
+          in: "body",
+          name: "dto",
+          required: true,
+          ref: "IQueryZaloPayOrderStatus",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new OrdersController();
+
+        const promise = controller.queryZalopayOrderStatus.apply(
           controller,
           validatedArgs as any
         );

@@ -240,6 +240,39 @@
 				],
 				"type": "string"
 			},
+			"ICallBackZaloPay": {
+				"properties": {
+					"data": {
+						"type": "string"
+					},
+					"mac": {
+						"type": "string"
+					},
+					"type": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"data",
+					"mac",
+					"type"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IQueryZaloPayOrderStatus": {
+				"properties": {
+					"app_trans_id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"app_trans_id"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"UserResDTO": {
 				"properties": {
 					"name": {
@@ -616,6 +649,99 @@
 						}
 					}
 				]
+			}
+		},
+		"/orders/pay-with-zalopay": {
+			"get": {
+				"operationId": "PayWithZalopay",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Orders"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/orders/callback-zalo-pay": {
+			"post": {
+				"operationId": "CallbackZaloPay",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"return_message": {},
+										"return_code": {
+											"type": "number",
+											"format": "double"
+										}
+									},
+									"required": [
+										"return_message",
+										"return_code"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Orders"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ICallBackZaloPay"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/orders/query-zalopay-order-status": {
+			"post": {
+				"operationId": "QueryZalopayOrderStatus",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Orders"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IQueryZaloPayOrderStatus"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/products": {

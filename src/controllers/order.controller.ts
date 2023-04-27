@@ -10,9 +10,14 @@ import {
   Query,
 } from "tsoa";
 import { OrderService } from "../services/order.service";
-import { ICreateOrder } from "../dto/request";
+import {
+  ICallBackZaloPay,
+  ICreateOrder,
+  IQueryZaloPayOrderStatus,
+} from "../dto/request";
 import { IGetUserAuthInfoRequest } from "../types/express";
 import { OrderStatus } from "../constances/enum";
+import { ICreateMAC } from "../dto/response/order.dto";
 
 @Tags("Orders")
 @Route("orders")
@@ -36,5 +41,20 @@ export class OrdersController extends Controller {
       request.user.userId,
       status
     );
+  }
+
+  @Get("/pay-with-zalopay")
+  public async payWithZalopay() {
+    return OrderService.createPaymentZaloPayURL();
+  }
+
+  @Post("/callback-zalo-pay")
+  public async callbackZaloPay(@Body() dto: ICallBackZaloPay) {
+    return OrderService.callbackZaloPay(dto);
+  }
+
+  @Post("/query-zalopay-order-status")
+  public async queryZalopayOrderStatus(@Body() dto: IQueryZaloPayOrderStatus) {
+    return OrderService.queryZalopayOrderStatus(dto.app_trans_id);
   }
 }
