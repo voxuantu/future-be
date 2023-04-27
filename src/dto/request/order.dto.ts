@@ -30,3 +30,8 @@ export interface IDataCallbackZalopay {
 export interface IQueryZaloPayOrderStatus {
   app_trans_id: string;
 }
+
+export interface ICreateZaloPayOrder {
+  amount: number;
+  bank_code: string;
+}

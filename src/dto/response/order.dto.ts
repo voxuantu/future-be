@@ -22,3 +22,7 @@ export interface ICreateMAC {
   embed_data: JSON;
   item: JSON[];
 }
+
+export interface IQueryZaloPayOrderStatusRes {
+  orderStatus: number;
+}

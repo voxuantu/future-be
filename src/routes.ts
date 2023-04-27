@@ -155,12 +155,29 @@ const models: TsoaRoute.Models = {
     enums: ["pending", "delivering", "completed"],
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  ICreateZaloPayOrder: {
+    dataType: "refObject",
+    properties: {
+      amount: { dataType: "double", required: true },
+      bank_code: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   ICallBackZaloPay: {
     dataType: "refObject",
     properties: {
       data: { dataType: "string", required: true },
       mac: { dataType: "string", required: true },
       type: { dataType: "double", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IQueryZaloPayOrderStatusRes: {
+    dataType: "refObject",
+    properties: {
+      orderStatus: { dataType: "double", required: true },
     },
     additionalProperties: false,
   },
@@ -441,7 +458,7 @@ export function RegisterRoutes(app: Router) {
     }
   );
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  app.get(
+  app.post(
     "/api/v1/orders/pay-with-zalopay",
     ...fetchMiddlewares<RequestHandler>(OrdersController),
     ...fetchMiddlewares<RequestHandler>(
@@ -453,7 +470,14 @@ export function RegisterRoutes(app: Router) {
       response: any,
       next: any
     ) {
-      const args = {};
+      const args = {
+        dto: {
+          in: "body",
+          name: "dto",
+          required: true,
+          ref: "ICreateZaloPayOrder",
+        },
+      };
 
       // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 

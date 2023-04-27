@@ -13,6 +13,7 @@ import { OrderService } from "../services/order.service";
 import {
   ICallBackZaloPay,
   ICreateOrder,
+  ICreateZaloPayOrder,
   IQueryZaloPayOrderStatus,
 } from "../dto/request";
 import { IGetUserAuthInfoRequest } from "../types/express";
@@ -43,9 +44,9 @@ export class OrdersController extends Controller {
     );
   }
 
-  @Get("/pay-with-zalopay")
-  public async payWithZalopay() {
-    return OrderService.createPaymentZaloPayURL();
+  @Post("/pay-with-zalopay")
+  public async payWithZalopay(@Body() dto: ICreateZaloPayOrder) {
+    return OrderService.createPaymentZaloPayURL(dto);
   }
 
   @Post("/callback-zalo-pay")

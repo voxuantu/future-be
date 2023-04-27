@@ -1,20 +1,28 @@
 import { createHmac } from "crypto";
 import {
   CREATE_ORDER_SUCCESS,
+  CREAT_PAYMENT_URL_ZALOPAY_SUCCESS,
   ERROR_CREATE_ORDER,
+  ERROR_CREAT_PAYMENT_URL_ZALOPAY,
   ERROR_GET_ORDER_HISTORY,
   ERROR_PRODUCT_NOT_FOUND,
+  ERROR_QUERY_ORDER_STATUS_ZALOPAY,
   ERROR_USER_NOT_FOUND,
   GET_ORDER_HISTORY_SUCCESS,
+  QUERY_ORDER_STATUS_ZALOPAY_SUCCESS,
 } from "../constances";
 import { HttpStatus, OrderStatus } from "../constances/enum";
 import {
   ICallBackZaloPay,
   ICreateOrder,
+  ICreateZaloPayOrder,
   IDataCallbackZalopay,
 } from "../dto/request";
-import { ICreateMAC, IOrderHistoryRes } from "../dto/response/order.dto";
-import Order, { IOrderModel } from "../models/order";
+import {
+  IOrderHistoryRes,
+  IQueryZaloPayOrderStatusRes,
+} from "../dto/response/order.dto";
+import Order from "../models/order";
 import OrderItem, { IOrderItemModel } from "../models/order-item";
 import Product from "../models/product";
 import User from "../models/user";
@@ -134,26 +142,18 @@ export class OrderService {
     }
   }
 
-  // static hashMAC(body: ICreateMAC) {
-  // 	const { amount, app_id, app_time, app_trans_id, app_user, embed_data, item } = body;
-  // 	const hmac_input =
-  // 		app_id + "|" + app_trans_id + "|" + app_user + "|" + amount + "|" + app_time + "|" + embed_data + "|" + item;
-  // 	const mac = createHmac("sha256", "sdngKKJmqEMzvh5QQcdD2A9XBSKUNaYn").update(hmac_input).digest("hex");
-  // 	return mac;
-  // }
-
-  static async createPaymentZaloPayURL() {
+  static async createPaymentZaloPayURL(dto: ICreateZaloPayOrder) {
     try {
       // APP INFO
       const config = {
-        app_id: "2553",
-        key1: "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL",
-        key2: "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz",
-        endpoint: "https://sb-openapi.zalopay.vn/v2/create",
+        app_id: process.env.APP_ID,
+        key1: process.env.KEY1 as string,
+        key2: process.env.KEY2 as string,
+        endpoint: process.env.ENDPOINT_CREATE_ORDER as string,
       };
 
       const embed_data = {
-        redirecturl: "http://localhost:3000",
+        redirecturl: process.env.REDIRECT_URL,
       };
 
       const items: any = [];
@@ -162,13 +162,12 @@ export class OrderService {
         app_id: config.app_id,
         app_user: "ZaloPayDemo",
         app_time: Date.now(), // miliseconds
-        amount: 50000,
+        amount: dto.amount,
         app_trans_id: `${moment().format("YYMMDD")}_${transID}`,
-        bank_code: "CC",
+        bank_code: dto.bank_code,
         embed_data: JSON.stringify(embed_data),
         item: JSON.stringify(items),
-        callback_url:
-          "https://279a-2401-d800-f9aa-e69c-9d32-69e2-c9ce-cc72.ngrok-free.app/api/v1/orders/callback-zalo-pay",
+        callback_url: process.env.CALLBACK_URL,
         description: `ZaloPayDemo - Thanh toán cho đơn hàng #${transID}`,
       };
 
@@ -189,15 +188,20 @@ export class OrderService {
         order.item;
       order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
 
-      console.log("order: ", order);
-
       const response = await axios.post(config.endpoint, null, {
         params: order,
       });
-      return response.data;
-      // return "hello";
+
+      return handlerResSuccess<string>(
+        CREAT_PAYMENT_URL_ZALOPAY_SUCCESS,
+        response.data.order_url
+      );
     } catch (error) {
       console.log("error: ", error);
+      return handleResFailure(
+        ERROR_CREAT_PAYMENT_URL_ZALOPAY,
+        HttpStatus.BAD_REQUEST
+      );
     }
   }
 
@@ -209,10 +213,10 @@ export class OrderService {
         return_message: "",
       };
       const config = {
-        app_id: "2553",
-        key1: "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL",
-        key2: "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz",
-        endpoint: "https://sb-openapi.zalopay.vn/v2/create",
+        app_id: process.env.APP_ID,
+        key1: process.env.KEY1 as string,
+        key2: process.env.KEY2 as string,
+        endpoint: process.env.ENDPOINT_CREATE_ORDER as string,
       };
 
       const dataStr = dto.data;
@@ -247,10 +251,10 @@ export class OrderService {
   static async queryZalopayOrderStatus(app_trans_id: string) {
     try {
       const config = {
-        app_id: "2553",
-        key1: "PcY4iZIKFCIdgZvA6ueMcMHHUbRLYjPL",
-        key2: "kLtgPl8HHhfvMuDHPwKfgfsY4Ydm9eIz",
-        endpoint: "https://sb-openapi.zalopay.vn/v2/query",
+        app_id: process.env.APP_ID,
+        key1: process.env.KEY1 as string,
+        key2: process.env.KEY2 as string,
+        endpoint: process.env.ENDPOINT_QUERY_ORDER_STATUS as string,
       };
 
       const postData: any = {
@@ -272,10 +276,18 @@ export class OrderService {
       };
 
       const response = await axios(postConfig);
-      return response.data;
+      return handlerResSuccess<IQueryZaloPayOrderStatusRes>(
+        QUERY_ORDER_STATUS_ZALOPAY_SUCCESS,
+        {
+          orderStatus: response.data.return_code,
+        }
+      );
     } catch (error) {
       console.log("error: ", error);
-      return "error";
+      return handleResFailure(
+        ERROR_QUERY_ORDER_STATUS_ZALOPAY,
+        HttpStatus.BAD_REQUEST
+      );
     }
   }
 }
