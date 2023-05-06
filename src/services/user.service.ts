@@ -11,8 +11,8 @@ import {
 import { HttpStatus } from "../constances/enum";
 import { ICreateUser } from "../dto/request/user.dto";
 import { UserResDTO } from "../dto/response/user.dto";
-import { IProductModel } from "../models/product";
 import User from "../models/user";
+import { IWishlistItemModel } from "../models/wishlist-item";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
 import { AddressService } from "./address.service";
 
@@ -65,13 +65,13 @@ export class UsersService {
 
   static async wishlistProduct(userId: string) {
     try {
-      const user = await User.findById(userId).populate("wishlist");
+      const user = await User.findById(userId);
 
       if (!user) {
         return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
 
-      const result = user.wishlist as IProductModel[];
+      const result = user.wishlist as IWishlistItemModel[];
       return result;
     } catch (error) {
       console.log("error: ", error);
