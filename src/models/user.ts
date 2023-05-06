@@ -6,7 +6,7 @@ import mongoose, {
   model,
 } from "mongoose";
 import { IAddressModel } from "./address";
-import { IWishlistItemModel } from "./wishlist-item";
+import { IProductModel } from "./product";
 
 export interface IUser {
   name: string;
@@ -16,7 +16,7 @@ export interface IUser {
   avatar: string;
   birthday: string;
   addresses: string[] | IAddressModel[];
-  wishlist: string[] | IWishlistItemModel[];
+  wishlist: string[] | IProductModel[];
 }
 
 export interface IUserModel extends IUser, Document, SchemaTimestampsConfig {}
@@ -30,7 +30,7 @@ export const UserSchema: Schema = new Schema(
     avatar: { type: String, require: true },
     birthday: { type: Date },
     addresses: [{ type: Schema.Types.ObjectId, ref: "Address" }],
-    wishlist: [{ type: Schema.Types.ObjectId, ref: "WishlistItem" }],
+    wishlist: [{ type: Schema.Types.ObjectId, ref: "Product" }],
   },
   { timestamps: true }
 );

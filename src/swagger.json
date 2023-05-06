@@ -307,37 +307,35 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"UserResDTO": {
+			"Pick_ICreateUser.name_": {
 				"properties": {
 					"name": {
-						"type": "string"
-					},
-					"email": {
-						"type": "string"
-					},
-					"username": {
-						"type": "string"
-					},
-					"password": {
-						"type": "string"
-					},
-					"avatar": {
-						"type": "string"
-					},
-					"_id": {
 						"type": "string"
 					}
 				},
 				"required": [
-					"name",
-					"email",
-					"username",
-					"password",
-					"avatar",
-					"_id"
+					"name"
 				],
 				"type": "object",
-				"additionalProperties": false
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"UserResDTO": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/Pick_ICreateUser.name_"
+					},
+					{
+						"properties": {
+							"_id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"_id"
+						],
+						"type": "object"
+					}
+				]
 			},
 			"ICreateUser": {
 				"properties": {
@@ -382,6 +380,53 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"WishlistItem": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"image": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"isStock": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"_id",
+					"image",
+					"name",
+					"price",
+					"isStock"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"HttpStatus": {
+				"enum": [
+					200,
+					201,
+					202,
+					400,
+					401,
+					403,
+					404,
+					406,
+					408,
+					500,
+					501,
+					502,
+					503
+				],
+				"type": "number"
 			}
 		},
 		"securitySchemes": {
@@ -1105,6 +1150,127 @@
 					{
 						"in": "path",
 						"name": "userId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/wishlist/{productId}": {
+			"post": {
+				"operationId": "InsertWishlistItem",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/WishlistItem"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Wishlist"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "productId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"delete": {
+				"operationId": "DeleteWishlistItem",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"type": "string"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/HttpStatus"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Wishlist"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "productId",
 						"required": true,
 						"schema": {
 							"type": "string"

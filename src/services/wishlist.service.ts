@@ -4,12 +4,14 @@ import {
   DELETE_WISHLIST_ITEM_SUCCESS,
   ERROR_WISHLIST_ITEM_NOT_FOUND,
   INSERT_WISHLIST_ITEM_SUCCESS,
-  UPDATE_WISHLIST_ITEM_SUCCESS,
+  ERROR_WISHLIST_ITEM_ALREADY_EXIST,
+  ERROR_INSERT_WISHLIST_ITEM,
+  ERROR_DELETE_WISHLIST_ITEM,
 } from "../constances";
 import { HttpStatus } from "../constances/enum";
+import { WishlistItem } from "../dto/response";
 import Product from "../models/product";
 import User from "../models/user";
-import WishlistItem, { IWishlistItemModel } from "../models/wishlist-item";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
 
 export class WishlistService {
@@ -24,23 +26,34 @@ export class WishlistService {
       if (!product) {
         return handleResFailure(ERROR_PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
-
-      const wishlist = user.wishlist as IWishlistItemModel[];
-
-      const newWishlistItem = new WishlistItem({
-        product: product.id,
-        image: product.thumbnail,
-        name: product.name,
-        price: product.price,
-        stock: false, //ĐỢI LÀM CART SẼ SET THEO LOGIC
+      const wishlist = user.wishlist;
+      for (const item of wishlist) {
+        if (item.toString() === productId) {
+          return handleResFailure(
+            ERROR_WISHLIST_ITEM_ALREADY_EXIST,
+            HttpStatus.BAD_REQUEST
+          );
+        }
+      }
+      await User.findByIdAndUpdate(userId, {
+        $push: { wishlist: productId },
       });
-      wishlist.push(newWishlistItem);
-      await User.updateOne({ _id: userId }, { $set: { wishlist: wishlist } });
-      return handlerResSuccess(INSERT_WISHLIST_ITEM_SUCCESS, HttpStatus.OK);
-    } catch (error) {
-      console.log("error: ", error);
+      const result: WishlistItem = {
+        _id: product.id,
+        name: product.name,
+        image: product.thumbnail,
+        price: product.price,
+        isStock: product.quantity > 0 ? true : false,
+      };
+      return handlerResSuccess(INSERT_WISHLIST_ITEM_SUCCESS, result);
+    } catch (error: any) {
+      return handleResFailure(
+        error.error || ERROR_INSERT_WISHLIST_ITEM,
+        HttpStatus.BAD_REQUEST
+      );
     }
   }
+
   static async delete(userId: string, productId: string) {
     try {
       const user = await User.findById(userId);
@@ -54,41 +67,26 @@ export class WishlistService {
           HttpStatus.NOT_FOUND
         );
       }
-      const itemIndex = (wishlist as IWishlistItemModel[]).findIndex((item) => {
-        return item.product == productId;
+
+      const itemIndex = (wishlist as string[]).findIndex((item) => {
+        return item.toString() === productId;
       });
 
-      wishlist.splice(itemIndex, 1);
-      await User.updateOne({ _id: userId }, { $set: { wishlist: wishlist } });
-      return handlerResSuccess(DELETE_WISHLIST_ITEM_SUCCESS, HttpStatus.OK);
-    } catch (error) {
-      console.log("error: ", error);
-    }
-  }
-  // UPDATE DÙNG ĐỂ CHUYỂN ĐỔI TRẠNG THÁI IN STOCK | OUT STOCK
-  static async update(userId: string, productId: string) {
-    try {
-      const user = await User.findById(userId);
-      if (!user) {
-        return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
-      }
-      const wishlist = user.wishlist;
-      if (!wishlist) {
-        return handleResFailure(
+      if (itemIndex === -1)
+        return handlerResSuccess(
           ERROR_WISHLIST_ITEM_NOT_FOUND,
           HttpStatus.NOT_FOUND
         );
-      }
-      (wishlist as IWishlistItemModel[]).findIndex((item) => {
-        if (item.product == productId) {
-          item.stock = !item.stock;
-        }
-      });
 
+      wishlist.splice(itemIndex, 1);
       await User.updateOne({ _id: userId }, { $set: { wishlist: wishlist } });
-      return handlerResSuccess(UPDATE_WISHLIST_ITEM_SUCCESS, HttpStatus.OK);
-    } catch (error) {
-      console.log("error: ", error);
+
+      return handlerResSuccess(DELETE_WISHLIST_ITEM_SUCCESS, productId);
+    } catch (error: any) {
+      return handleResFailure(
+        error.error || ERROR_DELETE_WISHLIST_ITEM,
+        HttpStatus.BAD_REQUEST
+      );
     }
   }
 }

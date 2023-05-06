@@ -1,20 +1,33 @@
-import { Controller, Get, Path, Post, Put, Route, Tags } from "tsoa";
+import {
+  Controller,
+  Post,
+  Route,
+  Security,
+  Tags,
+  Request,
+  Path,
+  Delete,
+} from "tsoa";
 import { WishlistService } from "../services/wishlist.service";
+import { IGetUserAuthInfoRequest } from "../types/express";
 
 @Tags("Wishlist")
 @Route("wishlist")
-export class ProductsController extends Controller {
-  //CHỈ THỰC HIỆN TRÊN INTERFACE CỦA WISHLIST NÊN KHÔNG CÓ ROUTE
-  @Post()
-  public async insertWishlistItem(@Path() userId: string, productId: string) {
-    return WishlistService.insert(userId, productId);
+export class WishlistController extends Controller {
+  @Security("jwt", ["user"])
+  @Post("/{productId}")
+  public async insertWishlistItem(
+    @Request() request: IGetUserAuthInfoRequest,
+    @Path() productId: string
+  ) {
+    return WishlistService.insert(request.user.userId, productId);
   }
-  @Post()
-  public async deleteWishlistItem(@Path() userId: string, productId: string) {
-    return WishlistService.delete(userId, productId);
-  }
-  @Put()
-  public async updateWishlistItem(@Path() userId: string, productId: string) {
-    return WishlistService.update(userId, productId);
+  @Security("jwt", ["user"])
+  @Delete("/{productId}")
+  public async deleteWishlistItem(
+    @Request() request: IGetUserAuthInfoRequest,
+    @Path() productId: string
+  ) {
+    return WishlistService.delete(request.user.userId, productId);
   }
 }

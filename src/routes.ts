@@ -19,6 +19,8 @@ import { OrdersController } from "./controllers/order.controller";
 import { ProductsController } from "./controllers/product.controller";
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UsersController } from "./controllers/user.controller";
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { WishlistController } from "./controllers/wishlist.controller";
 import { expressAuthentication } from "./middleware/authentication";
 // @ts-ignore - no great way to install types from subpackage
 const promiseAny = require("promise.any");
@@ -191,17 +193,28 @@ const models: TsoaRoute.Models = {
     additionalProperties: false,
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  UserResDTO: {
-    dataType: "refObject",
-    properties: {
-      name: { dataType: "string", required: true },
-      email: { dataType: "string", required: true },
-      username: { dataType: "string", required: true },
-      password: { dataType: "string", required: true },
-      avatar: { dataType: "string", required: true },
-      _id: { dataType: "string", required: true },
+  "Pick_ICreateUser.name_": {
+    dataType: "refAlias",
+    type: {
+      dataType: "nestedObjectLiteral",
+      nestedProperties: { name: { dataType: "string", required: true } },
+      validators: {},
     },
-    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  UserResDTO: {
+    dataType: "refAlias",
+    type: {
+      dataType: "intersection",
+      subSchemas: [
+        { ref: "Pick_ICreateUser.name_" },
+        {
+          dataType: "nestedObjectLiteral",
+          nestedProperties: { _id: { dataType: "string", required: true } },
+        },
+      ],
+      validators: {},
+    },
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   ICreateUser: {
@@ -223,6 +236,23 @@ const models: TsoaRoute.Models = {
       role: { dataType: "string", required: true },
     },
     additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  WishlistItem: {
+    dataType: "refObject",
+    properties: {
+      _id: { dataType: "string", required: true },
+      image: { dataType: "string", required: true },
+      name: { dataType: "string", required: true },
+      price: { dataType: "double", required: true },
+      isStock: { dataType: "boolean", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  HttpStatus: {
+    dataType: "refEnum",
+    enums: [200, 201, 202, 400, 401, 403, 404, 406, 408, 500, 501, 502, 503],
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
@@ -849,6 +879,100 @@ export function RegisterRoutes(app: Router) {
         const controller = new UsersController();
 
         const promise = controller.wishlist.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.post(
+    "/api/v1/wishlist/:productId",
+    authenticateMiddleware([{ jwt: ["user"] }]),
+    ...fetchMiddlewares<RequestHandler>(WishlistController),
+    ...fetchMiddlewares<RequestHandler>(
+      WishlistController.prototype.insertWishlistItem
+    ),
+
+    function WishlistController_insertWishlistItem(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        request: {
+          in: "request",
+          name: "request",
+          required: true,
+          dataType: "object",
+        },
+        productId: {
+          in: "path",
+          name: "productId",
+          required: true,
+          dataType: "string",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new WishlistController();
+
+        const promise = controller.insertWishlistItem.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.delete(
+    "/api/v1/wishlist/:productId",
+    authenticateMiddleware([{ jwt: ["user"] }]),
+    ...fetchMiddlewares<RequestHandler>(WishlistController),
+    ...fetchMiddlewares<RequestHandler>(
+      WishlistController.prototype.deleteWishlistItem
+    ),
+
+    function WishlistController_deleteWishlistItem(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        request: {
+          in: "request",
+          name: "request",
+          required: true,
+          dataType: "object",
+        },
+        productId: {
+          in: "path",
+          name: "productId",
+          required: true,
+          dataType: "string",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new WishlistController();
+
+        const promise = controller.deleteWishlistItem.apply(
           controller,
           validatedArgs as any
         );
