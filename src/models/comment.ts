@@ -1,14 +1,8 @@
-import mongoose, {
-  Document,
-  Model,
-  Schema,
-  SchemaTimestampsConfig,
-  model,
-} from "mongoose";
+import { Document, Schema, SchemaTimestampsConfig, model } from "mongoose";
 import { IUserModel } from "./user";
 
 export interface IComment {
-  name: string;
+  content: string;
   rate: number;
   user: string | IUserModel;
 }

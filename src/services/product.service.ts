@@ -1,4 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import {
+  CREATE_PRODUCT_SUCCESS,
+  ERROR_CREATE_PRODUCT,
+  ERROR_PRODUCT_NOT_FOUND,
+  GET_PRODUCT_BY_ID_SUCCESS,
+  GET_PRODUCT_SUCCESS,
+} from "../constances";
+import { HttpStatus } from "../constances/enum";
 import Product, { IProductModel } from "../models/product";
+import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
 
 export class ProductService {
   static async createProduct() {
@@ -15,9 +25,15 @@ export class ProductService {
 
       await newProduct.save();
 
-      return newProduct as IProductModel;
-    } catch (error) {
-      console.log("error: ", error);
+      return handlerResSuccess(
+        CREATE_PRODUCT_SUCCESS,
+        newProduct as IProductModel
+      );
+    } catch (error: any) {
+      return handleResFailure(
+        error.error || ERROR_CREATE_PRODUCT,
+        error.statusCode || HttpStatus.BAD_REQUEST
+      );
     }
   }
 
@@ -25,9 +41,38 @@ export class ProductService {
     try {
       const products = await Product.find({});
 
-      return products as IProductModel[];
-    } catch (error) {
-      console.log("error: ", error);
+      return handlerResSuccess(
+        GET_PRODUCT_SUCCESS,
+        products as IProductModel[]
+      );
+    } catch (error: any) {
+      return handleResFailure(
+        error.error || ERROR_PRODUCT_NOT_FOUND,
+        error.statusCode || HttpStatus.NOT_FOUND
+      );
+    }
+  }
+
+  static async getProductById(id: string) {
+    try {
+      const product = await Product.findById(id).populate({
+        path: "comments",
+        select: "user content createdAt rate",
+        populate: {
+          path: "user",
+          select: "avatar name",
+        },
+      });
+
+      return handlerResSuccess(
+        GET_PRODUCT_BY_ID_SUCCESS,
+        product as IProductModel
+      );
+    } catch (error: any) {
+      return handleResFailure(
+        error.error || ERROR_PRODUCT_NOT_FOUND,
+        error.statusCode || HttpStatus.NOT_FOUND
+      );
     }
   }
 }
