@@ -14,6 +14,8 @@ import {
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AddressController } from "./controllers/address.controller";
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { CategoryController } from "./controllers/category.controller";
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { CommentsController } from "./controllers/comment.controller";
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { OrdersController } from "./controllers/order.controller";
@@ -25,6 +27,8 @@ import { expressAuthentication } from "./middleware/authentication";
 // @ts-ignore - no great way to install types from subpackage
 const promiseAny = require("promise.any");
 import type { RequestHandler, Router } from "express";
+const multer = require("multer");
+const upload = multer();
 
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
@@ -86,6 +90,16 @@ const models: TsoaRoute.Models = {
       ],
       validators: {},
     },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  CategoryRes: {
+    dataType: "refObject",
+    properties: {
+      _id: { dataType: "string", required: true },
+      name: { dataType: "string", required: true },
+      image: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   CommentResDTO: {
@@ -393,6 +407,53 @@ export function RegisterRoutes(app: Router) {
         const controller = new AddressController();
 
         const promise = controller.deleteAddress.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.post(
+    "/api/v1/categories",
+    upload.single("file"),
+    ...fetchMiddlewares<RequestHandler>(CategoryController),
+    ...fetchMiddlewares<RequestHandler>(
+      CategoryController.prototype.createCategory
+    ),
+
+    function CategoryController_createCategory(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        name: {
+          in: "formData",
+          name: "name",
+          required: true,
+          dataType: "string",
+        },
+        file: {
+          in: "formData",
+          name: "file",
+          required: true,
+          dataType: "file",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new CategoryController();
+
+        const promise = controller.createCategory.apply(
           controller,
           validatedArgs as any
         );
