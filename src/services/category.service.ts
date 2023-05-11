@@ -45,4 +45,9 @@ export class CategoryService {
       );
     }
   }
+
+  static async findCategoryById(id: string) {
+    const cateFound = await Category.findById(id, "name");
+    return cateFound;
+  }
 }
