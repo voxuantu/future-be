@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import mongoose from "mongoose";
 import {
   CREATE_PRODUCT_SUCCESS,
   DELETE_PRODUCT_SUCCESS,
   ERROR_CATEGORY_NOT_FOUND,
   ERROR_CREATE_PRODUCT,
   ERROR_DELETE_PRODUCT,
+  ERROR_PRODUCT_ALREADY_EXIST,
   ERROR_PRODUCT_NOT_FOUND,
   ERROR_UPDATE_PRODUCT,
   GET_PRODUCT_BY_ID_SUCCESS,
@@ -31,6 +33,16 @@ export class ProductService {
         return handleResFailure(ERROR_CATEGORY_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
 
+      const prodFound = await Product.findOne({
+        name: { $regex: dto.name, $options: "i" },
+      });
+      if (prodFound) {
+        return handleResFailure(
+          ERROR_PRODUCT_ALREADY_EXIST,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+
       const imageURLs: string[] = [];
       for (const img of images) {
         const { public_id } = await CloudinaryService.upload(img, "products");
@@ -52,20 +64,9 @@ export class ProductService {
         thumbnail: thumbnailUpload.public_id,
       });
 
-      const productRes: ProdutResDTO = {
-        _id: newProduct.id,
-        category: {
-          _id: cateFound.id,
-          name: cateFound.name,
-        },
-        name: newProduct.name,
-        price: newProduct.price,
-        quantity: newProduct.quantity,
-      };
-
       await newProduct.save();
 
-      return handlerResSuccess(CREATE_PRODUCT_SUCCESS, productRes);
+      return handlerResSuccess(CREATE_PRODUCT_SUCCESS, "");
     } catch (error: any) {
       console.log("error: ", error);
       return handleResFailure(
@@ -194,5 +195,13 @@ export class ProductService {
         error.statusCode || HttpStatus.NOT_FOUND
       );
     }
+  }
+
+  static async checkCategoryIdIsBeingUsed(categoryId: string) {
+    const products = await Product.find({
+      category: new mongoose.Types.ObjectId(categoryId),
+    });
+
+    return products.length > 0 ? true : false;
   }
 }

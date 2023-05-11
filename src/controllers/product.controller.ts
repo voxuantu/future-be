@@ -20,25 +20,28 @@ import { CreateProductDTO, UpdateProductDTO } from "../dto/request/product.dto";
 @Route("products")
 export class ProductsController extends Controller {
   @Post()
-  public async createProduct(
-    @FormField("name") name: string,
-    @FormField("category") category: string,
-    @FormField("quantity") quantity: number,
-    @FormField("price") price: number,
-    @FormField("description") description: string,
-    @UploadedFiles("images")
-    images: Express.Multer.File[],
-    @UploadedFile("thumbnail")
-    thumbnail: Express.Multer.File
+  public createProduct(
+    @FormField() name: string,
+    @FormField() category: string,
+    @FormField() quantity: number,
+    @FormField() price: number,
+    @FormField() description: string,
+    @UploadedFile()
+    thumbnail: Express.Multer.File,
+    @UploadedFiles()
+    images: Express.Multer.File[]
   ) {
-    const dto: CreateProductDTO = {
-      category,
-      description,
-      name,
-      price,
-      quantity,
-    };
-    return ProductService.createProduct(dto, thumbnail, images);
+    // console.log("images: ", images);
+    // console.log("thumbnail: ", thumbnail);
+    // const dto: CreateProductDTO = {
+    //   category,
+    //   description,
+    //   name,
+    //   price,
+    //   quantity,
+    // };
+    // return ProductService.createProduct(dto, thumbnail, images);
+    return "hello";
   }
 
   @Put("/{productId}")
