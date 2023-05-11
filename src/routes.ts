@@ -417,6 +417,39 @@ export function RegisterRoutes(app: Router) {
     }
   );
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
+    "/api/v1/categories",
+    ...fetchMiddlewares<RequestHandler>(CategoryController),
+    ...fetchMiddlewares<RequestHandler>(
+      CategoryController.prototype.getCategories
+    ),
+
+    function CategoryController_getCategories(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {};
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new CategoryController();
+
+        const promise = controller.getCategories.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   app.post(
     "/api/v1/categories",
     upload.single("file"),
@@ -454,6 +487,79 @@ export function RegisterRoutes(app: Router) {
         const controller = new CategoryController();
 
         const promise = controller.createCategory.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.put(
+    "/api/v1/categories/:id",
+    upload.single("file"),
+    ...fetchMiddlewares<RequestHandler>(CategoryController),
+    ...fetchMiddlewares<RequestHandler>(
+      CategoryController.prototype.updateCategory
+    ),
+
+    function CategoryController_updateCategory(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        id: { in: "path", name: "id", required: true, dataType: "string" },
+        name: { in: "formData", name: "name", dataType: "string" },
+        file: { in: "formData", name: "file", dataType: "file" },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new CategoryController();
+
+        const promise = controller.updateCategory.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.delete(
+    "/api/v1/categories/:id",
+    ...fetchMiddlewares<RequestHandler>(CategoryController),
+    ...fetchMiddlewares<RequestHandler>(
+      CategoryController.prototype.deleteCategory
+    ),
+
+    function CategoryController_deleteCategory(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        id: { in: "path", name: "id", required: true, dataType: "string" },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new CategoryController();
+
+        const promise = controller.deleteCategory.apply(
           controller,
           validatedArgs as any
         );

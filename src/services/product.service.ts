@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import mongoose from "mongoose";
 import {
   CREATE_PRODUCT_SUCCESS,
   ERROR_CREATE_PRODUCT,
@@ -74,5 +75,13 @@ export class ProductService {
         error.statusCode || HttpStatus.NOT_FOUND
       );
     }
+  }
+
+  static async checkCategoryIdIsBeingUsed(categoryId: string) {
+    const products = await Product.find({
+      category: new mongoose.Types.ObjectId(categoryId),
+    });
+
+    return products.length > 0 ? true : false;
   }
 }
