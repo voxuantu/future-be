@@ -236,6 +236,44 @@ const models: TsoaRoute.Models = {
     additionalProperties: false,
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  ProdutResDTO: {
+    dataType: "refObject",
+    properties: {
+      _id: { dataType: "string", required: true },
+      name: { dataType: "string", required: true },
+      category: {
+        dataType: "nestedObjectLiteral",
+        nestedProperties: {
+          name: { dataType: "string", required: true },
+          _id: { dataType: "string", required: true },
+        },
+        required: true,
+      },
+      price: { dataType: "double", required: true },
+      quantity: { dataType: "double", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  ProductUpdateRes: {
+    dataType: "refObject",
+    properties: {
+      _id: { dataType: "string", required: true },
+      name: { dataType: "string", required: true },
+      category: { dataType: "string", required: true },
+      price: { dataType: "double", required: true },
+      quantity: { dataType: "double", required: true },
+      description: { dataType: "string", required: true },
+      thumbnail: { dataType: "string", required: true },
+      images: {
+        dataType: "array",
+        array: { dataType: "string" },
+        required: true,
+      },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   "Pick_ICreateUser.name_": {
     dataType: "refAlias",
     type: {
@@ -890,6 +928,7 @@ export function RegisterRoutes(app: Router) {
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   app.post(
     "/api/v1/products",
+    upload.array("images"),
     ...fetchMiddlewares<RequestHandler>(ProductsController),
     ...fetchMiddlewares<RequestHandler>(
       ProductsController.prototype.createProduct
@@ -930,6 +969,13 @@ export function RegisterRoutes(app: Router) {
           name: "description",
           required: true,
           dataType: "string",
+        },
+        images: {
+          in: "formData",
+          name: "images",
+          required: true,
+          dataType: "array",
+          array: { dataType: "file" },
         },
       };
 
@@ -979,6 +1025,11 @@ export function RegisterRoutes(app: Router) {
         description: {
           in: "formData",
           name: "description",
+          dataType: "string",
+        },
+        updateImageField: {
+          in: "formData",
+          name: "updateImageField",
           dataType: "string",
         },
         images: {
@@ -1049,18 +1100,26 @@ export function RegisterRoutes(app: Router) {
   );
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   app.get(
-    "/api/v1/products",
+    "/api/v1/products/pagination",
     ...fetchMiddlewares<RequestHandler>(ProductsController),
     ...fetchMiddlewares<RequestHandler>(
-      ProductsController.prototype.getProducts
+      ProductsController.prototype.getProductsPagination
     ),
 
-    function ProductsController_getProducts(
+    function ProductsController_getProductsPagination(
       request: any,
       response: any,
       next: any
     ) {
-      const args = {};
+      const args = {
+        limit: {
+          in: "query",
+          name: "limit",
+          required: true,
+          dataType: "double",
+        },
+        page: { in: "query", name: "page", required: true, dataType: "double" },
+      };
 
       // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
@@ -1070,7 +1129,47 @@ export function RegisterRoutes(app: Router) {
 
         const controller = new ProductsController();
 
-        const promise = controller.getProducts.apply(
+        const promise = controller.getProductsPagination.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
+    "/api/v1/products/update/:productId",
+    ...fetchMiddlewares<RequestHandler>(ProductsController),
+    ...fetchMiddlewares<RequestHandler>(
+      ProductsController.prototype.getProductForUpdate
+    ),
+
+    function ProductsController_getProductForUpdate(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        productId: {
+          in: "path",
+          name: "productId",
+          required: true,
+          dataType: "string",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new ProductsController();
+
+        const promise = controller.getProductForUpdate.apply(
           controller,
           validatedArgs as any
         );

@@ -8,3 +8,14 @@ export class ProdutResDTO {
   price: number;
   quantity: number;
 }
+
+export class ProductUpdateRes {
+  _id: string;
+  name: string;
+  category: string;
+  price: number;
+  quantity: number;
+  description: string;
+  thumbnail: string;
+  images: string[];
+}

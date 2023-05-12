@@ -12,6 +12,7 @@ import {
   Put,
   Delete,
   UploadedFile,
+  Query,
 } from "tsoa";
 import { ProductService } from "../services";
 import { CreateProductDTO, UpdateProductDTO } from "../dto/request/product.dto";
@@ -20,28 +21,24 @@ import { CreateProductDTO, UpdateProductDTO } from "../dto/request/product.dto";
 @Route("products")
 export class ProductsController extends Controller {
   @Post()
-  public createProduct(
-    @FormField() name: string,
-    @FormField() category: string,
-    @FormField() quantity: number,
-    @FormField() price: number,
-    @FormField() description: string,
-    @UploadedFile()
-    thumbnail: Express.Multer.File,
-    @UploadedFiles()
+  public async createProduct(
+    @FormField("name") name: string,
+    @FormField("category") category: string,
+    @FormField("quantity") quantity: number,
+    @FormField("price") price: number,
+    @FormField("description") description: string,
+    @UploadedFiles("images")
     images: Express.Multer.File[]
   ) {
-    // console.log("images: ", images);
-    // console.log("thumbnail: ", thumbnail);
-    // const dto: CreateProductDTO = {
-    //   category,
-    //   description,
-    //   name,
-    //   price,
-    //   quantity,
-    // };
-    // return ProductService.createProduct(dto, thumbnail, images);
-    return "hello";
+    console.log("images: ", images);
+    const dto: CreateProductDTO = {
+      category,
+      description,
+      name,
+      price,
+      quantity,
+    };
+    return ProductService.createProduct(dto, images);
   }
 
   @Put("/{productId}")
@@ -52,6 +49,7 @@ export class ProductsController extends Controller {
     @FormField("quantity") quantity?: number,
     @FormField("price") price?: number,
     @FormField("description") description?: string,
+    @FormField("updateImageField") updateImageField?: string,
     @UploadedFiles("images")
     images?: Express.Multer.File[]
   ) {
@@ -61,6 +59,7 @@ export class ProductsController extends Controller {
       price,
       quantity,
       description,
+      updateImageField,
     };
     return ProductService.updateProduct(productId, dto, images ? images : []);
   }
@@ -70,9 +69,17 @@ export class ProductsController extends Controller {
     return ProductService.deleteProduct(productId);
   }
 
-  @Get()
-  public async getProducts() {
-    return ProductService.getProducts();
+  @Get("/pagination")
+  public getProductsPagination(
+    @Query("limit") limit: number,
+    @Query("page") page: number
+  ) {
+    return ProductService.getProductsPagination(limit, page);
+  }
+
+  @Get("/update/{productId}")
+  public async getProductForUpdate(@Path() productId: string) {
+    return ProductService.getProductForUpdate(productId);
   }
 
   @Get("/{productId}")

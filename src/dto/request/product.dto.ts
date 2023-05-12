@@ -12,4 +12,5 @@ export class UpdateProductDTO {
   price?: number;
   quantity?: number;
   description?: string;
+  updateImageField?: string;
 }

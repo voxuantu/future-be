@@ -6,25 +6,29 @@ import {
   ERROR_CATEGORY_NOT_FOUND,
   ERROR_CREATE_PRODUCT,
   ERROR_DELETE_PRODUCT,
+  ERROR_GET_PRODUCT_FOR_UPDATE,
+  ERROR_GET_PRODUCT_PAGINATION,
   ERROR_PRODUCT_ALREADY_EXIST,
   ERROR_PRODUCT_NOT_FOUND,
   ERROR_UPDATE_PRODUCT,
   GET_PRODUCT_BY_ID_SUCCESS,
+  GET_PRODUCT_FOR_UPDATE_SUCCESS,
+  GET_PRODUCT_PAGINATION_SUCCESS,
   GET_PRODUCT_SUCCESS,
   UPDATE_PRODUCT_SUCCESS,
 } from "../constances";
 import { HttpStatus } from "../constances/enum";
 import { CreateProductDTO, UpdateProductDTO } from "../dto/request/product.dto";
-import { ProdutResDTO } from "../dto/response/product.dto";
+import { ProductUpdateRes, ProdutResDTO } from "../dto/response/product.dto";
 import Product, { IProductModel } from "../models/product";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
 import { CategoryService } from "./category.service";
 import { CloudinaryService } from "./cloudinary.service";
+import { ICategoryModel } from "../models/category";
 
 export class ProductService {
   static async createProduct(
     dto: CreateProductDTO,
-    thumbnail: Express.Multer.File,
     images: Express.Multer.File[]
   ) {
     try {
@@ -48,10 +52,6 @@ export class ProductService {
         const { public_id } = await CloudinaryService.upload(img, "products");
         imageURLs.push(public_id);
       }
-      const thumbnailUpload = await CloudinaryService.upload(
-        thumbnail,
-        "products"
-      );
 
       const newProduct = new Product({
         name: dto.name,
@@ -60,8 +60,8 @@ export class ProductService {
         quantity: dto.quantity,
         description: dto.description,
         rating: 0,
-        images: imageURLs,
-        thumbnail: thumbnailUpload.public_id,
+        images: imageURLs.slice(1),
+        thumbnail: imageURLs[0],
       });
 
       await newProduct.save();
@@ -82,7 +82,8 @@ export class ProductService {
     images: Express.Multer.File[]
   ) {
     try {
-      const { category, description, name, price, quantity } = dto;
+      const { category, description, name, price, quantity, updateImageField } =
+        dto;
       const product = await Product.findById(prodId);
       if (!product) {
         return handleResFailure(ERROR_PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -113,7 +114,14 @@ export class ProductService {
         product.quantity = quantity;
       }
 
-      if (images.length > 0) {
+      if (updateImageField === "thumbnail") {
+        const { public_id } = await CloudinaryService.upload(
+          images[0],
+          "products"
+        );
+        await CloudinaryService.deleteImage(product.thumbnail);
+        product.thumbnail = public_id;
+      } else if (updateImageField === "images") {
         for (const img of product.images) {
           await CloudinaryService.deleteImage(img);
         }
@@ -123,6 +131,21 @@ export class ProductService {
           const { public_id } = await CloudinaryService.upload(img, "products");
           product.images.push(public_id);
         }
+      } else if (updateImageField === "all") {
+        const imgURLs: string[] = [];
+
+        for (const img of images) {
+          const { public_id } = await CloudinaryService.upload(img, "products");
+          imgURLs.push(public_id);
+        }
+
+        await CloudinaryService.deleteImage(product.thumbnail);
+        product.thumbnail = imgURLs[0];
+
+        for (const img of product.images) {
+          await CloudinaryService.deleteImage(img);
+        }
+        product.images = imgURLs.slice(1);
       }
 
       await product.save();
@@ -151,6 +174,8 @@ export class ProductService {
         await CloudinaryService.deleteImage(img);
       }
 
+      await CloudinaryService.deleteImage(product.thumbnail);
+
       return handlerResSuccess(DELETE_PRODUCT_SUCCESS, productId);
     } catch (error) {
       console.log("error: ", error);
@@ -170,6 +195,42 @@ export class ProductService {
       return handleResFailure(
         error.error || ERROR_PRODUCT_NOT_FOUND,
         error.statusCode || HttpStatus.NOT_FOUND
+      );
+    }
+  }
+
+  static async getProductsPagination(limit: number, page: number) {
+    try {
+      const product = await Product.find()
+        .skip(limit * page)
+        .limit(limit)
+        .populate("category")
+        .select("name category price quantity");
+
+      const numOfProds = await Product.count();
+      // const totalPages =
+      // 	numOfProds % limit > 0 ? Math.floor(numOfProds / limit) + 1 : Math.floor(numOfProds / limit);
+
+      const prodRes: ProdutResDTO[] = product.map((prod) => ({
+        _id: prod.id,
+        name: prod.name,
+        price: prod.price,
+        quantity: prod.quantity,
+        category: {
+          _id: (prod.category as ICategoryModel)._id,
+          name: (prod.category as ICategoryModel).name,
+        },
+      }));
+
+      return handlerResSuccess(GET_PRODUCT_PAGINATION_SUCCESS, {
+        products: prodRes,
+        numOfProds,
+      });
+    } catch (error) {
+      console.log("error: ", error);
+      return handleResFailure(
+        ERROR_GET_PRODUCT_PAGINATION,
+        HttpStatus.BAD_REQUEST
       );
     }
   }
@@ -203,5 +264,35 @@ export class ProductService {
     });
 
     return products.length > 0 ? true : false;
+  }
+
+  static async getProductForUpdate(prodId: string) {
+    try {
+      const prod = await Product.findById(
+        prodId,
+        "name category quantity price description thumbnail images"
+      );
+      if (prod) {
+        prod.thumbnail = await CloudinaryService.getImageUrl(prod.thumbnail);
+
+        const imgURLs: string[] = [];
+        for (const publicId of prod.images) {
+          const url = await CloudinaryService.getImageUrl(publicId);
+          imgURLs.push(url);
+        }
+        prod.images = imgURLs;
+      }
+
+      return handlerResSuccess(
+        GET_PRODUCT_FOR_UPDATE_SUCCESS,
+        prod as ProductUpdateRes
+      );
+    } catch (error) {
+      console.log("error: ", error);
+      return handleResFailure(
+        ERROR_GET_PRODUCT_FOR_UPDATE,
+        HttpStatus.BAD_REQUEST
+      );
+    }
   }
 }

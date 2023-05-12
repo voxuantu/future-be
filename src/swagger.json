@@ -389,6 +389,93 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"ProdutResDTO": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"category": {
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"_id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"name",
+							"_id"
+						],
+						"type": "object"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"_id",
+					"name",
+					"category",
+					"price",
+					"quantity"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ProductUpdateRes": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"category": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"thumbnail": {
+						"type": "string"
+					},
+					"images": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"_id",
+					"name",
+					"category",
+					"price",
+					"quantity",
+					"description",
+					"thumbnail",
+					"images"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Pick_ICreateUser.name_": {
 				"properties": {
 					"name": {
@@ -1247,7 +1334,24 @@
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "string"
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"type": "string"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
 								}
 							}
 						}
@@ -1279,6 +1383,13 @@
 									},
 									"description": {
 										"type": "string"
+									},
+									"images": {
+										"items": {
+											"type": "string",
+											"format": "binary"
+										},
+										"type": "array"
 									}
 								},
 								"required": [
@@ -1286,52 +1397,13 @@
 									"category",
 									"quantity",
 									"price",
-									"description"
+									"description",
+									"images"
 								]
 							}
 						}
 					}
 				}
-			},
-			"get": {
-				"operationId": "GetProducts",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"anyOf": [
-										{},
-										{
-											"properties": {
-												"data": {
-													"items": {
-														"$ref": "#/components/schemas/IProductModel"
-													},
-													"type": "array"
-												},
-												"message": {
-													"type": "string"
-												}
-											},
-											"required": [
-												"data",
-												"message"
-											],
-											"type": "object"
-										}
-									]
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Products"
-				],
-				"security": [],
-				"parameters": []
 			}
 		},
 		"/products/{productId}": {
@@ -1400,6 +1472,9 @@
 										"type": "string"
 									},
 									"description": {
+										"type": "string"
+									},
+									"updateImageField": {
 										"type": "string"
 									},
 									"images": {
@@ -1475,6 +1550,128 @@
 											"properties": {
 												"data": {
 													"$ref": "#/components/schemas/IProductModel"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Products"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "productId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/products/pagination": {
+			"get": {
+				"operationId": "GetProductsPagination",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"properties": {
+														"numOfProds": {
+															"type": "number",
+															"format": "double"
+														},
+														"products": {
+															"items": {
+																"$ref": "#/components/schemas/ProdutResDTO"
+															},
+															"type": "array"
+														}
+													},
+													"required": [
+														"numOfProds",
+														"products"
+													],
+													"type": "object"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Products"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "limit",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "page",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/products/update/{productId}": {
+			"get": {
+				"operationId": "GetProductForUpdate",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/ProductUpdateRes"
 												},
 												"message": {
 													"type": "string"
