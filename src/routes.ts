@@ -274,6 +274,25 @@ const models: TsoaRoute.Models = {
     additionalProperties: false,
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  ProductCard: {
+    dataType: "refObject",
+    properties: {
+      _id: { dataType: "string", required: true },
+      name: { dataType: "string", required: true },
+      price: { dataType: "double", required: true },
+      category: {
+        dataType: "nestedObjectLiteral",
+        nestedProperties: {
+          name: { dataType: "string", required: true },
+          _id: { dataType: "string", required: true },
+        },
+        required: true,
+      },
+      thumbnail: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   "Pick_ICreateUser.name_": {
     dataType: "refAlias",
     type: {
@@ -1170,6 +1189,39 @@ export function RegisterRoutes(app: Router) {
         const controller = new ProductsController();
 
         const promise = controller.getProductForUpdate.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
+    "/api/v1/products/newest",
+    ...fetchMiddlewares<RequestHandler>(ProductsController),
+    ...fetchMiddlewares<RequestHandler>(
+      ProductsController.prototype.getNewestProds
+    ),
+
+    function ProductsController_getNewestProds(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {};
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new ProductsController();
+
+        const promise = controller.getNewestProds.apply(
           controller,
           validatedArgs as any
         );

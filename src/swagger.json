@@ -476,6 +476,47 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"ProductCard": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"category": {
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"_id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"name",
+							"_id"
+						],
+						"type": "object"
+					},
+					"thumbnail": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"_id",
+					"name",
+					"price",
+					"category",
+					"thumbnail"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"Pick_ICreateUser.name_": {
 				"properties": {
 					"name": {
@@ -1703,6 +1744,48 @@
 						}
 					}
 				]
+			}
+		},
+		"/products/newest": {
+			"get": {
+				"operationId": "GetNewestProds",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/ProductCard"
+													},
+													"type": "array"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Products"
+				],
+				"security": [],
+				"parameters": []
 			}
 		},
 		"/users": {

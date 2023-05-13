@@ -19,3 +19,14 @@ export class ProductUpdateRes {
   thumbnail: string;
   images: string[];
 }
+
+export class ProductCard {
+  _id: string;
+  name: string;
+  price: number;
+  category: {
+    _id: string;
+    name: string;
+  };
+  thumbnail: string;
+}

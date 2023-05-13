@@ -82,6 +82,11 @@ export class ProductsController extends Controller {
     return ProductService.getProductForUpdate(productId);
   }
 
+  @Get("/newest")
+  public async getNewestProds() {
+    return ProductService.getNewestProduct();
+  }
+
   @Get("/{productId}")
   public async getProductById(@Path() productId: string) {
     return ProductService.getProductById(productId);

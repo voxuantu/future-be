@@ -6,11 +6,13 @@ import {
   ERROR_CATEGORY_NOT_FOUND,
   ERROR_CREATE_PRODUCT,
   ERROR_DELETE_PRODUCT,
+  ERROR_GET_NEWEST_PRODUCT,
   ERROR_GET_PRODUCT_FOR_UPDATE,
   ERROR_GET_PRODUCT_PAGINATION,
   ERROR_PRODUCT_ALREADY_EXIST,
   ERROR_PRODUCT_NOT_FOUND,
   ERROR_UPDATE_PRODUCT,
+  GET_NEWEST_PRODUCT_SUCCESS,
   GET_PRODUCT_BY_ID_SUCCESS,
   GET_PRODUCT_FOR_UPDATE_SUCCESS,
   GET_PRODUCT_PAGINATION_SUCCESS,
@@ -19,12 +21,17 @@ import {
 } from "../constances";
 import { HttpStatus } from "../constances/enum";
 import { CreateProductDTO, UpdateProductDTO } from "../dto/request/product.dto";
-import { ProductUpdateRes, ProdutResDTO } from "../dto/response/product.dto";
+import {
+  ProductCard,
+  ProductUpdateRes,
+  ProdutResDTO,
+} from "../dto/response/product.dto";
 import Product, { IProductModel } from "../models/product";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
 import { CategoryService } from "./category.service";
 import { CloudinaryService } from "./cloudinary.service";
 import { ICategoryModel } from "../models/category";
+import { shuffle } from "../utils/array";
 
 export class ProductService {
   static async createProduct(
@@ -183,22 +190,6 @@ export class ProductService {
     }
   }
 
-  static async getProducts() {
-    try {
-      const products = await Product.find({});
-
-      return handlerResSuccess(
-        GET_PRODUCT_SUCCESS,
-        products as IProductModel[]
-      );
-    } catch (error: any) {
-      return handleResFailure(
-        error.error || ERROR_PRODUCT_NOT_FOUND,
-        error.statusCode || HttpStatus.NOT_FOUND
-      );
-    }
-  }
-
   static async getProductsPagination(limit: number, page: number) {
     try {
       const product = await Product.find()
@@ -293,6 +284,39 @@ export class ProductService {
         ERROR_GET_PRODUCT_FOR_UPDATE,
         HttpStatus.BAD_REQUEST
       );
+    }
+  }
+
+  static async getNewestProduct() {
+    try {
+      const newestProds = await Product.find({})
+        .sort({ createdAt: -1 })
+        .limit(24)
+        .populate("category");
+      const newestProdsRes: ProductCard[] = [];
+      for (const prod of newestProds) {
+        const thumbnailURL = await CloudinaryService.getImageUrl(
+          prod.thumbnail
+        );
+        newestProdsRes.push({
+          _id: prod.id,
+          category: {
+            _id: (prod.category as ICategoryModel).id,
+            name: (prod.category as ICategoryModel).name,
+          },
+          name: prod.name,
+          price: prod.price,
+          thumbnail: thumbnailURL,
+        });
+      }
+
+      return handlerResSuccess(
+        GET_NEWEST_PRODUCT_SUCCESS,
+        shuffle(newestProdsRes)
+      );
+    } catch (error) {
+      console.log("error: ", error);
+      return handleResFailure(ERROR_GET_NEWEST_PRODUCT, HttpStatus.BAD_REQUEST);
     }
   }
 }
