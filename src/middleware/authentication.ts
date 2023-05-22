@@ -3,6 +3,7 @@ import * as jwt from "jsonwebtoken";
 import { UsersService } from "../services";
 import HttpException from "../utils/http-exception";
 import { HttpStatus } from "../constances/enum";
+import { AdminService } from "../services/admin.service";
 
 export function expressAuthentication(
   request: express.Request,
@@ -28,22 +29,27 @@ export function expressAuthentication(
 
         // Check if JWT contains all required scopes
         if (scopes && scopes.length > 0) {
-          for (const scope of scopes) {
-            // @typescript-eslint/no-explicit-any
-            if (!decoded.role.includes(scope)) {
+          // @typescript-eslint/no-explicit-any
+          if (!scopes.includes(decoded.role[0])) {
+            return reject(
+              new HttpException(
+                HttpStatus.FOBIDDEN,
+                "JWT does not contain required role."
+              )
+            );
+          } else if (decoded.role[0] === "user") {
+            const user = await UsersService.findUserById(decoded.userId);
+            if (!user) {
               return reject(
-                new HttpException(
-                  HttpStatus.FOBIDDEN,
-                  "JWT does not contain required role."
-                )
+                new HttpException(HttpStatus.NOT_FOUND, "User not exist")
               );
-            } else if (scope === "user") {
-              const user = await UsersService.findUserById(decoded.userId);
-              if (!user) {
-                return reject(
-                  new HttpException(HttpStatus.NOT_FOUND, "User not exist")
-                );
-              }
+            }
+          } else if (decoded.role[0] === "admin") {
+            const admin = await AdminService.findAdminById(decoded.userId);
+            if (!admin) {
+              return reject(
+                new HttpException(HttpStatus.NOT_FOUND, "User not exist")
+              );
             }
           }
           resolve(decoded);

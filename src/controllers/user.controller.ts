@@ -18,7 +18,7 @@ import { IGetUserAuthInfoRequest } from "../types/express";
 @Tags("Users")
 @Route("users")
 export class UsersController extends Controller {
-  @Security("jwt", ["admin"])
+  @Security("jwt", ["user"])
   @Get()
   public async getTest(
     @Request() request: IGetUserAuthInfoRequest
