@@ -117,6 +117,75 @@
 					}
 				]
 			},
+			"Pick_ICreateAdmin.name_": {
+				"properties": {
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"AdminResDTO": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/Pick_ICreateAdmin.name_"
+					},
+					{
+						"properties": {
+							"_id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"_id"
+						],
+						"type": "object"
+					}
+				]
+			},
+			"ICreateAdmin": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"username": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"username",
+					"password"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Pick_ICreateAdmin.username-or-password_": {
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"username",
+					"password"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"AdminLogin": {
+				"$ref": "#/components/schemas/Pick_ICreateAdmin.username-or-password_"
+			},
 			"CommentResDTO": {
 				"properties": {
 					"_id": {
@@ -369,37 +438,35 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"UserResDTO": {
+			"Pick_ICreateUser.name_": {
 				"properties": {
 					"name": {
-						"type": "string"
-					},
-					"email": {
-						"type": "string"
-					},
-					"username": {
-						"type": "string"
-					},
-					"password": {
-						"type": "string"
-					},
-					"avatar": {
-						"type": "string"
-					},
-					"_id": {
 						"type": "string"
 					}
 				},
 				"required": [
-					"name",
-					"email",
-					"username",
-					"password",
-					"avatar",
-					"_id"
+					"name"
 				],
 				"type": "object",
-				"additionalProperties": false
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"UserResDTO": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/Pick_ICreateUser.name_"
+					},
+					{
+						"properties": {
+							"_id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"_id"
+						],
+						"type": "object"
+					}
+				]
 			},
 			"ICreateUser": {
 				"properties": {
@@ -633,6 +700,104 @@
 						}
 					}
 				]
+			}
+		},
+		"/admin": {
+			"post": {
+				"operationId": "CreateAdmin",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/AdminResDTO"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Admin"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ICreateAdmin"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/admin/login": {
+			"post": {
+				"operationId": "Login",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"type": "string"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Admin"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AdminLogin"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/comments": {
@@ -1153,7 +1318,7 @@
 				"security": [
 					{
 						"jwt": [
-							"admin"
+							"user"
 						]
 					}
 				],

@@ -2,6 +2,7 @@ import { Document, Schema, SchemaTimestampsConfig, model } from "mongoose";
 
 export interface IAdmin {
   email: string;
+  name: string;
   username: string;
   password: string;
 }
@@ -10,7 +11,7 @@ export interface IAdminModel extends IAdmin, Document, SchemaTimestampsConfig {}
 
 export const AdminSchema: Schema = new Schema(
   {
-    email: { type: String },
+    name: { type: String, require: true },
     username: { type: String, require: true },
     password: { type: String, require: true },
   },
