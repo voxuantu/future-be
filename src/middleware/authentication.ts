@@ -26,15 +26,10 @@ export function expressAuthentication(
           );
         }
 
-        const user = await UsersService.findUserById(decoded.userId);
-        if (!user) {
-          return reject(
-            new HttpException(HttpStatus.NOT_FOUND, "User not exist")
-          );
-        }
         // Check if JWT contains all required scopes
         if (scopes && scopes.length > 0) {
           for (const scope of scopes) {
+            // @typescript-eslint/no-explicit-any
             if (!decoded.role.includes(scope)) {
               return reject(
                 new HttpException(
@@ -42,6 +37,13 @@ export function expressAuthentication(
                   "JWT does not contain required role."
                 )
               );
+            } else if (scope === "user") {
+              const user = await UsersService.findUserById(decoded.userId);
+              if (!user) {
+                return reject(
+                  new HttpException(HttpStatus.NOT_FOUND, "User not exist")
+                );
+              }
             }
           }
           resolve(decoded);
