@@ -167,13 +167,17 @@
 							"_id"
 						],
 						"type": "object"
+					},
+					"createdAt": {
+						"type": "string"
 					}
 				},
 				"required": [
 					"_id",
 					"content",
 					"rate",
-					"user"
+					"user",
+					"createdAt"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -513,6 +517,75 @@
 					"price",
 					"category",
 					"thumbnail"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ProductDetail": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"category": {
+						"properties": {
+							"name": {
+								"type": "string"
+							},
+							"_id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"name",
+							"_id"
+						],
+						"type": "object"
+					},
+					"thumbnail": {
+						"type": "string"
+					},
+					"images": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"rating": {
+						"type": "number",
+						"format": "double"
+					},
+					"description": {
+						"type": "string"
+					},
+					"comments": {
+						"items": {
+							"$ref": "#/components/schemas/CommentResDTO"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"_id",
+					"name",
+					"price",
+					"category",
+					"thumbnail",
+					"images",
+					"quantity",
+					"rating",
+					"description",
+					"comments"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -1590,7 +1663,7 @@
 										{
 											"properties": {
 												"data": {
-													"$ref": "#/components/schemas/IProductModel"
+													"$ref": "#/components/schemas/ProductDetail"
 												},
 												"message": {
 													"type": "string"

@@ -23,6 +23,7 @@ import { HttpStatus } from "../constances/enum";
 import { CreateProductDTO, UpdateProductDTO } from "../dto/request/product.dto";
 import {
   ProductCard,
+  ProductDetail,
   ProductUpdateRes,
   ProdutResDTO,
 } from "../dto/response/product.dto";
@@ -32,6 +33,10 @@ import { CategoryService } from "./category.service";
 import { CloudinaryService } from "./cloudinary.service";
 import { ICategoryModel } from "../models/category";
 import { shuffle } from "../utils/array";
+import { error } from "console";
+import { CommentResDTO } from "../dto/response/comment.dto";
+import { ICommentModel } from "../models/comment";
+import { IUserModel } from "../models/user";
 
 export class ProductService {
   static async createProduct(
@@ -228,19 +233,65 @@ export class ProductService {
 
   static async getProductById(id: string) {
     try {
-      const product = await Product.findById(id).populate({
-        path: "comments",
-        select: "user content createdAt rate",
-        populate: {
-          path: "user",
-          select: "avatar name",
-        },
-      });
-
-      return handlerResSuccess(
-        GET_PRODUCT_BY_ID_SUCCESS,
-        product as IProductModel
+      const product = await Product.findById(id)
+        .populate("category", "name")
+        .populate({
+          path: "comments",
+          select: "user content createdAt rate",
+          populate: {
+            path: "user",
+            select: "avatar name",
+          },
+        });
+      if (!product) {
+        return handleResFailure(ERROR_PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+      const thumbnailURL = await CloudinaryService.getImageUrl(
+        product.thumbnail
       );
+      product.thumbnail = thumbnailURL;
+      const imgURLs: string[] = [];
+      for (const publicId of product.images) {
+        const url = await CloudinaryService.getImageUrl(publicId);
+        imgURLs.push(url);
+      }
+      product.images = imgURLs;
+
+      // Chuyển đổi comment từ ICommentModal sang kiểu CommentResDTO
+      const comments: CommentResDTO[] = [];
+      for (const comment of product.comments as ICommentModel[]) {
+        const tempComment: CommentResDTO = {
+          _id: comment._id,
+          content: comment.content,
+          rate: comment.rate,
+          user: {
+            _id: (comment.user as IUserModel)._id,
+            avatar: (comment.user as IUserModel).avatar,
+            name: (comment.user as IUserModel).name,
+          },
+          createdAt: comment.createdAt as string,
+        };
+
+        comments.push(tempComment);
+      }
+
+      const prodRes: ProductDetail = {
+        _id: product._id,
+        category: {
+          _id: (product.category as ICategoryModel)._id,
+          name: (product.category as ICategoryModel).name,
+        },
+        comments,
+        description: product.description,
+        images: product.images,
+        quantity: product.quantity,
+        name: product.name,
+        price: product.price,
+        rating: product.rating,
+        thumbnail: product.thumbnail,
+      };
+
+      return handlerResSuccess(GET_PRODUCT_BY_ID_SUCCESS, prodRes);
     } catch (error: any) {
       return handleResFailure(
         error.error || ERROR_PRODUCT_NOT_FOUND,

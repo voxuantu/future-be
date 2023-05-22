@@ -117,6 +117,7 @@ const models: TsoaRoute.Models = {
         },
         required: true,
       },
+      createdAt: { dataType: "string", required: true },
     },
     additionalProperties: false,
   },
@@ -289,6 +290,38 @@ const models: TsoaRoute.Models = {
         required: true,
       },
       thumbnail: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  ProductDetail: {
+    dataType: "refObject",
+    properties: {
+      _id: { dataType: "string", required: true },
+      name: { dataType: "string", required: true },
+      price: { dataType: "double", required: true },
+      category: {
+        dataType: "nestedObjectLiteral",
+        nestedProperties: {
+          name: { dataType: "string", required: true },
+          _id: { dataType: "string", required: true },
+        },
+        required: true,
+      },
+      thumbnail: { dataType: "string", required: true },
+      images: {
+        dataType: "array",
+        array: { dataType: "string" },
+        required: true,
+      },
+      quantity: { dataType: "double", required: true },
+      rating: { dataType: "double", required: true },
+      description: { dataType: "string", required: true },
+      comments: {
+        dataType: "array",
+        array: { dataType: "refObject", ref: "CommentResDTO" },
+        required: true,
+      },
     },
     additionalProperties: false,
   },
