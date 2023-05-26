@@ -18,7 +18,7 @@ import { IGetUserAuthInfoRequest } from "../types/express";
 @Tags("Users")
 @Route("users")
 export class UsersController extends Controller {
-  @Security("jwt", ["admin"])
+  @Security("jwt", ["user"])
   @Get()
   public async getTest(
     @Request() request: IGetUserAuthInfoRequest
@@ -36,7 +36,7 @@ export class UsersController extends Controller {
   public signJwtToken(@Body() dto: ISignJWT) {
     return jwt.sign(
       { userId: dto.userId, role: [dto.role] },
-      process.env.JWT_SECRET || ""
+      process.env.SECRET || ""
     );
   }
 

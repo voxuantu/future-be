@@ -10,3 +10,5 @@ export interface ISignJWT {
   userId: string;
   role: string;
 }
+
+export type IEmailVerify = Pick<ICreateUser, "email">;

@@ -1,6 +1,4 @@
-import { ICreateUser } from "../request/user.dto";
-
-export class UserResDTO implements ICreateUser {
+export interface UserResDTO {
   _id: string;
   name: string;
 }

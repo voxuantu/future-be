@@ -14,6 +14,8 @@ import {
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { AddressController } from "./controllers/address.controller";
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { AuthenticationController } from "./controllers/authentication.controller";
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { OrdersController } from "./controllers/order.controller";
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { ProductsController } from "./controllers/product.controller";
@@ -86,6 +88,62 @@ const models: TsoaRoute.Models = {
     },
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  UserAuthenticate: {
+    dataType: "refObject",
+    properties: {
+      token: { dataType: "string", required: true },
+      name: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  "Pick_ICreateUser.username-or-password_": {
+    dataType: "refAlias",
+    type: {
+      dataType: "nestedObjectLiteral",
+      nestedProperties: {
+        username: { dataType: "string", required: true },
+        password: { dataType: "string", required: true },
+      },
+      validators: {},
+    },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  "Pick_ICreateUser.email_": {
+    dataType: "refAlias",
+    type: {
+      dataType: "nestedObjectLiteral",
+      nestedProperties: { email: { dataType: "string", required: true } },
+      validators: {},
+    },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IEmailVerify: {
+    dataType: "refAlias",
+    type: { ref: "Pick_ICreateUser.email_", validators: {} },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  UserResDTO: {
+    dataType: "refObject",
+    properties: {
+      _id: { dataType: "string", required: true },
+      name: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  ICreateUser: {
+    dataType: "refObject",
+    properties: {
+      name: { dataType: "string", required: true },
+      email: { dataType: "string", required: true },
+      username: { dataType: "string", required: true },
+      password: { dataType: "string", required: true },
+      avatar: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   FlattenMaps_T_: {
     dataType: "refAlias",
     type: {
@@ -153,31 +211,6 @@ const models: TsoaRoute.Models = {
   OrderStatus: {
     dataType: "refEnum",
     enums: ["pending", "delivering", "completed"],
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  UserResDTO: {
-    dataType: "refObject",
-    properties: {
-      name: { dataType: "string", required: true },
-      email: { dataType: "string", required: true },
-      username: { dataType: "string", required: true },
-      password: { dataType: "string", required: true },
-      avatar: { dataType: "string", required: true },
-      _id: { dataType: "string", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  ICreateUser: {
-    dataType: "refObject",
-    properties: {
-      name: { dataType: "string", required: true },
-      email: { dataType: "string", required: true },
-      username: { dataType: "string", required: true },
-      password: { dataType: "string", required: true },
-      avatar: { dataType: "string", required: true },
-    },
-    additionalProperties: false,
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   ISignJWT: {
@@ -326,6 +359,116 @@ export function RegisterRoutes(app: Router) {
         const controller = new AddressController();
 
         const promise = controller.deleteAddress.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.post(
+    "/api/v1/authenticate/login",
+    ...fetchMiddlewares<RequestHandler>(AuthenticationController),
+    ...fetchMiddlewares<RequestHandler>(
+      AuthenticationController.prototype.loginUser
+    ),
+
+    function AuthenticationController_loginUser(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        dto: {
+          in: "body",
+          name: "dto",
+          required: true,
+          ref: "Pick_ICreateUser.username-or-password_",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new AuthenticationController();
+
+        const promise = controller.loginUser.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.post(
+    "/api/v1/authenticate/send-code-email",
+    ...fetchMiddlewares<RequestHandler>(AuthenticationController),
+    ...fetchMiddlewares<RequestHandler>(
+      AuthenticationController.prototype.sendVerifyCode
+    ),
+
+    function AuthenticationController_sendVerifyCode(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        dto: { in: "body", name: "dto", required: true, ref: "IEmailVerify" },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new AuthenticationController();
+
+        const promise = controller.sendVerifyCode.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.post(
+    "/api/v1/authenticate/register",
+    ...fetchMiddlewares<RequestHandler>(AuthenticationController),
+    ...fetchMiddlewares<RequestHandler>(
+      AuthenticationController.prototype.createUser
+    ),
+
+    function AuthenticationController_createUser(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        dto: { in: "body", name: "dto", required: true, ref: "ICreateUser" },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new AuthenticationController();
+
+        const promise = controller.createUser.apply(
           controller,
           validatedArgs as any
         );
@@ -491,7 +634,7 @@ export function RegisterRoutes(app: Router) {
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   app.get(
     "/api/v1/users",
-    authenticateMiddleware([{ jwt: ["admin"] }]),
+    authenticateMiddleware([{ jwt: ["user"] }]),
     ...fetchMiddlewares<RequestHandler>(UsersController),
     ...fetchMiddlewares<RequestHandler>(UsersController.prototype.getTest),
 
