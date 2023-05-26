@@ -9,11 +9,13 @@ import {
   Request,
   Path,
   Tags,
+  Delete,
 } from "tsoa";
 import { UsersService } from "../services";
 import { ICreateUser, ISignJWT } from "../dto/request/user.dto";
 import * as jwt from "jsonwebtoken";
 import { IGetUserAuthInfoRequest } from "../types/express";
+import { WishlistService } from "../services/wishlist.service";
 
 @Tags("Users")
 @Route("users")
@@ -54,5 +56,23 @@ export class UsersController extends Controller {
   @Get("/{userId}/wish-list")
   public wishlist(@Path() userId: string) {
     return UsersService.wishlistProduct(userId);
+  }
+
+  @Security("jwt", ["user"])
+  @Post("/wishlist/{productId}")
+  public async insertWishlistItem(
+    @Request() request: IGetUserAuthInfoRequest,
+    @Path() productId: string
+  ) {
+    return WishlistService.insert(request.user.userId, productId);
+  }
+
+  @Security("jwt", ["user"])
+  @Delete("/wishlist/{productId}")
+  public async deleteWishlistItem(
+    @Request() request: IGetUserAuthInfoRequest,
+    @Path() productId: string
+  ) {
+    return WishlistService.delete(request.user.userId, productId);
   }
 }
