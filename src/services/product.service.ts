@@ -6,12 +6,14 @@ import {
   ERROR_CATEGORY_NOT_FOUND,
   ERROR_CREATE_PRODUCT,
   ERROR_DELETE_PRODUCT,
+  ERROR_GET_MAX_PRICE,
   ERROR_GET_NEWEST_PRODUCT,
   ERROR_GET_PRODUCT_FOR_UPDATE,
   ERROR_GET_PRODUCT_PAGINATION,
   ERROR_PRODUCT_ALREADY_EXIST,
   ERROR_PRODUCT_NOT_FOUND,
   ERROR_UPDATE_PRODUCT,
+  GET_MAX_PRICE_SUCCESS,
   GET_NEWEST_PRODUCT_SUCCESS,
   GET_PRODUCT_BY_ID_SUCCESS,
   GET_PRODUCT_FOR_UPDATE_SUCCESS,
@@ -317,6 +319,31 @@ export class ProductService {
     } catch (error) {
       console.log("error: ", error);
       return handleResFailure(ERROR_GET_NEWEST_PRODUCT, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  static async countProdutsInCategory(categoryId: string) {
+    const products = await Product.find({ category: categoryId });
+
+    return products.length;
+  }
+
+  static async findMaxPrice(categoryId?: string) {
+    try {
+      const query: { [index: string]: any } = {};
+      if (categoryId) {
+        query.category = new mongoose.Types.ObjectId(categoryId);
+      }
+
+      const product = await Product.find(query)
+        .sort({
+          price: -1,
+        })
+        .limit(1);
+
+      return handlerResSuccess(GET_MAX_PRICE_SUCCESS, product[0].price);
+    } catch (error) {
+      return handleResFailure(ERROR_GET_MAX_PRICE, HttpStatus.BAD_REQUEST);
     }
   }
 }

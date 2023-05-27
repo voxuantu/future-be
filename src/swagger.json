@@ -117,7 +117,32 @@
 					}
 				]
 			},
-			"CategoryRes": {
+			"CategoryClientRes": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"image": {
+						"type": "string"
+					},
+					"numberOfProducts": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"_id",
+					"name",
+					"image",
+					"numberOfProducts"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CategoryAdminRes": {
 				"properties": {
 					"_id": {
 						"type": "string"
@@ -796,7 +821,7 @@
 											"properties": {
 												"data": {
 													"items": {
-														"$ref": "#/components/schemas/CategoryRes"
+														"$ref": "#/components/schemas/CategoryClientRes"
 													},
 													"type": "array"
 												},
@@ -835,7 +860,7 @@
 										{
 											"properties": {
 												"data": {
-													"$ref": "#/components/schemas/CategoryRes"
+													"$ref": "#/components/schemas/CategoryAdminRes"
 												},
 												"message": {
 													"type": "string"
@@ -897,7 +922,7 @@
 										{
 											"properties": {
 												"data": {
-													"$ref": "#/components/schemas/CategoryRes"
+													"$ref": "#/components/schemas/CategoryAdminRes"
 												},
 												"message": {
 													"type": "string"
@@ -1786,6 +1811,55 @@
 				],
 				"security": [],
 				"parameters": []
+			}
+		},
+		"/products/max-price": {
+			"get": {
+				"operationId": "GetMaxPrice",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"type": "number",
+													"format": "double"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Products"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "category",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/users": {

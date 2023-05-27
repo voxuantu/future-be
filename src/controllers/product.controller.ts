@@ -87,6 +87,11 @@ export class ProductsController extends Controller {
     return ProductService.getNewestProduct();
   }
 
+  @Get("/max-price")
+  public async getMaxPrice(@Query("category") category?: string) {
+    return ProductService.findMaxPrice(category);
+  }
+
   @Get("/{productId}")
   public async getProductById(@Path() productId: string) {
     return ProductService.getProductById(productId);
