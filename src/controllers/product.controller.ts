@@ -6,12 +6,10 @@ import {
   Route,
   Tags,
   Path,
-  Body,
   FormField,
   UploadedFiles,
   Put,
   Delete,
-  UploadedFile,
   Query,
 } from "tsoa";
 import { ProductService } from "../services";
@@ -85,6 +83,27 @@ export class ProductsController extends Controller {
   @Get("/newest")
   public async getNewestProds() {
     return ProductService.getNewestProduct();
+  }
+
+  @Get("/filter")
+  public async filterProducts(
+    @Query() category: string,
+    @Query() limit: number,
+    @Query() page: number,
+    @Query() search?: string,
+    @Query() from?: number,
+    @Query() to?: number,
+    @Query() sort?: string
+  ) {
+    return ProductService.filterProduct(
+      category,
+      limit,
+      page,
+      search,
+      from,
+      to,
+      sort
+    );
   }
 
   @Get("/{productId}")

@@ -6,17 +6,18 @@ import {
   ERROR_CATEGORY_NOT_FOUND,
   ERROR_CREATE_PRODUCT,
   ERROR_DELETE_PRODUCT,
+  ERROR_FILTER_PRODUCT,
   ERROR_GET_NEWEST_PRODUCT,
   ERROR_GET_PRODUCT_FOR_UPDATE,
   ERROR_GET_PRODUCT_PAGINATION,
   ERROR_PRODUCT_ALREADY_EXIST,
   ERROR_PRODUCT_NOT_FOUND,
   ERROR_UPDATE_PRODUCT,
+  FILTER_PRODUCT_SUCCESS,
   GET_NEWEST_PRODUCT_SUCCESS,
   GET_PRODUCT_BY_ID_SUCCESS,
   GET_PRODUCT_FOR_UPDATE_SUCCESS,
   GET_PRODUCT_PAGINATION_SUCCESS,
-  GET_PRODUCT_SUCCESS,
   UPDATE_PRODUCT_SUCCESS,
 } from "../constances";
 import { HttpStatus } from "../constances/enum";
@@ -33,7 +34,6 @@ import { CategoryService } from "./category.service";
 import { CloudinaryService } from "./cloudinary.service";
 import { ICategoryModel } from "../models/category";
 import { shuffle } from "../utils/array";
-import { error } from "console";
 import { CommentResDTO } from "../dto/response/comment.dto";
 import { ICommentModel } from "../models/comment";
 import { IUserModel } from "../models/user";
@@ -368,6 +368,69 @@ export class ProductService {
     } catch (error) {
       console.log("error: ", error);
       return handleResFailure(ERROR_GET_NEWEST_PRODUCT, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  static async filterProduct(
+    categoryId: string,
+    limit: number,
+    page: number,
+    searchText?: string,
+    priceFrom?: number,
+    priceTo?: number,
+    sort?: string
+  ) {
+    try {
+      const query: { [index: string]: any } = {};
+      if (searchText && searchText.length > 0) {
+        query.name = { $regex: searchText, $options: "i" };
+      }
+
+      if (priceFrom && priceTo) {
+        query.price = { $gte: priceFrom, $lte: priceTo };
+      }
+
+      query.category = new mongoose.Types.ObjectId(categoryId);
+
+      const products = await Product.find(query)
+        .skip(limit * page)
+        .limit(limit)
+        .populate("category")
+        .select("name category price thumbnail");
+
+      let prodsRes: ProductCard[] = [];
+      for (const prod of products) {
+        const thumbnailURL = await CloudinaryService.getImageUrl(
+          prod.thumbnail
+        );
+        prodsRes.push({
+          _id: prod.id,
+          category: {
+            _id: (prod.category as ICategoryModel).id,
+            name: (prod.category as ICategoryModel).name,
+          },
+          name: prod.name,
+          price: prod.price,
+          thumbnail: thumbnailURL,
+        });
+      }
+
+      if (sort) {
+        if (sort === "ascending") {
+          prodsRes = prodsRes.sort((prodA: ProductCard, prodB: ProductCard) =>
+            prodA.price - prodB.price >= 0 ? 1 : -1
+          );
+        } else if (sort === "descending") {
+          prodsRes = prodsRes.sort((prodA: ProductCard, prodB: ProductCard) =>
+            prodB.price - prodA.price >= 0 ? 1 : -1
+          );
+        }
+      }
+
+      return handlerResSuccess(FILTER_PRODUCT_SUCCESS, prodsRes);
+    } catch (error) {
+      console.log("error: ", error);
+      return handleResFailure(ERROR_FILTER_PRODUCT, HttpStatus.BAD_REQUEST);
     }
   }
 }
