@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/users/usersService.ts
 import {
   CREATE_USER_SUCCESS,
@@ -14,6 +15,7 @@ import { UserResDTO } from "../dto/response/user.dto";
 import { IProductModel } from "../models/product";
 import User from "../models/user";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
+import { hashPasswords } from "../utils/hash-password";
 import { AddressService } from "./address.service";
 
 export class UsersService {
@@ -23,7 +25,7 @@ export class UsersService {
         name: userCreationParams.name,
         email: userCreationParams.email,
         username: userCreationParams.username,
-        password: userCreationParams.password,
+        password: hashPasswords(userCreationParams.password),
         birthday: new Date().toString(),
       });
 

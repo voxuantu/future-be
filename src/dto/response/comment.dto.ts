@@ -7,4 +7,5 @@ export class CommentResDTO {
     name: string;
     avatar: string;
   };
+  createdAt: string;
 }

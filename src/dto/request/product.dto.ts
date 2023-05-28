@@ -14,3 +14,8 @@ export class UpdateProductDTO {
   description?: string;
   updateImageField?: string;
 }
+
+export class Pagination {
+  limit: number;
+  page: number;
+}

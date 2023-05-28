@@ -1,3 +1,5 @@
+import { CommentResDTO } from "./comment.dto";
+
 export class ProdutResDTO {
   _id: string;
   name: string;
@@ -29,4 +31,20 @@ export class ProductCard {
     name: string;
   };
   thumbnail: string;
+}
+
+export class ProductDetail {
+  _id: string;
+  name: string;
+  price: number;
+  category: {
+    _id: string;
+    name: string;
+  };
+  thumbnail: string;
+  images: string[];
+  quantity: number;
+  rating: number;
+  description: string;
+  comments: CommentResDTO[];
 }
