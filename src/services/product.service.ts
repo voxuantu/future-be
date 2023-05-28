@@ -393,8 +393,6 @@ export class ProductService {
       query.category = new mongoose.Types.ObjectId(categoryId);
 
       const products = await Product.find(query)
-        .skip(limit * page)
-        .limit(limit)
         .populate("category")
         .select("name category price thumbnail");
 
@@ -427,7 +425,10 @@ export class ProductService {
         }
       }
 
-      return handlerResSuccess(FILTER_PRODUCT_SUCCESS, prodsRes);
+      return handlerResSuccess(
+        FILTER_PRODUCT_SUCCESS,
+        prodsRes.slice(limit * page, limit * page + limit)
+      );
     } catch (error) {
       console.log("error: ", error);
       return handleResFailure(ERROR_FILTER_PRODUCT, HttpStatus.BAD_REQUEST);
