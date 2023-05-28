@@ -15,6 +15,7 @@ export interface IUser {
   password: string;
   avatar: string;
   birthday: string;
+  googleId: string;
   addresses: string[] | IAddressModel[];
   wishlist: string[] | IProductModel[];
 }
@@ -29,6 +30,7 @@ export const UserSchema: Schema = new Schema(
     password: { type: String, require: true },
     avatar: { type: String, require: true },
     birthday: { type: Date },
+    googleId: { type: String },
     addresses: [{ type: Schema.Types.ObjectId, ref: "Address" }],
     wishlist: [{ type: Schema.Types.ObjectId, ref: "Product" }],
   },

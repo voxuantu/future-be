@@ -83,7 +83,7 @@ export class AuthenticationService {
         host: "smtp.elasticemail.com",
         auth: {
           user: "maihuynhtrung0@gmail.com",
-          pass: "85C09D0E360FAE8704620C811174BB6AB0F2",
+          pass: process.env.password as string,
         },
       });
       // Thiết lập nội dung email

@@ -6,6 +6,7 @@ import initSwagger from "./config/swagger";
 import initMongoDB from "./config/mongodb";
 import { errorHandler } from "./utils/error-handler";
 import cors from "cors";
+import passport from "passport";
 
 dotenv.config();
 
@@ -19,6 +20,8 @@ app.use(
 );
 app.use(bodyParser.json());
 app.use(cors());
+// app.use(passport.initialize());
+// app.use(passport.session());
 
 initMongoDB()
   .then(() => {

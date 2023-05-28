@@ -684,6 +684,36 @@
 				}
 			}
 		},
+		"/authenticate/google": {
+			"get": {
+				"operationId": "CreateGoogleClientRequest",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"login"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/authenticate/google/callback": {
+			"get": {
+				"operationId": "CallBackGoogle",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"login"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
 		"/orders": {
 			"post": {
 				"operationId": "CreateOrder",
