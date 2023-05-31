@@ -92,4 +92,15 @@ export class UsersService {
       return handleResFailure(ERROR_GET_MY_ADDRESSES, HttpStatus.BAD_REQUEST);
     }
   }
+
+  static async getCart(userId: string) {
+    const user = await User.findById(userId).populate("cart.product");
+    if (user) {
+      for (const cartItem of user.cart) {
+        console.log("cartItem: ", cartItem);
+      }
+    }
+
+    return "haha";
+  }
 }

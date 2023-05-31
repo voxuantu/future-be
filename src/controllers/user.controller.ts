@@ -55,4 +55,8 @@ export class UsersController extends Controller {
   public wishlist(@Path() userId: string) {
     return UsersService.wishlistProduct(userId);
   }
+  @Get("/{userId}/cart")
+  public getCart(@Path() userId: string) {
+    return UsersService.getCart(userId);
+  }
 }
