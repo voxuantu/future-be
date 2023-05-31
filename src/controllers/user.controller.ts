@@ -9,9 +9,14 @@ import {
   Request,
   Path,
   Tags,
+  Put,
 } from "tsoa";
 import { UsersService } from "../services";
-import { ICreateUser, ISignJWT } from "../dto/request/user.dto";
+import {
+  ICreateUser,
+  ISignJWT,
+  IUpdateUserInfo,
+} from "../dto/request/user.dto";
 import * as jwt from "jsonwebtoken";
 import { IGetUserAuthInfoRequest } from "../types/express";
 
@@ -58,5 +63,13 @@ export class UsersController extends Controller {
   @Get("/{userId}/cart")
   public getCart(@Path() userId: string) {
     return UsersService.getCart(userId);
+  }
+  @Security("jwt", ["user"])
+  @Put("/setting")
+  public updateInfo(
+    @Request() request: IGetUserAuthInfoRequest,
+    @Body() dto: IUpdateUserInfo
+  ) {
+    return UsersService.updateInfo(request.user.userId, dto);
   }
 }

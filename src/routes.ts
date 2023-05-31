@@ -424,6 +424,45 @@ const models: TsoaRoute.Models = {
     additionalProperties: false,
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  HttpStatus: {
+    dataType: "refEnum",
+    enums: [200, 201, 202, 400, 401, 403, 404, 406, 408, 500, 501, 502, 503],
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IAddressModel: {
+    dataType: "refAlias",
+    type: { ref: "FlattenMaps_T_", validators: {} },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IUpdateUserInfo: {
+    dataType: "refAlias",
+    type: {
+      dataType: "nestedObjectLiteral",
+      nestedProperties: {
+        address: {
+          dataType: "union",
+          subSchemas: [
+            { dataType: "array", array: { dataType: "string" } },
+            {
+              dataType: "array",
+              array: { dataType: "refAlias", ref: "IAddressModel" },
+            },
+          ],
+          required: true,
+        },
+        birthday: {
+          dataType: "union",
+          subSchemas: [{ dataType: "datetime" }, { dataType: "string" }],
+          required: true,
+        },
+        avatar: { dataType: "string", required: true },
+        email: { dataType: "string", required: true },
+        name: { dataType: "string", required: true },
+      },
+      validators: {},
+    },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
 const validationService = new ValidationService(models);
 
@@ -1734,6 +1773,51 @@ export function RegisterRoutes(app: Router) {
         const controller = new UsersController();
 
         const promise = controller.getCart.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.put(
+    "/api/v1/users/setting",
+    authenticateMiddleware([{ jwt: ["user"] }]),
+    ...fetchMiddlewares<RequestHandler>(UsersController),
+    ...fetchMiddlewares<RequestHandler>(UsersController.prototype.updateInfo),
+
+    function UsersController_updateInfo(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        request: {
+          in: "request",
+          name: "request",
+          required: true,
+          dataType: "object",
+        },
+        dto: {
+          in: "body",
+          name: "dto",
+          required: true,
+          ref: "IUpdateUserInfo",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new UsersController();
+
+        const promise = controller.updateInfo.apply(
           controller,
           validatedArgs as any
         );

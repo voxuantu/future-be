@@ -5,12 +5,14 @@ import {
   ERROR_CREATE_USER,
   ERROR_GET_MY_ADDRESSES,
   ERROR_GET_USER_BY_ID,
+  ERROR_UPDATE_USER,
   ERROR_USER_NOT_FOUND,
   FIND_USER_BY_ID_SUCCESS,
   GET_MY_ADDRESSES_SUCCESS,
+  UPDATE_USER_SUCESS,
 } from "../constances";
 import { HttpStatus } from "../constances/enum";
-import { ICreateUser } from "../dto/request/user.dto";
+import { ICreateUser, IUpdateUserInfo } from "../dto/request/user.dto";
 import { UserResDTO } from "../dto/response/user.dto";
 import { IProductModel } from "../models/product";
 import User from "../models/user";
@@ -60,6 +62,36 @@ export class UsersService {
       console.log("error: ", error);
       return handleResFailure(
         error.error ? error.error : ERROR_GET_USER_BY_ID,
+        error.statusCode ? error.statusCode : HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  static async updateInfo(userId: string, userInfo: IUpdateUserInfo) {
+    try {
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+
+      await User.updateOne(
+        { _id: userId },
+        {
+          $set: {
+            name: userInfo.name,
+            email: userInfo.email,
+            avatar: userInfo.avatar,
+            addresses: userInfo.address,
+            birthday: userInfo.birthday,
+          },
+        }
+      );
+      return handlerResSuccess(UPDATE_USER_SUCESS, HttpStatus.OK);
+    } catch (error: any) {
+      console.log("error: ", error);
+      return handleResFailure(
+        error.error ? error.error : ERROR_UPDATE_USER,
         error.statusCode ? error.statusCode : HttpStatus.BAD_REQUEST
       );
     }

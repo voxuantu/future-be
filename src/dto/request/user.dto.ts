@@ -1,3 +1,5 @@
+import { IAddressModel } from "../../models/address";
+
 export interface ICreateUser {
   name: string;
   email: string;
@@ -10,6 +12,14 @@ export interface ISignJWT {
   userId: string;
   role: string;
 }
+
+export type IUpdateUserInfo = {
+  name: string;
+  email: string;
+  avatar: string;
+  birthday: Date | string;
+  address: string[] | IAddressModel[];
+};
 
 export interface ICreateAdmin {
   name: string;

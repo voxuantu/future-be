@@ -732,6 +732,75 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"HttpStatus": {
+				"enum": [
+					200,
+					201,
+					202,
+					400,
+					401,
+					403,
+					404,
+					406,
+					408,
+					500,
+					501,
+					502,
+					503
+				],
+				"type": "number"
+			},
+			"IAddressModel": {
+				"$ref": "#/components/schemas/FlattenMaps_T_"
+			},
+			"IUpdateUserInfo": {
+				"properties": {
+					"address": {
+						"anyOf": [
+							{
+								"items": {
+									"type": "string"
+								},
+								"type": "array"
+							},
+							{
+								"items": {
+									"$ref": "#/components/schemas/IAddressModel"
+								},
+								"type": "array"
+							}
+						]
+					},
+					"birthday": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"avatar": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"address",
+					"birthday",
+					"avatar",
+					"email",
+					"name"
+				],
+				"type": "object"
 			}
 		},
 		"securitySchemes": {
@@ -2430,6 +2499,61 @@
 						}
 					}
 				]
+			}
+		},
+		"/users/setting": {
+			"put": {
+				"operationId": "UpdateInfo",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/HttpStatus"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IUpdateUserInfo"
+							}
+						}
+					}
+				}
 			}
 		}
 	},
