@@ -13,6 +13,7 @@ import { WishlistItem } from "../dto/response";
 import Product from "../models/product";
 import User from "../models/user";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
+import { CloudinaryService } from "./cloudinary.service";
 
 export class WishlistService {
   static async insert(userId: string, productId: string) {
@@ -41,8 +42,7 @@ export class WishlistService {
       const result: WishlistItem = {
         _id: product.id,
         name: product.name,
-        // image: await CloudinaryService.getImageUrl(product.thumbnail),
-        image: product.thumbnail,
+        thumbnail: await CloudinaryService.getImageUrl(product.thumbnail),
         price: product.price,
         isStock: product.quantity > 0 ? true : false,
       };

@@ -20,7 +20,7 @@ import { WishlistService } from "../services/wishlist.service";
 @Tags("Users")
 @Route("users")
 export class UsersController extends Controller {
-  @Security("jwt", ["admin"])
+  @Security("jwt", ["user"])
   @Get()
   public async getTest(
     @Request() request: IGetUserAuthInfoRequest
@@ -75,5 +75,9 @@ export class UsersController extends Controller {
     @Path() productId: string
   ) {
     return WishlistService.delete(request.user.userId, productId);
+  }
+  @Get("/{userId}/cart")
+  public getCart(@Path() userId: string) {
+    return UsersService.getCart(userId);
   }
 }

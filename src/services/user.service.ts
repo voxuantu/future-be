@@ -1,12 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // src/users/usersService.ts
 import {
   CREATE_USER_SUCCESS,
   ERROR_CREATE_USER,
   ERROR_GET_MY_ADDRESSES,
   ERROR_GET_USER_BY_ID,
+  ERROR_GET_WISHLIST,
   ERROR_USER_NOT_FOUND,
   FIND_USER_BY_ID_SUCCESS,
   GET_MY_ADDRESSES_SUCCESS,
+  GET_WISHLIST_SUCCESS,
 } from "../constances";
 import { HttpStatus } from "../constances/enum";
 import { ICreateUser } from "../dto/request/user.dto";
@@ -15,7 +18,9 @@ import { UserResDTO } from "../dto/response/user.dto";
 import { IProductModel } from "../models/product";
 import User from "../models/user";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
+import { hashPasswords } from "../utils/hash-password";
 import { AddressService } from "./address.service";
+import { CloudinaryService } from "./cloudinary.service";
 
 export class UsersService {
   static async create(userCreationParams: ICreateUser) {
@@ -24,7 +29,7 @@ export class UsersService {
         name: userCreationParams.name,
         email: userCreationParams.email,
         username: userCreationParams.username,
-        password: userCreationParams.password,
+        password: hashPasswords(userCreationParams.password),
         birthday: new Date().toString(),
       });
 
@@ -71,23 +76,21 @@ export class UsersService {
       if (!user) {
         return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
-      // const wishlist: WishlistItem[];
-      // (user.wishlist as IProductModel[]).map((item) => {
-      //   wishlist.push({
-      //     _id: item._id,
-      //     // image: await CloudinaryService.getImageUrl(item.thumbnail),
-      //     image: item.thumbnail,
-      //     name: item.name,
-      //     price: item.price,
-      //     isStock: item.quantity > 0 ? true : false,
-      //   })
-      // });
-      // const res: WishlistItem[] = wishlist;
-      // return handlerResSuccess(FIND_USER_BY_ID_SUCCESS, res);
-      const result = user.wishlist as IProductModel[];
-      return result;
+      const wishlist: WishlistItem[] = [];
+      for (const item of user.wishlist as IProductModel[]) {
+        wishlist.push({
+          _id: item._id,
+          thumbnail: await CloudinaryService.getImageUrl(item.thumbnail),
+          name: item.name,
+          price: item.price,
+          isStock: item.quantity > 0 ? true : false,
+        });
+      }
+
+      return handlerResSuccess(GET_WISHLIST_SUCCESS, wishlist);
     } catch (error) {
       console.log("error: ", error);
+      return handleResFailure(ERROR_GET_WISHLIST, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -102,5 +105,16 @@ export class UsersService {
     } catch (error) {
       return handleResFailure(ERROR_GET_MY_ADDRESSES, HttpStatus.BAD_REQUEST);
     }
+  }
+
+  static async getCart(userId: string) {
+    const user = await User.findById(userId).populate("cart.product");
+    if (user) {
+      for (const cartItem of user.cart) {
+        console.log("cartItem: ", cartItem);
+      }
+    }
+
+    return "haha";
   }
 }
