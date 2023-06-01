@@ -10,6 +10,8 @@ import {
   Path,
   Tags,
   Put,
+  FormField,
+  UploadedFile,
 } from "tsoa";
 import { UsersService } from "../services";
 import {
@@ -23,15 +25,6 @@ import { IGetUserAuthInfoRequest } from "../types/express";
 @Tags("Users")
 @Route("users")
 export class UsersController extends Controller {
-  @Security("jwt", ["user"])
-  @Get()
-  public async getTest(
-    @Request() request: IGetUserAuthInfoRequest
-  ): Promise<string> {
-    console.log("request: ", request.user);
-    return "test";
-  }
-
   @Post()
   public async createUser(@Body() dto: ICreateUser) {
     return UsersService.create(dto);
@@ -51,6 +44,12 @@ export class UsersController extends Controller {
     return UsersService.getMyAddresses(request.user.userId);
   }
 
+  @Security("jwt", ["user"])
+  @Get()
+  public getUser(@Request() request: IGetUserAuthInfoRequest) {
+    return UsersService.getUser(request.user.userId);
+  }
+
   @Get("/{userId}")
   public findUserById(@Path() userId: string) {
     return UsersService.findUserById(userId);
@@ -68,8 +67,18 @@ export class UsersController extends Controller {
   @Put("/setting")
   public updateInfo(
     @Request() request: IGetUserAuthInfoRequest,
-    @Body() dto: IUpdateUserInfo
+    @FormField("name") name?: string,
+    @FormField("email") email?: string,
+    @FormField("birthday") birthday?: string,
+    @UploadedFile("avatar")
+    avatar?: Express.Multer.File
   ) {
+    const dto: IUpdateUserInfo = {
+      name,
+      email,
+      birthday,
+      avatar,
+    };
     return UsersService.updateInfo(request.user.userId, dto);
   }
 }

@@ -14,11 +14,10 @@ export interface ISignJWT {
 }
 
 export type IUpdateUserInfo = {
-  name: string;
-  email: string;
-  avatar: string;
-  birthday: Date | string;
-  address: string[] | IAddressModel[];
+  name?: string;
+  email?: string;
+  avatar?: Express.Multer.File;
+  birthday?: Date | string;
 };
 
 export interface ICreateAdmin {

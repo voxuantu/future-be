@@ -13,12 +13,13 @@ import {
 } from "../constances";
 import { HttpStatus } from "../constances/enum";
 import { ICreateUser, IUpdateUserInfo } from "../dto/request/user.dto";
-import { UserResDTO } from "../dto/response/user.dto";
+import { IUserInfo, UserResDTO } from "../dto/response/user.dto";
 import { IProductModel } from "../models/product";
 import User from "../models/user";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
 import { hashPasswords } from "../utils/hash-password";
 import { AddressService } from "./address.service";
+import { CloudinaryService } from "./cloudinary.service";
 
 export class UsersService {
   static async create(userCreationParams: ICreateUser) {
@@ -66,7 +67,29 @@ export class UsersService {
       );
     }
   }
+  static async getUser(id: string) {
+    try {
+      const user = await User.findById(id);
 
+      if (!user) {
+        return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+      const res: IUserInfo = {
+        name: user.name,
+        avatar: await CloudinaryService.getImageUrl(user.avatar),
+        email: user.email,
+        birthday: user.birthday,
+      };
+
+      return handlerResSuccess(FIND_USER_BY_ID_SUCCESS, res);
+    } catch (error: any) {
+      console.log("error: ", error);
+      return handleResFailure(
+        error.error ? error.error : ERROR_GET_USER_BY_ID,
+        error.statusCode ? error.statusCode : HttpStatus.BAD_REQUEST
+      );
+    }
+  }
   static async updateInfo(userId: string, userInfo: IUpdateUserInfo) {
     try {
       const user = await User.findById(userId);
@@ -75,19 +98,41 @@ export class UsersService {
         return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
 
-      await User.updateOne(
-        { _id: userId },
-        {
-          $set: {
-            name: userInfo.name,
-            email: userInfo.email,
-            avatar: userInfo.avatar,
-            addresses: userInfo.address,
-            birthday: userInfo.birthday,
-          },
-        }
-      );
-      return handlerResSuccess(UPDATE_USER_SUCESS, HttpStatus.OK);
+      // await User.updateOne(
+      //   { _id: userId },
+      //   {
+      //     $set: {
+      //       name: userInfo.name,
+      //       email: userInfo.email,
+      //       avatar: userInfo.avatar,
+      //       birthday: userInfo.birthday,
+      //     },
+      //   }
+      // );
+      if (userInfo.name) {
+        user.name = userInfo.name;
+      }
+      if (userInfo.email) {
+        user.email = userInfo.email;
+      }
+      if (userInfo.avatar) {
+        await CloudinaryService.deleteImage(user.avatar);
+        const image = await CloudinaryService.upload(userInfo.avatar, "users");
+        user.avatar = image.public_id;
+      }
+      if (userInfo.birthday) {
+        user.birthday = new Date(userInfo.birthday).toString();
+      }
+
+      await user.save();
+
+      const res: IUserInfo = {
+        name: user.name,
+        avatar: await CloudinaryService.getImageUrl(user.avatar),
+        email: user.email,
+        birthday: user.birthday,
+      };
+      return handlerResSuccess(UPDATE_USER_SUCESS, res);
     } catch (error: any) {
       console.log("error: ", error);
       return handleResFailure(
