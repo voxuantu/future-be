@@ -48,14 +48,15 @@ export class UsersController extends Controller {
     return UsersService.getMyAddresses(request.user.userId);
   }
 
+  @Security("jwt", ["user"])
+  @Get("/wishlist")
+  public getWishlist(@Request() request: IGetUserAuthInfoRequest) {
+    return UsersService.getWishlistProduct(request.user.userId);
+  }
+
   @Get("/{userId}")
   public findUserById(@Path() userId: string) {
     return UsersService.findUserById(userId);
-  }
-
-  @Get("/{userId}/wish-list")
-  public wishlist(@Path() userId: string) {
-    return UsersService.wishlistProduct(userId);
   }
 
   @Security("jwt", ["user"])

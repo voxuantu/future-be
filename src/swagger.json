@@ -1071,6 +1071,42 @@
 				"parameters": []
 			}
 		},
+		"/users/wishlist": {
+			"get": {
+				"operationId": "GetWishlist",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"items": {
+												"$ref": "#/components/schemas/IProductModel"
+											},
+											"type": "array"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/users/{userId}": {
 			"get": {
 				"operationId": "FindUserById",
@@ -1119,46 +1155,7 @@
 				]
 			}
 		},
-		"/users/{userId}/wish-list": {
-			"get": {
-				"operationId": "Wishlist",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"anyOf": [
-										{},
-										{
-											"items": {
-												"$ref": "#/components/schemas/IProductModel"
-											},
-											"type": "array"
-										}
-									]
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Users"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "path",
-						"name": "userId",
-						"required": true,
-						"schema": {
-							"type": "string"
-						}
-					}
-				]
-			}
-		},
-		"/wishlist/{productId}": {
+		"/users/wishlist/{productId}": {
 			"post": {
 				"operationId": "InsertWishlistItem",
 				"responses": {
@@ -1191,7 +1188,7 @@
 					}
 				},
 				"tags": [
-					"Wishlist"
+					"Users"
 				],
 				"security": [
 					{
@@ -1258,7 +1255,7 @@
 					}
 				},
 				"tags": [
-					"Wishlist"
+					"Users"
 				],
 				"security": [
 					{

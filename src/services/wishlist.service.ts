@@ -41,6 +41,7 @@ export class WishlistService {
       const result: WishlistItem = {
         _id: product.id,
         name: product.name,
+        // image: await CloudinaryService.getImageUrl(product.thumbnail),
         image: product.thumbnail,
         price: product.price,
         isStock: product.quantity > 0 ? true : false,

@@ -10,6 +10,7 @@ import {
 } from "../constances";
 import { HttpStatus } from "../constances/enum";
 import { ICreateUser } from "../dto/request/user.dto";
+import { WishlistItem } from "../dto/response";
 import { UserResDTO } from "../dto/response/user.dto";
 import { IProductModel } from "../models/product";
 import User from "../models/user";
@@ -63,14 +64,26 @@ export class UsersService {
     }
   }
 
-  static async wishlistProduct(userId: string) {
+  static async getWishlistProduct(userId: string) {
     try {
       const user = await User.findById(userId).populate("wishlist");
 
       if (!user) {
         return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
-
+      // const wishlist: WishlistItem[];
+      // (user.wishlist as IProductModel[]).map((item) => {
+      //   wishlist.push({
+      //     _id: item._id,
+      //     // image: await CloudinaryService.getImageUrl(item.thumbnail),
+      //     image: item.thumbnail,
+      //     name: item.name,
+      //     price: item.price,
+      //     isStock: item.quantity > 0 ? true : false,
+      //   })
+      // });
+      // const res: WishlistItem[] = wishlist;
+      // return handlerResSuccess(FIND_USER_BY_ID_SUCCESS, res);
       const result = user.wishlist as IProductModel[];
       return result;
     } catch (error) {

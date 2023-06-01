@@ -19,8 +19,6 @@ import { OrdersController } from "./controllers/order.controller";
 import { ProductsController } from "./controllers/product.controller";
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { UsersController } from "./controllers/user.controller";
-// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-import { WishlistController } from "./controllers/wishlist.controller";
 import { expressAuthentication } from "./middleware/authentication";
 // @ts-ignore - no great way to install types from subpackage
 const promiseAny = require("promise.any");
@@ -818,6 +816,45 @@ export function RegisterRoutes(app: Router) {
   );
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   app.get(
+    "/api/v1/users/wishlist",
+    authenticateMiddleware([{ jwt: ["user"] }]),
+    ...fetchMiddlewares<RequestHandler>(UsersController),
+    ...fetchMiddlewares<RequestHandler>(UsersController.prototype.getWishlist),
+
+    function UsersController_getWishlist(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        request: {
+          in: "request",
+          name: "request",
+          required: true,
+          dataType: "object",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new UsersController();
+
+        const promise = controller.getWishlist.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
     "/api/v1/users/:userId",
     ...fetchMiddlewares<RequestHandler>(UsersController),
     ...fetchMiddlewares<RequestHandler>(UsersController.prototype.findUserById),
@@ -855,16 +892,29 @@ export function RegisterRoutes(app: Router) {
     }
   );
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  app.get(
-    "/api/v1/users/:userId/wish-list",
+  app.post(
+    "/api/v1/users/wishlist/:productId",
+    authenticateMiddleware([{ jwt: ["user"] }]),
     ...fetchMiddlewares<RequestHandler>(UsersController),
-    ...fetchMiddlewares<RequestHandler>(UsersController.prototype.wishlist),
+    ...fetchMiddlewares<RequestHandler>(
+      UsersController.prototype.insertWishlistItem
+    ),
 
-    function UsersController_wishlist(request: any, response: any, next: any) {
+    function UsersController_insertWishlistItem(
+      request: any,
+      response: any,
+      next: any
+    ) {
       const args = {
-        userId: {
+        request: {
+          in: "request",
+          name: "request",
+          required: true,
+          dataType: "object",
+        },
+        productId: {
           in: "path",
-          name: "userId",
+          name: "productId",
           required: true,
           dataType: "string",
         },
@@ -878,53 +928,6 @@ export function RegisterRoutes(app: Router) {
 
         const controller = new UsersController();
 
-        const promise = controller.wishlist.apply(
-          controller,
-          validatedArgs as any
-        );
-        promiseHandler(controller, promise, response, undefined, next);
-      } catch (err) {
-        return next(err);
-      }
-    }
-  );
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  app.post(
-    "/api/v1/wishlist/:productId",
-    authenticateMiddleware([{ jwt: ["user"] }]),
-    ...fetchMiddlewares<RequestHandler>(WishlistController),
-    ...fetchMiddlewares<RequestHandler>(
-      WishlistController.prototype.insertWishlistItem
-    ),
-
-    function WishlistController_insertWishlistItem(
-      request: any,
-      response: any,
-      next: any
-    ) {
-      const args = {
-        request: {
-          in: "request",
-          name: "request",
-          required: true,
-          dataType: "object",
-        },
-        productId: {
-          in: "path",
-          name: "productId",
-          required: true,
-          dataType: "string",
-        },
-      };
-
-      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-
-      let validatedArgs: any[] = [];
-      try {
-        validatedArgs = getValidatedArgs(args, request, response);
-
-        const controller = new WishlistController();
-
         const promise = controller.insertWishlistItem.apply(
           controller,
           validatedArgs as any
@@ -937,14 +940,14 @@ export function RegisterRoutes(app: Router) {
   );
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   app.delete(
-    "/api/v1/wishlist/:productId",
+    "/api/v1/users/wishlist/:productId",
     authenticateMiddleware([{ jwt: ["user"] }]),
-    ...fetchMiddlewares<RequestHandler>(WishlistController),
+    ...fetchMiddlewares<RequestHandler>(UsersController),
     ...fetchMiddlewares<RequestHandler>(
-      WishlistController.prototype.deleteWishlistItem
+      UsersController.prototype.deleteWishlistItem
     ),
 
-    function WishlistController_deleteWishlistItem(
+    function UsersController_deleteWishlistItem(
       request: any,
       response: any,
       next: any
@@ -970,7 +973,7 @@ export function RegisterRoutes(app: Router) {
       try {
         validatedArgs = getValidatedArgs(args, request, response);
 
-        const controller = new WishlistController();
+        const controller = new UsersController();
 
         const promise = controller.deleteWishlistItem.apply(
           controller,
