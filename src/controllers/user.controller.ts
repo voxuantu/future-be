@@ -9,9 +9,16 @@ import {
   Request,
   Path,
   Tags,
+  Delete,
+  Put,
 } from "tsoa";
 import { UsersService } from "../services";
-import { ICreateUser, ISignJWT } from "../dto/request/user.dto";
+import {
+  AddToCart,
+  ICreateUser,
+  ISignJWT,
+  UpdateQuantity,
+} from "../dto/request/user.dto";
 import * as jwt from "jsonwebtoken";
 import { IGetUserAuthInfoRequest } from "../types/express";
 
@@ -46,6 +53,12 @@ export class UsersController extends Controller {
     return UsersService.getMyAddresses(request.user.userId);
   }
 
+  @Security("jwt", ["user"])
+  @Get("/cart")
+  public getCart(@Request() request: IGetUserAuthInfoRequest) {
+    return UsersService.getCart(request.user.userId);
+  }
+
   @Get("/{userId}")
   public findUserById(@Path() userId: string) {
     return UsersService.findUserById(userId);
@@ -55,8 +68,36 @@ export class UsersController extends Controller {
   public wishlist(@Path() userId: string) {
     return UsersService.wishlistProduct(userId);
   }
-  @Get("/{userId}/cart")
-  public getCart(@Path() userId: string) {
-    return UsersService.getCart(userId);
+
+  @Security("jwt", ["user"])
+  @Post("/cart")
+  public addToCart(
+    @Body() body: AddToCart,
+    @Request() request: IGetUserAuthInfoRequest
+  ) {
+    return UsersService.addToCart(body, request.user.userId);
+  }
+
+  @Security("jwt", ["user"])
+  @Delete("/cart/{productId}")
+  public deleteCart(
+    @Path() productId: string,
+    @Request() request: IGetUserAuthInfoRequest
+  ) {
+    return UsersService.deleteCart(productId, request.user.userId);
+  }
+
+  @Security("jwt", ["user"])
+  @Put("/cart/{productId}")
+  public updateQuantity(
+    @Path() productId: string,
+    @Body() body: UpdateQuantity,
+    @Request() request: IGetUserAuthInfoRequest
+  ) {
+    return UsersService.updateQuantity(
+      productId,
+      request.user.userId,
+      body.action
+    );
   }
 }

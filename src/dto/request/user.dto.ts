@@ -24,3 +24,12 @@ export interface IUpdateAdmin {
 }
 
 export type AdminLogin = Pick<ICreateAdmin, "username" | "password">;
+
+export type AddToCart = {
+  productId: string;
+  quantity: number;
+};
+
+export type UpdateQuantity = {
+  action: string;
+};

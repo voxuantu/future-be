@@ -732,6 +732,62 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"CartItemResDTO": {
+				"properties": {
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"thumbnail": {
+						"type": "string"
+					},
+					"_id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"quantity",
+					"price",
+					"name",
+					"thumbnail",
+					"_id"
+				],
+				"type": "object"
+			},
+			"AddToCart": {
+				"properties": {
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"productId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"quantity",
+					"productId"
+				],
+				"type": "object"
+			},
+			"UpdateQuantity": {
+				"properties": {
+					"action": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"action"
+				],
+				"type": "object"
 			}
 		},
 		"securitySchemes": {
@@ -2314,6 +2370,102 @@
 				"parameters": []
 			}
 		},
+		"/users/cart": {
+			"get": {
+				"operationId": "GetCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"items": {
+												"$ref": "#/components/schemas/CartItemResDTO"
+											},
+											"type": "array"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"data",
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "AddToCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/CartItemResDTO"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AddToCart"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/users/{userId}": {
 			"get": {
 				"operationId": "FindUserById",
@@ -2401,16 +2553,33 @@
 				]
 			}
 		},
-		"/users/{userId}/cart": {
-			"get": {
-				"operationId": "GetCart",
+		"/users/cart/{productId}": {
+			"delete": {
+				"operationId": "DeleteCart",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "string"
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"type": "string"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
 								}
 							}
 						}
@@ -2419,17 +2588,97 @@
 				"tags": [
 					"Users"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
-						"name": "userId",
+						"name": "productId",
 						"required": true,
 						"schema": {
 							"type": "string"
 						}
 					}
 				]
+			},
+			"put": {
+				"operationId": "UpdateQuantity",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"properties": {
+														"action": {
+															"type": "string"
+														},
+														"productId": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"action",
+														"productId"
+													],
+													"type": "object"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "productId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateQuantity"
+							}
+						}
+					}
+				}
 			}
 		}
 	},

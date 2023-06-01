@@ -7,3 +7,11 @@ export type AdminResDTO = Pick<ICreateAdmin, "name"> & { _id: string };
 //   _id: string;
 //   name: string;
 // }
+
+export type CartItemResDTO = {
+  _id: string;
+  thumbnail: string;
+  name: string;
+  price: number;
+  quantity: number;
+};
