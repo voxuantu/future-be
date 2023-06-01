@@ -19,8 +19,10 @@ export interface ICreateAdmin {
 
 export interface IUpdateAdmin {
   name?: string;
-  username: string;
   password?: string;
+  oldPassword: string;
 }
+
+export type ResAdmin = Pick<ICreateAdmin, "username" | "name">;
 
 export type AdminLogin = Pick<ICreateAdmin, "username" | "password">;
