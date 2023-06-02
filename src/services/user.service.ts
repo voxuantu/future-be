@@ -42,6 +42,7 @@ export class UsersService {
         username: userCreationParams.username,
         password: hashPasswords(userCreationParams.password),
         birthday: new Date().toString(),
+        avatar: userCreationParams.avatar,
       });
 
       await user.save();

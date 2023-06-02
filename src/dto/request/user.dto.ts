@@ -11,6 +11,8 @@ export interface ISignJWT {
   role: string;
 }
 
+export type IEmailVerify = Pick<ICreateUser, "email">;
+
 export interface ICreateAdmin {
   name: string;
   username: string;

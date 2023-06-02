@@ -3,11 +3,13 @@ import {
   CREATE_ORDER_SUCCESS,
   CREAT_PAYMENT_URL_ZALOPAY_SUCCESS,
   ERROR_CREATE_ORDER,
+  ERROR_GET_ALL_ORDERS,
   ERROR_CREAT_PAYMENT_URL_ZALOPAY,
   ERROR_GET_ORDER_HISTORY,
   ERROR_PRODUCT_NOT_FOUND,
   ERROR_QUERY_ORDER_STATUS_ZALOPAY,
   ERROR_USER_NOT_FOUND,
+  GET_ALL_ORDERS_SUCCESS,
   GET_ORDER_HISTORY_SUCCESS,
   QUERY_ORDER_STATUS_ZALOPAY_SUCCESS,
 } from "../constances";
@@ -20,6 +22,7 @@ import {
   IQueryZaloPayOrderStatus,
 } from "../dto/request";
 import {
+  IAllOrders,
   IOrderHistoryRes,
   IQueryZaloPayOrderStatusRes,
 } from "../dto/response/order.dto";
@@ -140,6 +143,31 @@ export class OrderService {
     } catch (error) {
       console.log("error: ", error);
       return handleResFailure(ERROR_GET_ORDER_HISTORY, HttpStatus.BAD_REQUEST);
+    }
+  }
+  static async getAllOrders() {
+    try {
+      const orderArray: IAllOrders[] = [];
+      const allOrders = await Order.find();
+      if (!allOrders) {
+        return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+      allOrders.map((item) =>
+        orderArray.push({
+          shortId: item.shortId,
+          address: item.address,
+          userId: item.user,
+          status: item.status,
+          total: item.total,
+        })
+      );
+      return handlerResSuccess<IAllOrders[]>(
+        GET_ALL_ORDERS_SUCCESS,
+        orderArray
+      );
+    } catch (error) {
+      console.log("error", error);
+      return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.BAD_REQUEST);
     }
   }
 
