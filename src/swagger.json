@@ -117,6 +117,14 @@
 					}
 				]
 			},
+			"Pick_ICreateAdmin.username-or-name_": {
+				"properties": {},
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"ResAdmin": {
+				"$ref": "#/components/schemas/Pick_ICreateAdmin.username-or-name_"
+			},
 			"Pick_ICreateAdmin.name_": {
 				"properties": {
 					"name": {
@@ -185,6 +193,24 @@
 			},
 			"AdminLogin": {
 				"$ref": "#/components/schemas/Pick_ICreateAdmin.username-or-password_"
+			},
+			"IUpdateAdmin": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"oldPassword": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"oldPassword"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"CategoryRes": {
 				"properties": {
@@ -1027,6 +1053,49 @@
 			}
 		},
 		"/admin": {
+			"get": {
+				"operationId": "GetAdminById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/ResAdmin"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Admin"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
+				"parameters": []
+			},
 			"post": {
 				"operationId": "CreateAdmin",
 				"responses": {
@@ -1124,16 +1193,33 @@
 				}
 			}
 		},
-		"/admin/test": {
-			"get": {
-				"operationId": "Test",
+		"/admin/setting": {
+			"put": {
+				"operationId": "Update",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "string"
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/ResAdmin"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
 								}
 							}
 						}
@@ -1149,7 +1235,17 @@
 						]
 					}
 				],
-				"parameters": []
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IUpdateAdmin"
+							}
+						}
+					}
+				}
 			}
 		},
 		"/categories": {

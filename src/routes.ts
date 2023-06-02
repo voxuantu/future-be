@@ -94,6 +94,20 @@ const models: TsoaRoute.Models = {
     },
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  "Pick_ICreateAdmin.username-or-name_": {
+    dataType: "refAlias",
+    type: {
+      dataType: "nestedObjectLiteral",
+      nestedProperties: {},
+      validators: {},
+    },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  ResAdmin: {
+    dataType: "refAlias",
+    type: { ref: "Pick_ICreateAdmin.username-or-name_", validators: {} },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   "Pick_ICreateAdmin.name_": {
     dataType: "refAlias",
     type: {
@@ -143,6 +157,16 @@ const models: TsoaRoute.Models = {
   AdminLogin: {
     dataType: "refAlias",
     type: { ref: "Pick_ICreateAdmin.username-or-password_", validators: {} },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IUpdateAdmin: {
+    dataType: "refObject",
+    properties: {
+      name: { dataType: "string" },
+      password: { dataType: "string" },
+      oldPassword: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   CategoryRes: {
@@ -624,6 +648,45 @@ export function RegisterRoutes(app: Router) {
     }
   );
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
+    "/api/v1/admin",
+    authenticateMiddleware([{ jwt: ["admin"] }]),
+    ...fetchMiddlewares<RequestHandler>(AdminController),
+    ...fetchMiddlewares<RequestHandler>(AdminController.prototype.getAdminById),
+
+    function AdminController_getAdminById(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        request: {
+          in: "request",
+          name: "request",
+          required: true,
+          dataType: "object",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new AdminController();
+
+        const promise = controller.getAdminById.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   app.post(
     "/api/v1/admin",
     ...fetchMiddlewares<RequestHandler>(AdminController),
@@ -686,14 +749,22 @@ export function RegisterRoutes(app: Router) {
     }
   );
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  app.get(
-    "/api/v1/admin/test",
+  app.put(
+    "/api/v1/admin/setting",
     authenticateMiddleware([{ jwt: ["admin"] }]),
     ...fetchMiddlewares<RequestHandler>(AdminController),
-    ...fetchMiddlewares<RequestHandler>(AdminController.prototype.test),
+    ...fetchMiddlewares<RequestHandler>(AdminController.prototype.update),
 
-    function AdminController_test(request: any, response: any, next: any) {
-      const args = {};
+    function AdminController_update(request: any, response: any, next: any) {
+      const args = {
+        dto: { in: "body", name: "dto", required: true, ref: "IUpdateAdmin" },
+        request: {
+          in: "request",
+          name: "request",
+          required: true,
+          dataType: "object",
+        },
+      };
 
       // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 
@@ -703,7 +774,10 @@ export function RegisterRoutes(app: Router) {
 
         const controller = new AdminController();
 
-        const promise = controller.test.apply(controller, validatedArgs as any);
+        const promise = controller.update.apply(
+          controller,
+          validatedArgs as any
+        );
         promiseHandler(controller, promise, response, undefined, next);
       } catch (err) {
         return next(err);
