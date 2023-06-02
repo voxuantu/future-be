@@ -1,5 +1,6 @@
 import { OrderStatus } from "../../constances/enum";
 import { IAddress } from "../../models/address";
+import { IOrderItem } from "../../models/order-item";
 import { IUserModel } from "../../models/user";
 
 export interface IOrderHistoryRes {
@@ -22,5 +23,16 @@ export interface IAllOrders {
   address: string | IAddress;
   userId: string | IUserModel;
   total: number;
+  dateCreated: string;
+  status: OrderStatus;
+}
+
+export interface IOrderItemsDetail {
+  orderItems: IOrderItem[];
+  totalQuantity: number;
+}
+
+export interface IUpdateStatus {
+  orderId: string;
   status: OrderStatus;
 }

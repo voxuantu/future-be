@@ -331,6 +331,96 @@
 				],
 				"type": "string"
 			},
+			"IAddress": {
+				"properties": {
+					"province": {
+						"type": "string"
+					},
+					"district": {
+						"type": "string"
+					},
+					"ward": {
+						"type": "string"
+					},
+					"specificAddress": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"receiver": {
+						"type": "string"
+					},
+					"default": {
+						"type": "boolean"
+					},
+					"deleted": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"province",
+					"district",
+					"ward",
+					"specificAddress",
+					"phone",
+					"receiver",
+					"default",
+					"deleted"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IUserModel": {
+				"$ref": "#/components/schemas/FlattenMaps_T_"
+			},
+			"IAllOrders": {
+				"properties": {
+					"shortId": {
+						"type": "string"
+					},
+					"address": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"$ref": "#/components/schemas/IAddress"
+							}
+						]
+					},
+					"userId": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"$ref": "#/components/schemas/IUserModel"
+							}
+						]
+					},
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"dateCreated": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/OrderStatus"
+					}
+				},
+				"required": [
+					"shortId",
+					"address",
+					"userId",
+					"total",
+					"dateCreated",
+					"status"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ISignJWT": {
 				"properties": {
 					"userId": {
@@ -815,6 +905,184 @@
 					}
 				],
 				"parameters": [
+					{
+						"in": "query",
+						"name": "status",
+						"required": true,
+						"schema": {
+							"$ref": "#/components/schemas/OrderStatus"
+						}
+					}
+				]
+			}
+		},
+		"/orders/pagination": {
+			"get": {
+				"operationId": "GetAllOrders",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/IAllOrders"
+													},
+													"type": "array"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Orders"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "limit",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "page",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/orders/order-follow-date/pagination": {
+			"get": {
+				"operationId": "GetOrdersFollowDate",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/IAllOrders"
+													},
+													"type": "array"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Orders"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "limit",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"in": "query",
+						"name": "page",
+						"required": true,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/orders/update-status": {
+			"put": {
+				"operationId": "UpdateStatusOrder",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"type": "string"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Orders"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "order-id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
 					{
 						"in": "query",
 						"name": "status",

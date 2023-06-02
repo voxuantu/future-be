@@ -3,7 +3,9 @@ import {
   ERROR_CREATE_ORDER,
   ERROR_GET_ALL_ORDERS,
   ERROR_GET_ORDER_HISTORY,
+  ERROR_ORDER_NOT_FOUND,
   ERROR_PRODUCT_NOT_FOUND,
+  ERROR_UPDATE_STATUS,
   ERROR_USER_NOT_FOUND,
   GET_ALL_ORDERS_SUCCESS,
   GET_ORDER_HISTORY_SUCCESS,
@@ -126,19 +128,55 @@ export class OrderService {
       return handleResFailure(ERROR_GET_ORDER_HISTORY, HttpStatus.BAD_REQUEST);
     }
   }
-  static async getAllOrders() {
+  static async getAllOrders(limit: number, page: number) {
     try {
-      const orderArray: IAllOrders[] = [];
-      const allOrders = await Order.find();
-      if (!allOrders) {
-        return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
-      }
+      const orderArray: IAllOrders[] = [
+        {
+          shortId: "1",
+          address: "2",
+          userId: "3",
+          status: OrderStatus.Delivering,
+          dateCreated: new Date().toLocaleDateString(),
+          total: 12,
+        },
+        {
+          shortId: "2",
+          address: "3",
+          userId: "4",
+          status: OrderStatus.Completed,
+          dateCreated: new Date().toLocaleDateString(),
+          total: 89000,
+        },
+        {
+          shortId: "3",
+          address: "2",
+          userId: "3",
+          status: OrderStatus.Delivering,
+          dateCreated: "11/2/2001",
+          total: 12,
+        },
+        {
+          shortId: "4",
+          address: "3",
+          userId: "4",
+          status: OrderStatus.Completed,
+          dateCreated: "11/2/2001",
+          total: 89000,
+        },
+      ];
+      const allOrders = await Order.find()
+        .limit(limit)
+        .skip(page * limit);
+      // if (!allOrders) {
+      //   return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.NOT_FOUND);
+      // }
       allOrders.map((item) =>
         orderArray.push({
           shortId: item.shortId,
           address: item.address,
           userId: item.user,
           status: item.status,
+          dateCreated: item.createdAt as string,
           total: item.total,
         })
       );
@@ -151,4 +189,109 @@ export class OrderService {
       return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.BAD_REQUEST);
     }
   }
+  static async getOrdersFollowDate(limit: number, page: number) {
+    try {
+      const orderArray: IAllOrders[] = [
+        // {
+        //   shortId: "1",
+        //   address: "2",
+        //   userId: "3",
+        //   status: OrderStatus.Delivering,
+        //   dateCreated: new Date().toLocaleDateString(),
+        //   total: 12,
+        // },
+        // {
+        //   shortId: "2",
+        //   address: "3",
+        //   userId: "4",
+        //   status: OrderStatus.Completed,
+        //   dateCreated: new Date().toLocaleDateString(),
+        //   total: 89000,
+        // },
+        {
+          shortId: "3",
+          address: "2",
+          userId: "3",
+          status: OrderStatus.Delivering,
+          dateCreated: "11/2/2001",
+          total: 12,
+        },
+        {
+          shortId: "4",
+          address: "3",
+          userId: "4",
+          status: OrderStatus.Completed,
+          dateCreated: "11/2/2001",
+          total: 89000,
+        },
+      ];
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0); // Đặt giá trị giờ phút giây của ngày hiện tại về 00:00:00
+      const tomorrow = new Date(today);
+      tomorrow.setUTCDate(tomorrow.getUTCDate() + 1); // Tăng ngày lên 1 để xác định đến cuối ngày
+      const allOrders = await Order.find({
+        createdAt: {
+          $gte: today,
+          $lt: tomorrow,
+        },
+      })
+        .limit(limit)
+        .skip(page * limit);
+      // if (!allOrders) {
+      //   return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.NOT_FOUND);
+      // }
+      allOrders.map((item) => {
+        orderArray.push({
+          shortId: item.shortId,
+          address: item.address,
+          userId: item.user,
+          status: item.status,
+          dateCreated: item.createdAt as string,
+          total: item.total,
+        });
+      });
+      return handlerResSuccess<IAllOrders[]>(
+        GET_ALL_ORDERS_SUCCESS,
+        orderArray
+      );
+    } catch (error) {
+      console.log("error", error);
+      return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.BAD_REQUEST);
+    }
+  }
+  static async updateStatusOrder(orderId: string, status: OrderStatus) {
+    try {
+      const orderStatus = await Order.updateOne(
+        { shortId: { $eq: orderId } },
+        { $set: { status: status } }
+      );
+      console.log(orderStatus);
+      // if (orderStatus.modifiedCount === 0) {
+      //   return handleResFailure(ERROR_ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      // }
+      return handlerResSuccess<string>(
+        GET_ALL_ORDERS_SUCCESS,
+        `update thành công qua quá trình ${status}`
+      );
+    } catch (error) {
+      console.log("error", error);
+      return handleResFailure(ERROR_UPDATE_STATUS, HttpStatus.BAD_REQUEST);
+    }
+  }
+  // static async getOrderItemsById(orderId: number) {
+  //   try {
+  //     const orderItemsId = await Order.findOne({ shortId: { $eq: orderId } });
+  //     if (!orderItemsId) {
+  //       return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+  //     }
+  //     const orderItemsArrayDetail = Promise.all(
+  //       orderItemsId.orderItems.map(async (item) => {
+  //         const a = await OrderItem.findById(item._id);
+  //       })
+  //     ).then();
+  //   } catch (error) {
+  //     console.log("error", error);
+  //     return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.BAD_REQUEST);
+  //   }
+  // }
 }

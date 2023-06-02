@@ -213,6 +213,47 @@ const models: TsoaRoute.Models = {
     enums: ["pending", "delivering", "completed"],
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IAddress: {
+    dataType: "refObject",
+    properties: {
+      province: { dataType: "string", required: true },
+      district: { dataType: "string", required: true },
+      ward: { dataType: "string", required: true },
+      specificAddress: { dataType: "string", required: true },
+      phone: { dataType: "string", required: true },
+      receiver: { dataType: "string", required: true },
+      default: { dataType: "boolean", required: true },
+      deleted: { dataType: "boolean", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IUserModel: {
+    dataType: "refAlias",
+    type: { ref: "FlattenMaps_T_", validators: {} },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IAllOrders: {
+    dataType: "refObject",
+    properties: {
+      shortId: { dataType: "string", required: true },
+      address: {
+        dataType: "union",
+        subSchemas: [{ dataType: "string" }, { ref: "IAddress" }],
+        required: true,
+      },
+      userId: {
+        dataType: "union",
+        subSchemas: [{ dataType: "string" }, { ref: "IUserModel" }],
+        required: true,
+      },
+      total: { dataType: "double", required: true },
+      dateCreated: { dataType: "string", required: true },
+      status: { ref: "OrderStatus", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   ISignJWT: {
     dataType: "refObject",
     properties: {
@@ -622,6 +663,134 @@ export function RegisterRoutes(app: Router) {
         const controller = new OrdersController();
 
         const promise = controller.getOrderHistoryfollowStatus.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
+    "/api/v1/orders/pagination",
+    ...fetchMiddlewares<RequestHandler>(OrdersController),
+    ...fetchMiddlewares<RequestHandler>(
+      OrdersController.prototype.getAllOrders
+    ),
+
+    function OrdersController_getAllOrders(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        limit: {
+          in: "query",
+          name: "limit",
+          required: true,
+          dataType: "double",
+        },
+        page: { in: "query", name: "page", required: true, dataType: "double" },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new OrdersController();
+
+        const promise = controller.getAllOrders.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
+    "/api/v1/orders/order-follow-date/pagination",
+    ...fetchMiddlewares<RequestHandler>(OrdersController),
+    ...fetchMiddlewares<RequestHandler>(
+      OrdersController.prototype.getOrdersFollowDate
+    ),
+
+    function OrdersController_getOrdersFollowDate(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        limit: {
+          in: "query",
+          name: "limit",
+          required: true,
+          dataType: "double",
+        },
+        page: { in: "query", name: "page", required: true, dataType: "double" },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new OrdersController();
+
+        const promise = controller.getOrdersFollowDate.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.put(
+    "/api/v1/orders/update-status",
+    ...fetchMiddlewares<RequestHandler>(OrdersController),
+    ...fetchMiddlewares<RequestHandler>(
+      OrdersController.prototype.updateStatusOrder
+    ),
+
+    function OrdersController_updateStatusOrder(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        orderId: {
+          in: "query",
+          name: "order-id",
+          required: true,
+          dataType: "string",
+        },
+        status: {
+          in: "query",
+          name: "status",
+          required: true,
+          ref: "OrderStatus",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new OrdersController();
+
+        const promise = controller.updateStatusOrder.apply(
           controller,
           validatedArgs as any
         );
