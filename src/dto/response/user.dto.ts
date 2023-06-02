@@ -7,6 +7,12 @@ export type AdminResDTO = Pick<ICreateAdmin, "name"> & { _id: string };
 //   _id: string;
 //   name: string;
 // }
+export interface IUserInfo {
+  name: string;
+  avatar: string;
+  email: string;
+  birthday: string | Date;
+}
 
 export type CartItemResDTO = {
   _id: string;

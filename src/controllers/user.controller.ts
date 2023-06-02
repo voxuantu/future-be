@@ -9,15 +9,18 @@ import {
   Request,
   Path,
   Tags,
+  FormField,
+  UploadedFile,
   Delete,
   Put,
 } from "tsoa";
 import { UsersService } from "../services";
 import {
-  AddToCart,
   ICreateUser,
   ISignJWT,
+  IUpdateUserInfo,
   UpdateQuantity,
+  AddToCart,
 } from "../dto/request/user.dto";
 import * as jwt from "jsonwebtoken";
 import { IGetUserAuthInfoRequest } from "../types/express";
@@ -26,15 +29,6 @@ import { WishlistService } from "../services/wishlist.service";
 @Tags("Users")
 @Route("users")
 export class UsersController extends Controller {
-  @Security("jwt", ["user"])
-  @Get()
-  public async getTest(
-    @Request() request: IGetUserAuthInfoRequest
-  ): Promise<string> {
-    console.log("request: ", request.user);
-    return "test";
-  }
-
   @Post()
   public async createUser(@Body() dto: ICreateUser) {
     return UsersService.create(dto);
@@ -52,6 +46,12 @@ export class UsersController extends Controller {
   @Get("/addresses")
   public async getMyAddresses(@Request() request: IGetUserAuthInfoRequest) {
     return UsersService.getMyAddresses(request.user.userId);
+  }
+
+  @Security("jwt", ["user"])
+  @Get()
+  public getUser(@Request() request: IGetUserAuthInfoRequest) {
+    return UsersService.getUser(request.user.userId);
   }
 
   @Security("jwt", ["user"])
@@ -119,5 +119,23 @@ export class UsersController extends Controller {
       request.user.userId,
       body.action
     );
+  }
+  @Security("jwt", ["user"])
+  @Put("/setting")
+  public updateInfo(
+    @Request() request: IGetUserAuthInfoRequest,
+    @FormField("name") name?: string,
+    @FormField("email") email?: string,
+    @FormField("birthday") birthday?: string,
+    @UploadedFile("avatar")
+    avatar?: Express.Multer.File
+  ) {
+    const dto: IUpdateUserInfo = {
+      name,
+      email,
+      birthday,
+      avatar,
+    };
+    return UsersService.updateInfo(request.user.userId, dto);
   }
 }

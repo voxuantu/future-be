@@ -1,3 +1,5 @@
+import { IAddressModel } from "../../models/address";
+
 export interface ICreateUser {
   name: string;
   email: string;
@@ -11,7 +13,12 @@ export interface ISignJWT {
   role: string;
 }
 
-export type IEmailVerify = Pick<ICreateUser, "email">;
+export type IUpdateUserInfo = {
+  name?: string;
+  email?: string;
+  avatar?: Express.Multer.File;
+  birthday?: Date | string;
+};
 
 export interface ICreateAdmin {
   name: string;
@@ -37,3 +44,5 @@ export type AddToCart = {
 export type UpdateQuantity = {
   action: string;
 };
+
+export type IEmailVerify = Pick<ICreateUser, "email">;

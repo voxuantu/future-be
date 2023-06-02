@@ -9,6 +9,7 @@ import {
   ERROR_DELETE_CART,
   ERROR_GET_MY_ADDRESSES,
   ERROR_GET_USER_BY_ID,
+  ERROR_UPDATE_USER,
   ERROR_GET_WISHLIST,
   ERROR_PRODUCT_NOT_FOUND,
   ERROR_UPDATE_QUANTITY,
@@ -16,12 +17,17 @@ import {
   FIND_USER_BY_ID_SUCCESS,
   GET_CART_SUCCESS,
   GET_MY_ADDRESSES_SUCCESS,
+  UPDATE_USER_SUCESS,
   GET_WISHLIST_SUCCESS,
   UPDATE_QUANTITY_SUCCESS,
 } from "../constances";
 import { HttpStatus } from "../constances/enum";
-import { AddToCart, ICreateUser } from "../dto/request/user.dto";
-import { WishlistItem } from "../dto/response";
+import {
+  AddToCart,
+  ICreateUser,
+  IUpdateUserInfo,
+} from "../dto/request/user.dto";
+import { IUserInfo, WishlistItem } from "../dto/response";
 import { ProductCard } from "../dto/response/product.dto";
 import { CartItemResDTO, UserResDTO } from "../dto/response/user.dto";
 import CartItem, { ICartItemModel } from "../models/cart-item";
@@ -76,6 +82,80 @@ export class UsersService {
       console.log("error: ", error);
       return handleResFailure(
         error.error ? error.error : ERROR_GET_USER_BY_ID,
+        error.statusCode ? error.statusCode : HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+  static async getUser(id: string) {
+    try {
+      const user = await User.findById(id);
+
+      if (!user) {
+        return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+      const res: IUserInfo = {
+        name: user.name,
+        avatar: await CloudinaryService.getImageUrl(user.avatar),
+        email: user.email,
+        birthday: user.birthday,
+      };
+
+      return handlerResSuccess(FIND_USER_BY_ID_SUCCESS, res);
+    } catch (error: any) {
+      console.log("error: ", error);
+      return handleResFailure(
+        error.error ? error.error : ERROR_GET_USER_BY_ID,
+        error.statusCode ? error.statusCode : HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+  static async updateInfo(userId: string, userInfo: IUpdateUserInfo) {
+    try {
+      const user = await User.findById(userId);
+
+      if (!user) {
+        return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+
+      // await User.updateOne(
+      //   { _id: userId },
+      //   {
+      //     $set: {
+      //       name: userInfo.name,
+      //       email: userInfo.email,
+      //       avatar: userInfo.avatar,
+      //       birthday: userInfo.birthday,
+      //     },
+      //   }
+      // );
+      if (userInfo.name) {
+        user.name = userInfo.name;
+      }
+      if (userInfo.email) {
+        user.email = userInfo.email;
+      }
+      if (userInfo.avatar) {
+        await CloudinaryService.deleteImage(user.avatar);
+        const image = await CloudinaryService.upload(userInfo.avatar, "users");
+        user.avatar = image.public_id;
+      }
+      if (userInfo.birthday) {
+        user.birthday = new Date(userInfo.birthday).toString();
+      }
+
+      await user.save();
+
+      const res: IUserInfo = {
+        name: user.name,
+        avatar: await CloudinaryService.getImageUrl(user.avatar),
+        email: user.email,
+        birthday: user.birthday,
+      };
+      return handlerResSuccess(UPDATE_USER_SUCESS, res);
+    } catch (error: any) {
+      console.log("error: ", error);
+      return handleResFailure(
+        error.error ? error.error : ERROR_UPDATE_USER,
         error.statusCode ? error.statusCode : HttpStatus.BAD_REQUEST
       );
     }
