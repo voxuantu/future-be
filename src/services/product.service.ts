@@ -463,4 +463,15 @@ export class ProductService {
       return handleResFailure(ERROR_FILTER_PRODUCT, HttpStatus.BAD_REQUEST);
     }
   }
+  static async getProductForCart(productId: string) {
+    const product = await Product.findById(productId).select(
+      "name thumnail price"
+    );
+    if (!product) {
+      return null;
+    }
+    const imgUrl = await CloudinaryService.getImageUrl(product.thumbnail);
+    product.thumbnail = imgUrl;
+    return product as IProductModel;
+  }
 }

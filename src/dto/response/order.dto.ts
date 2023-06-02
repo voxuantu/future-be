@@ -1,3 +1,7 @@
+import { OrderStatus } from "../../constances/enum";
+import { IAddress } from "../../models/address";
+import { IUserModel } from "../../models/user";
+
 export interface IOrderHistoryRes {
   _id: string;
   shortId: string;
@@ -11,6 +15,14 @@ export interface IOrderHistoryRes {
     price: number;
   };
   orderItemsLength: number;
+}
+
+export interface IAllOrders {
+  shortId: string;
+  address: string | IAddress;
+  userId: string | IUserModel;
+  total: number;
+  status: OrderStatus;
 }
 
 export interface ICreateMAC {

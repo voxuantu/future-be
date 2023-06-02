@@ -117,6 +117,14 @@
 					}
 				]
 			},
+			"Pick_ICreateAdmin.username-or-name_": {
+				"properties": {},
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"ResAdmin": {
+				"$ref": "#/components/schemas/Pick_ICreateAdmin.username-or-name_"
+			},
 			"Pick_ICreateAdmin.name_": {
 				"properties": {
 					"name": {
@@ -185,6 +193,129 @@
 			},
 			"AdminLogin": {
 				"$ref": "#/components/schemas/Pick_ICreateAdmin.username-or-password_"
+			},
+			"IUpdateAdmin": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"oldPassword": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"oldPassword"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"UserAuthenticate": {
+				"properties": {
+					"token": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"token",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Pick_ICreateUser.username-or-password_": {
+				"properties": {
+					"username": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"username",
+					"password"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"Pick_ICreateUser.email_": {
+				"properties": {
+					"email": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"IEmailVerify": {
+				"$ref": "#/components/schemas/Pick_ICreateUser.email_"
+			},
+			"Pick_ICreateUser.name_": {
+				"properties": {
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name"
+				],
+				"type": "object",
+				"description": "From T, pick a set of properties whose keys are in the union K"
+			},
+			"UserResDTO": {
+				"allOf": [
+					{
+						"$ref": "#/components/schemas/Pick_ICreateUser.name_"
+					},
+					{
+						"properties": {
+							"_id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"_id"
+						],
+						"type": "object"
+					}
+				]
+			},
+			"ICreateUser": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"username": {
+						"type": "string"
+					},
+					"password": {
+						"type": "string"
+					},
+					"avatar": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"name",
+					"email",
+					"username",
+					"password",
+					"avatar"
+				],
+				"type": "object",
+				"additionalProperties": false
 			},
 			"CategoryClientRes": {
 				"properties": {
@@ -684,64 +815,6 @@
 				"type": "object",
 				"additionalProperties": false
 			},
-			"Pick_ICreateUser.name_": {
-				"properties": {
-					"name": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"name"
-				],
-				"type": "object",
-				"description": "From T, pick a set of properties whose keys are in the union K"
-			},
-			"UserResDTO": {
-				"allOf": [
-					{
-						"$ref": "#/components/schemas/Pick_ICreateUser.name_"
-					},
-					{
-						"properties": {
-							"_id": {
-								"type": "string"
-							}
-						},
-						"required": [
-							"_id"
-						],
-						"type": "object"
-					}
-				]
-			},
-			"ICreateUser": {
-				"properties": {
-					"name": {
-						"type": "string"
-					},
-					"email": {
-						"type": "string"
-					},
-					"username": {
-						"type": "string"
-					},
-					"password": {
-						"type": "string"
-					},
-					"avatar": {
-						"type": "string"
-					}
-				},
-				"required": [
-					"name",
-					"email",
-					"username",
-					"password",
-					"avatar"
-				],
-				"type": "object",
-				"additionalProperties": false
-			},
 			"ISignJWT": {
 				"properties": {
 					"userId": {
@@ -757,6 +830,141 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"IUserInfo": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"avatar": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"birthday": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "string",
+								"format": "date-time"
+							}
+						]
+					}
+				},
+				"required": [
+					"name",
+					"avatar",
+					"email",
+					"birthday"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"WishlistItem": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"thumbnail": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"isStock": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"_id",
+					"thumbnail",
+					"name",
+					"price",
+					"isStock"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"CartItemResDTO": {
+				"properties": {
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"name": {
+						"type": "string"
+					},
+					"thumbnail": {
+						"type": "string"
+					},
+					"_id": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"quantity",
+					"price",
+					"name",
+					"thumbnail",
+					"_id"
+				],
+				"type": "object"
+			},
+			"HttpStatus": {
+				"enum": [
+					200,
+					201,
+					202,
+					400,
+					401,
+					403,
+					404,
+					406,
+					408,
+					500,
+					501,
+					502,
+					503
+				],
+				"type": "number"
+			},
+			"AddToCart": {
+				"properties": {
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"productId": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"quantity",
+					"productId"
+				],
+				"type": "object"
+			},
+			"UpdateQuantity": {
+				"properties": {
+					"action": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"action"
+				],
+				"type": "object"
 			}
 		},
 		"securitySchemes": {
@@ -949,6 +1157,49 @@
 			}
 		},
 		"/admin": {
+			"get": {
+				"operationId": "GetAdminById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/ResAdmin"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Admin"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
+				"parameters": []
+			},
 			"post": {
 				"operationId": "CreateAdmin",
 				"responses": {
@@ -1046,16 +1297,33 @@
 				}
 			}
 		},
-		"/admin/test": {
-			"get": {
-				"operationId": "Test",
+		"/admin/setting": {
+			"put": {
+				"operationId": "Update",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "string"
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/ResAdmin"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
 								}
 							}
 						}
@@ -1071,6 +1339,193 @@
 						]
 					}
 				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IUpdateAdmin"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/authenticate/login": {
+			"post": {
+				"operationId": "LoginUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/UserAuthenticate"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"login"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Pick_ICreateUser.username-or-password_"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/authenticate/send-code-email": {
+			"post": {
+				"operationId": "SendVerifyCode",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"type": "string"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"login"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/IEmailVerify"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/authenticate/register": {
+			"post": {
+				"operationId": "CreateUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/UserResDTO"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"login"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ICreateUser"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/authenticate/google": {
+			"get": {
+				"operationId": "CreateGoogleClientRequest",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"login"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/authenticate/google/callback": {
+			"get": {
+				"operationId": "CallBackGoogle",
+				"responses": {
+					"204": {
+						"description": "No content"
+					}
+				},
+				"tags": [
+					"login"
+				],
+				"security": [],
 				"parameters": []
 			}
 		},
@@ -2234,32 +2689,6 @@
 			}
 		},
 		"/users": {
-			"get": {
-				"operationId": "GetTest",
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"content": {
-							"application/json": {
-								"schema": {
-									"type": "string"
-								}
-							}
-						}
-					}
-				},
-				"tags": [
-					"Users"
-				],
-				"security": [
-					{
-						"jwt": [
-							"user"
-						]
-					}
-				],
-				"parameters": []
-			},
 			"post": {
 				"operationId": "CreateUser",
 				"responses": {
@@ -2306,6 +2735,49 @@
 						}
 					}
 				}
+			},
+			"get": {
+				"operationId": "GetUser",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/IUserInfo"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/users/sign-jwt-token": {
@@ -2388,6 +2860,150 @@
 				"parameters": []
 			}
 		},
+		"/users/wishlist": {
+			"get": {
+				"operationId": "GetWishlist",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/WishlistItem"
+													},
+													"type": "array"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
+		"/users/cart": {
+			"get": {
+				"operationId": "GetCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"properties": {
+										"data": {
+											"items": {
+												"$ref": "#/components/schemas/CartItemResDTO"
+											},
+											"type": "array"
+										},
+										"message": {
+											"type": "string"
+										}
+									},
+									"required": [
+										"data",
+										"message"
+									],
+									"type": "object"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": []
+			},
+			"post": {
+				"operationId": "AddToCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/CartItemResDTO"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/AddToCart"
+							}
+						}
+					}
+				}
+			}
+		},
 		"/users/{userId}": {
 			"get": {
 				"operationId": "FindUserById",
@@ -2436,9 +3052,9 @@
 				]
 			}
 		},
-		"/users/{userId}/wish-list": {
-			"get": {
-				"operationId": "Wishlist",
+		"/users/wishlist/{productId}": {
+			"post": {
+				"operationId": "InsertWishlistItem",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -2448,10 +3064,19 @@
 									"anyOf": [
 										{},
 										{
-											"items": {
-												"$ref": "#/components/schemas/IProductModel"
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/WishlistItem"
+												},
+												"message": {
+													"type": "string"
+												}
 											},
-											"type": "array"
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
 										}
 									]
 								}
@@ -2462,29 +3087,65 @@
 				"tags": [
 					"Users"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
-						"name": "userId",
+						"name": "productId",
 						"required": true,
 						"schema": {
 							"type": "string"
 						}
 					}
 				]
-			}
-		},
-		"/users/{userId}/cart": {
-			"get": {
-				"operationId": "GetCart",
+			},
+			"delete": {
+				"operationId": "DeleteWishlistItem",
 				"responses": {
 					"200": {
 						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
-									"type": "string"
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"type": "string"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/HttpStatus"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
 								}
 							}
 						}
@@ -2493,17 +3154,221 @@
 				"tags": [
 					"Users"
 				],
-				"security": [],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
 				"parameters": [
 					{
 						"in": "path",
-						"name": "userId",
+						"name": "productId",
 						"required": true,
 						"schema": {
 							"type": "string"
 						}
 					}
 				]
+			}
+		},
+		"/users/cart/{productId}": {
+			"delete": {
+				"operationId": "DeleteCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"type": "string"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "productId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"put": {
+				"operationId": "UpdateQuantity",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"properties": {
+														"action": {
+															"type": "string"
+														},
+														"productId": {
+															"type": "string"
+														}
+													},
+													"required": [
+														"action",
+														"productId"
+													],
+													"type": "object"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "productId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/UpdateQuantity"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/users/setting": {
+			"put": {
+				"operationId": "UpdateInfo",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/IUserInfo"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": false,
+					"content": {
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"name": {
+										"type": "string"
+									},
+									"email": {
+										"type": "string"
+									},
+									"birthday": {
+										"type": "string"
+									},
+									"avatar": {
+										"type": "string",
+										"format": "binary"
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	},
