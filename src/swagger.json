@@ -67,14 +67,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"province",
-					"district",
-					"ward",
-					"specificAddress",
-					"phone",
-					"receiver"
-				],
+				"required": ["province", "district", "ward", "specificAddress", "phone", "receiver"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -123,9 +116,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"name"
-				],
+				"required": ["name"],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
 			},
@@ -140,9 +131,7 @@
 								"type": "string"
 							}
 						},
-						"required": [
-							"_id"
-						],
+						"required": ["_id"],
 						"type": "object"
 					}
 				]
@@ -159,11 +148,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"name",
-					"username",
-					"password"
-				],
+				"required": ["name", "username", "password"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -176,10 +161,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"username",
-					"password"
-				],
+				"required": ["username", "password"],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
 			},
@@ -198,11 +180,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"_id",
-					"name",
-					"image"
-				],
+				"required": ["_id", "name", "image"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -230,24 +208,14 @@
 								"type": "string"
 							}
 						},
-						"required": [
-							"avatar",
-							"name",
-							"_id"
-						],
+						"required": ["avatar", "name", "_id"],
 						"type": "object"
 					},
 					"createdAt": {
 						"type": "string"
 					}
 				},
-				"required": [
-					"_id",
-					"content",
-					"rate",
-					"user",
-					"createdAt"
-				],
+				"required": ["_id", "content", "rate", "user", "createdAt"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -264,11 +232,7 @@
 						"format": "double"
 					}
 				},
-				"required": [
-					"productId",
-					"content",
-					"rate"
-				],
+				"required": ["productId", "content", "rate"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -300,11 +264,7 @@
 						"format": "double"
 					}
 				},
-				"required": [
-					"product",
-					"price",
-					"quantity"
-				],
+				"required": ["product", "price", "quantity"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -320,10 +280,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"orderItems",
-					"address"
-				],
+				"required": ["orderItems", "address"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -362,13 +319,7 @@
 								"type": "string"
 							}
 						},
-						"required": [
-							"price",
-							"quantity",
-							"thumbnail",
-							"name",
-							"_id"
-						],
+						"required": ["price", "quantity", "thumbnail", "name", "_id"],
 						"type": "object"
 					},
 					"orderItemsLength": {
@@ -376,23 +327,12 @@
 						"format": "double"
 					}
 				},
-				"required": [
-					"_id",
-					"shortId",
-					"total",
-					"createdAt",
-					"firstProduct",
-					"orderItemsLength"
-				],
+				"required": ["_id", "shortId", "total", "createdAt", "firstProduct", "orderItemsLength"],
 				"type": "object",
 				"additionalProperties": false
 			},
 			"OrderStatus": {
-				"enum": [
-					"pending",
-					"delivering",
-					"completed"
-				],
+				"enum": ["pending", "delivering", "completed"],
 				"type": "string"
 			},
 			"ICreateZaloPayOrder": {
@@ -408,11 +348,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"amount",
-					"order_id",
-					"bank_code"
-				],
+				"required": ["amount", "order_id", "bank_code"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -429,11 +365,7 @@
 						"format": "double"
 					}
 				},
-				"required": [
-					"data",
-					"mac",
-					"type"
-				],
+				"required": ["data", "mac", "type"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -444,9 +376,7 @@
 						"format": "double"
 					}
 				},
-				"required": [
-					"orderStatus"
-				],
+				"required": ["orderStatus"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -456,9 +386,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"app_trans_id"
-				],
+				"required": ["app_trans_id"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -479,10 +407,7 @@
 								"type": "string"
 							}
 						},
-						"required": [
-							"name",
-							"_id"
-						],
+						"required": ["name", "_id"],
 						"type": "object"
 					},
 					"price": {
@@ -494,13 +419,7 @@
 						"format": "double"
 					}
 				},
-				"required": [
-					"_id",
-					"name",
-					"category",
-					"price",
-					"quantity"
-				],
+				"required": ["_id", "name", "category", "price", "quantity"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -570,23 +489,14 @@
 								"type": "string"
 							}
 						},
-						"required": [
-							"name",
-							"_id"
-						],
+						"required": ["name", "_id"],
 						"type": "object"
 					},
 					"thumbnail": {
 						"type": "string"
 					}
 				},
-				"required": [
-					"_id",
-					"name",
-					"price",
-					"category",
-					"thumbnail"
-				],
+				"required": ["_id", "name", "price", "category", "thumbnail"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -611,10 +521,7 @@
 								"type": "string"
 							}
 						},
-						"required": [
-							"name",
-							"_id"
-						],
+						"required": ["name", "_id"],
 						"type": "object"
 					},
 					"thumbnail": {
@@ -665,9 +572,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"name"
-				],
+				"required": ["name"],
 				"type": "object",
 				"description": "From T, pick a set of properties whose keys are in the union K"
 			},
@@ -682,9 +587,7 @@
 								"type": "string"
 							}
 						},
-						"required": [
-							"_id"
-						],
+						"required": ["_id"],
 						"type": "object"
 					}
 				]
@@ -707,13 +610,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"name",
-					"email",
-					"username",
-					"password",
-					"avatar"
-				],
+				"required": ["name", "email", "username", "password", "avatar"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -726,10 +623,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"userId",
-					"role"
-				],
+				"required": ["userId", "role"],
 				"type": "object",
 				"additionalProperties": false
 			},
@@ -753,13 +647,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"quantity",
-					"price",
-					"name",
-					"thumbnail",
-					"_id"
-				],
+				"required": ["quantity", "price", "name", "thumbnail", "_id"],
 				"type": "object"
 			},
 			"AddToCart": {
@@ -772,10 +660,7 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"quantity",
-					"productId"
-				],
+				"required": ["quantity", "productId"],
 				"type": "object"
 			},
 			"UpdateQuantity": {
@@ -784,10 +669,35 @@
 						"type": "string"
 					}
 				},
-				"required": [
-					"action"
-				],
+				"required": ["action"],
 				"type": "object"
+			},
+			"WishlistItem": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"thumbnail": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"isStock": {
+						"type": "boolean"
+					}
+				},
+				"required": ["_id", "thumbnail", "name", "price", "isStock"],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"HttpStatus": {
+				"enum": [200, 201, 202, 400, 401, 403, 404, 406, 408, 500, 501, 502, 503],
+				"type": "number"
 			}
 		},
 		"securitySchemes": {
@@ -828,10 +738,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -840,14 +747,10 @@
 						}
 					}
 				},
-				"tags": [
-					"Addresses"
-				],
+				"tags": ["Addresses"],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": ["user"]
 					}
 				],
 				"parameters": [],
@@ -883,10 +786,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -895,14 +795,10 @@
 						}
 					}
 				},
-				"tags": [
-					"Addresses"
-				],
+				"tags": ["Addresses"],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": ["user"]
 					}
 				],
 				"parameters": [
@@ -945,10 +841,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -957,14 +850,10 @@
 						}
 					}
 				},
-				"tags": [
-					"Addresses"
-				],
+				"tags": ["Addresses"],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": ["user"]
 					}
 				],
 				"parameters": [
@@ -999,10 +888,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1011,9 +897,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Admin"
-				],
+				"tags": ["Admin"],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -1048,10 +932,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1060,9 +941,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Admin"
-				],
+				"tags": ["Admin"],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -1092,14 +971,10 @@
 						}
 					}
 				},
-				"tags": [
-					"Admin"
-				],
+				"tags": ["Admin"],
 				"security": [
 					{
-						"jwt": [
-							"admin"
-						]
+						"jwt": ["admin"]
 					}
 				],
 				"parameters": []
@@ -1128,10 +1003,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1140,9 +1012,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Categories"
-				],
+				"tags": ["Categories"],
 				"security": [],
 				"parameters": []
 			},
@@ -1165,10 +1035,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1177,9 +1044,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Categories"
-				],
+				"tags": ["Categories"],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -1197,10 +1062,7 @@
 										"format": "binary"
 									}
 								},
-								"required": [
-									"name",
-									"file"
-								]
+								"required": ["name", "file"]
 							}
 						}
 					}
@@ -1227,10 +1089,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1239,9 +1098,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Categories"
-				],
+				"tags": ["Categories"],
 				"security": [],
 				"parameters": [
 					{
@@ -1292,10 +1149,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1304,9 +1158,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Categories"
-				],
+				"tags": ["Categories"],
 				"security": [],
 				"parameters": [
 					{
@@ -1340,10 +1192,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1352,14 +1201,10 @@
 						}
 					}
 				},
-				"tags": [
-					"Comments"
-				],
+				"tags": ["Comments"],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": ["user"]
 					}
 				],
 				"parameters": [],
@@ -1395,10 +1240,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1407,14 +1249,10 @@
 						}
 					}
 				},
-				"tags": [
-					"Comments"
-				],
+				"tags": ["Comments"],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": ["user"]
 					}
 				],
 				"parameters": [
@@ -1457,10 +1295,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1469,14 +1304,10 @@
 						}
 					}
 				},
-				"tags": [
-					"Orders"
-				],
+				"tags": ["Orders"],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": ["user"]
 					}
 				],
 				"parameters": [],
@@ -1515,10 +1346,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1527,14 +1355,10 @@
 						}
 					}
 				},
-				"tags": [
-					"Orders"
-				],
+				"tags": ["Orders"],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": ["user"]
 					}
 				],
 				"parameters": [
@@ -1569,10 +1393,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1581,9 +1402,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Orders"
-				],
+				"tags": ["Orders"],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -1614,19 +1433,14 @@
 											"format": "double"
 										}
 									},
-									"required": [
-										"return_message",
-										"return_code"
-									],
+									"required": ["return_message", "return_code"],
 									"type": "object"
 								}
 							}
 						}
 					}
 				},
-				"tags": [
-					"Orders"
-				],
+				"tags": ["Orders"],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -1661,10 +1475,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1673,9 +1484,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Orders"
-				],
+				"tags": ["Orders"],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -1710,10 +1519,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1722,9 +1528,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Products"
-				],
+				"tags": ["Products"],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -1757,14 +1561,7 @@
 										"type": "array"
 									}
 								},
-								"required": [
-									"name",
-									"category",
-									"quantity",
-									"price",
-									"description",
-									"images"
-								]
+								"required": ["name", "category", "quantity", "price", "description", "images"]
 							}
 						}
 					}
@@ -1791,10 +1588,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1803,9 +1597,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Products"
-				],
+				"tags": ["Products"],
 				"security": [],
 				"parameters": [
 					{
@@ -1874,10 +1666,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1886,9 +1675,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Products"
-				],
+				"tags": ["Products"],
 				"security": [],
 				"parameters": [
 					{
@@ -1920,10 +1707,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1932,9 +1716,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Products"
-				],
+				"tags": ["Products"],
 				"security": [],
 				"parameters": [
 					{
@@ -1974,20 +1756,14 @@
 															"type": "array"
 														}
 													},
-													"required": [
-														"numOfProds",
-														"products"
-													],
+													"required": ["numOfProds", "products"],
 													"type": "object"
 												},
 												"message": {
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -1996,9 +1772,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Products"
-				],
+				"tags": ["Products"],
 				"security": [],
 				"parameters": [
 					{
@@ -2042,10 +1816,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -2054,9 +1825,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Products"
-				],
+				"tags": ["Products"],
 				"security": [],
 				"parameters": [
 					{
@@ -2093,10 +1862,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -2105,9 +1871,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Products"
-				],
+				"tags": ["Products"],
 				"security": [],
 				"parameters": []
 			}
@@ -2135,10 +1899,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -2147,9 +1908,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Products"
-				],
+				"tags": ["Products"],
 				"security": [],
 				"parameters": [
 					{
@@ -2230,14 +1989,10 @@
 						}
 					}
 				},
-				"tags": [
-					"Users"
-				],
+				"tags": ["Users"],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": ["user"]
 					}
 				],
 				"parameters": []
@@ -2261,10 +2016,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -2273,9 +2025,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Users"
-				],
+				"tags": ["Users"],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -2305,9 +2055,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Users"
-				],
+				"tags": ["Users"],
 				"security": [],
 				"parameters": [],
 				"requestBody": {
@@ -2345,10 +2093,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -2357,14 +2102,10 @@
 						}
 					}
 				},
-				"tags": [
-					"Users"
-				],
+				"tags": ["Users"],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": ["user"]
 					}
 				],
 				"parameters": []
@@ -2390,24 +2131,17 @@
 											"type": "string"
 										}
 									},
-									"required": [
-										"data",
-										"message"
-									],
+									"required": ["data", "message"],
 									"type": "object"
 								}
 							}
 						}
 					}
 				},
-				"tags": [
-					"Users"
-				],
+				"tags": ["Users"],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": ["user"]
 					}
 				],
 				"parameters": []
@@ -2431,10 +2165,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -2443,14 +2174,10 @@
 						}
 					}
 				},
-				"tags": [
-					"Users"
-				],
+				"tags": ["Users"],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": ["user"]
 					}
 				],
 				"parameters": [],
@@ -2464,6 +2191,47 @@
 						}
 					}
 				}
+			}
+		},
+		"/users/wishlist": {
+			"get": {
+				"operationId": "GetWishlist",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/WishlistItem"
+													},
+													"type": "array"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": ["data", "message"],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": ["Users"],
+				"security": [
+					{
+						"jwt": ["user"]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/users/{userId}": {
@@ -2486,10 +2254,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -2498,9 +2263,7 @@
 						}
 					}
 				},
-				"tags": [
-					"Users"
-				],
+				"tags": ["Users"],
 				"security": [],
 				"parameters": [
 					{
@@ -2514,9 +2277,9 @@
 				]
 			}
 		},
-		"/users/{userId}/wish-list": {
-			"get": {
-				"operationId": "Wishlist",
+		"/users/wishlist/{productId}": {
+			"post": {
+				"operationId": "InsertWishlistItem",
 				"responses": {
 					"200": {
 						"description": "Ok",
@@ -2526,10 +2289,16 @@
 									"anyOf": [
 										{},
 										{
-											"items": {
-												"$ref": "#/components/schemas/IProductModel"
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/WishlistItem"
+												},
+												"message": {
+													"type": "string"
+												}
 											},
-											"type": "array"
+											"required": ["data", "message"],
+											"type": "object"
 										}
 									]
 								}
@@ -2537,14 +2306,16 @@
 						}
 					}
 				},
-				"tags": [
-					"Users"
+				"tags": ["Users"],
+				"security": [
+					{
+						"jwt": ["user"]
+					}
 				],
-				"security": [],
 				"parameters": [
 					{
 						"in": "path",
-						"name": "userId",
+						"name": "productId",
 						"required": true,
 						"schema": {
 							"type": "string"
@@ -2573,10 +2344,7 @@
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -2585,14 +2353,10 @@
 						}
 					}
 				},
-				"tags": [
-					"Users"
-				],
+				"tags": ["Users"],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": ["user"]
 					}
 				],
 				"parameters": [
@@ -2627,20 +2391,14 @@
 															"type": "string"
 														}
 													},
-													"required": [
-														"action",
-														"productId"
-													],
+													"required": ["action", "productId"],
 													"type": "object"
 												},
 												"message": {
 													"type": "string"
 												}
 											},
-											"required": [
-												"data",
-												"message"
-											],
+											"required": ["data", "message"],
 											"type": "object"
 										}
 									]
@@ -2649,14 +2407,10 @@
 						}
 					}
 				},
-				"tags": [
-					"Users"
-				],
+				"tags": ["Users"],
 				"security": [
 					{
-						"jwt": [
-							"user"
-						]
+						"jwt": ["user"]
 					}
 				],
 				"parameters": [

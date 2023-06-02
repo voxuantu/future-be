@@ -21,6 +21,7 @@ import {
 } from "../dto/request/user.dto";
 import * as jwt from "jsonwebtoken";
 import { IGetUserAuthInfoRequest } from "../types/express";
+import { WishlistService } from "../services/wishlist.service";
 
 @Tags("Users")
 @Route("users")
@@ -54,6 +55,12 @@ export class UsersController extends Controller {
   }
 
   @Security("jwt", ["user"])
+  @Get("/wishlist")
+  public getWishlist(@Request() request: IGetUserAuthInfoRequest) {
+    return UsersService.getWishlistProduct(request.user.userId);
+  }
+
+  @Security("jwt", ["user"])
   @Get("/cart")
   public getCart(@Request() request: IGetUserAuthInfoRequest) {
     return UsersService.getCart(request.user.userId);
@@ -64,9 +71,22 @@ export class UsersController extends Controller {
     return UsersService.findUserById(userId);
   }
 
-  @Get("/{userId}/wish-list")
-  public wishlist(@Path() userId: string) {
-    return UsersService.wishlistProduct(userId);
+  @Security("jwt", ["user"])
+  @Post("/wishlist/{productId}")
+  public async insertWishlistItem(
+    @Request() request: IGetUserAuthInfoRequest,
+    @Path() productId: string
+  ) {
+    return WishlistService.insert(request.user.userId, productId);
+  }
+
+  @Security("jwt", ["user"])
+  @Delete("/wishlist/{productId}")
+  public async deleteWishlistItem(
+    @Request() request: IGetUserAuthInfoRequest,
+    @Path() productId: string
+  ) {
+    return WishlistService.delete(request.user.userId, productId);
   }
 
   @Security("jwt", ["user"])

@@ -9,16 +9,19 @@ import {
   ERROR_DELETE_CART,
   ERROR_GET_MY_ADDRESSES,
   ERROR_GET_USER_BY_ID,
+  ERROR_GET_WISHLIST,
   ERROR_PRODUCT_NOT_FOUND,
   ERROR_UPDATE_QUANTITY,
   ERROR_USER_NOT_FOUND,
   FIND_USER_BY_ID_SUCCESS,
   GET_CART_SUCCESS,
   GET_MY_ADDRESSES_SUCCESS,
+  GET_WISHLIST_SUCCESS,
   UPDATE_QUANTITY_SUCCESS,
 } from "../constances";
 import { HttpStatus } from "../constances/enum";
 import { AddToCart, ICreateUser } from "../dto/request/user.dto";
+import { WishlistItem } from "../dto/response";
 import { ProductCard } from "../dto/response/product.dto";
 import { CartItemResDTO, UserResDTO } from "../dto/response/user.dto";
 import CartItem, { ICartItemModel } from "../models/cart-item";
@@ -27,6 +30,7 @@ import User from "../models/user";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
 import { hashPasswords } from "../utils/hash-password";
 import { AddressService } from "./address.service";
+import { CloudinaryService } from "./cloudinary.service";
 import { CloudinaryService } from "./cloudinary.service";
 import { ProductService } from "./product.service";
 
@@ -77,18 +81,28 @@ export class UsersService {
     }
   }
 
-  static async wishlistProduct(userId: string) {
+  static async getWishlistProduct(userId: string) {
     try {
       const user = await User.findById(userId).populate("wishlist");
 
       if (!user) {
         return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
+      const wishlist: WishlistItem[] = [];
+      for (const item of user.wishlist as IProductModel[]) {
+        wishlist.push({
+          _id: item._id,
+          thumbnail: await CloudinaryService.getImageUrl(item.thumbnail),
+          name: item.name,
+          price: item.price,
+          isStock: item.quantity > 0 ? true : false,
+        });
+      }
 
-      const result = user.wishlist as IProductModel[];
-      return result;
+      return handlerResSuccess(GET_WISHLIST_SUCCESS, wishlist);
     } catch (error) {
       console.log("error: ", error);
+      return handleResFailure(ERROR_GET_WISHLIST, HttpStatus.BAD_REQUEST);
     }
   }
 
