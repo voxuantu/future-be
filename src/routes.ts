@@ -424,6 +424,18 @@ const models: TsoaRoute.Models = {
     additionalProperties: false,
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  WishlistItem: {
+    dataType: "refObject",
+    properties: {
+      _id: { dataType: "string", required: true },
+      thumbnail: { dataType: "string", required: true },
+      name: { dataType: "string", required: true },
+      price: { dataType: "double", required: true },
+      isStock: { dataType: "boolean", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   CartItemResDTO: {
     dataType: "refAlias",
     type: {
@@ -437,6 +449,11 @@ const models: TsoaRoute.Models = {
       },
       validators: {},
     },
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  HttpStatus: {
+    dataType: "refEnum",
+    enums: [200, 201, 202, 400, 401, 403, 404, 406, 408, 500, 501, 502, 503],
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   AddToCart: {
@@ -458,23 +475,6 @@ const models: TsoaRoute.Models = {
       nestedProperties: { action: { dataType: "string", required: true } },
       validators: {},
     },
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  WishlistItem: {
-    dataType: "refObject",
-    properties: {
-      _id: { dataType: "string", required: true },
-      thumbnail: { dataType: "string", required: true },
-      name: { dataType: "string", required: true },
-      price: { dataType: "double", required: true },
-      isStock: { dataType: "boolean", required: true },
-    },
-    additionalProperties: false,
-  },
-  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  HttpStatus: {
-    dataType: "refEnum",
-    enums: [200, 201, 202, 400, 401, 403, 404, 406, 408, 500, 501, 502, 503],
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
@@ -1875,12 +1875,6 @@ export function RegisterRoutes(app: Router) {
           name: "productId",
           required: true,
           dataType: "string",
-        },
-        request: {
-          in: "request",
-          name: "request",
-          required: true,
-          dataType: "object",
         },
       };
 

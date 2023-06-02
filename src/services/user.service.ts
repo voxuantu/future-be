@@ -31,7 +31,6 @@ import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
 import { hashPasswords } from "../utils/hash-password";
 import { AddressService } from "./address.service";
 import { CloudinaryService } from "./cloudinary.service";
-import { CloudinaryService } from "./cloudinary.service";
 import { ProductService } from "./product.service";
 
 export class UsersService {
