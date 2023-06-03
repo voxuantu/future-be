@@ -19,7 +19,7 @@ export function expressAuthentication(
     // @typescript-eslint/no-explicit-any
     jwt.verify(
       token,
-      process.env.SECRET || "",
+      process.env.JWT_SECRET || "",
       async function (err: any, decoded: any) {
         if (err) {
           return reject(

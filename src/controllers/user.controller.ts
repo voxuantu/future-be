@@ -38,7 +38,7 @@ export class UsersController extends Controller {
   public signJwtToken(@Body() dto: ISignJWT) {
     return jwt.sign(
       { userId: dto.userId, role: [dto.role] },
-      process.env.SECRET || ""
+      process.env.JWT_SECRET || ""
     );
   }
 
