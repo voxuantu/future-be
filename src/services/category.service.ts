@@ -14,7 +14,10 @@ import {
   UPDATE_CATEGOY_SUCCESS,
 } from "../constances/category-res-message";
 import { HttpStatus } from "../constances/enum";
-import { CategoryRes } from "../dto/response/category.dto";
+import {
+  CategoryAdminRes,
+  CategoryClientRes,
+} from "../dto/response/category.dto";
 import Category from "../models/category";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
 import { CloudinaryService } from "./cloudinary.service";
@@ -41,7 +44,7 @@ export class CategoryService {
         image: res.public_id,
       });
 
-      const result: CategoryRes = {
+      const result: CategoryAdminRes = {
         _id: newCategory.id,
         name: newCategory.name,
         image: res.url,
@@ -92,7 +95,7 @@ export class CategoryService {
 
       await category.save();
 
-      const result: CategoryRes = {
+      const result: CategoryAdminRes = {
         _id: category.id,
         name: category.name,
         image: await CloudinaryService.getImageUrl(category.image),
@@ -142,14 +145,19 @@ export class CategoryService {
   static async getMany() {
     try {
       const categories = await Category.find({});
-      const result: CategoryRes[] = [];
+      const result: CategoryClientRes[] = [];
 
       for (const cate of categories) {
         const image = await CloudinaryService.getImageUrl(cate.image);
+        const numberOfProducts = await ProductService.countProdutsInCategory(
+          cate._id
+        );
+
         result.push({
           _id: cate.id,
           name: cate.name,
           image,
+          numberOfProducts,
         });
       }
 

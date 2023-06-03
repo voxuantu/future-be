@@ -36,6 +36,7 @@ import moment from "moment";
 import axios from "axios";
 import CryptoJS from "crypto-js";
 import qs from "qs";
+import { CloudinaryService } from "./cloudinary.service";
 
 export class OrderService {
   static async createOrder(dto: ICreateOrder, userId: string) {
@@ -121,6 +122,8 @@ export class OrderService {
           );
         }
 
+        const imgURL = await CloudinaryService.getImageUrl(firstProd.thumbnail);
+
         ordersHistoryRes.push({
           _id: order.id,
           shortId: order.shortId,
@@ -128,7 +131,7 @@ export class OrderService {
           total: order.total,
           firstProduct: {
             _id: firstProd.id,
-            thumbnail: firstProd.thumbnail,
+            thumbnail: imgURL,
             name: firstProd.name,
             price: (order.orderItems[0] as IOrderItemModel).price,
             quantity: (order.orderItems[0] as IOrderItemModel).quantity,

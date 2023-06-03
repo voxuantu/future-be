@@ -22,9 +22,9 @@ export class AuthenticationService {
     return jwt.sign(
       {
         userId: user.userId,
-        role: user.role,
+        role: [user.role],
       },
-      process.env.SECRET || ""
+      process.env.JWT_SECRET || ""
     );
   }
   static async login(
@@ -40,7 +40,7 @@ export class AuthenticationService {
       if (!validPassword) {
         return handleResFailure(ERROR_PASSWORD, HttpStatus.NOT_FOUND);
       }
-      console.log(validPassword);
+      // console.log(validPassword);
       const token = AuthenticationService.generateToken({
         userId: user._id.toString(),
         role: "user",
@@ -52,6 +52,7 @@ export class AuthenticationService {
         name: user.name,
       });
     } catch (error) {
+      console.log("error: ", error);
       return handleResFailure(ERROR_LOGIN, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -94,7 +95,7 @@ export class AuthenticationService {
         text: `Mã xác thực của bạn là: ${code}`,
       };
       // Gửi email
-      transporter.sendMail(mailOptions, (error, info) => {
+      transporter.sendMail(mailOptions, (error: any, info: any) => {
         if (error) {
           console.log("Gửi email thất bại:", error);
         } else {

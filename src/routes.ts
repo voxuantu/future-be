@@ -242,7 +242,18 @@ const models: TsoaRoute.Models = {
     additionalProperties: false,
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
-  CategoryRes: {
+  CategoryClientRes: {
+    dataType: "refObject",
+    properties: {
+      _id: { dataType: "string", required: true },
+      name: { dataType: "string", required: true },
+      image: { dataType: "string", required: true },
+      numberOfProducts: { dataType: "double", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  CategoryAdminRes: {
     dataType: "refObject",
     properties: {
       _id: { dataType: "string", required: true },
@@ -1774,12 +1785,6 @@ export function RegisterRoutes(app: Router) {
       next: any
     ) {
       const args = {
-        category: {
-          in: "query",
-          name: "category",
-          required: true,
-          dataType: "string",
-        },
         limit: {
           in: "query",
           name: "limit",
@@ -1787,6 +1792,7 @@ export function RegisterRoutes(app: Router) {
           dataType: "double",
         },
         page: { in: "query", name: "page", required: true, dataType: "double" },
+        category: { in: "query", name: "category", dataType: "string" },
         search: { in: "query", name: "search", dataType: "string" },
         from: { in: "query", name: "from", dataType: "double" },
         to: { in: "query", name: "to", dataType: "double" },
@@ -1802,6 +1808,41 @@ export function RegisterRoutes(app: Router) {
         const controller = new ProductsController();
 
         const promise = controller.filterProducts.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
+    "/api/v1/products/max-price",
+    ...fetchMiddlewares<RequestHandler>(ProductsController),
+    ...fetchMiddlewares<RequestHandler>(
+      ProductsController.prototype.getMaxPrice
+    ),
+
+    function ProductsController_getMaxPrice(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        category: { in: "query", name: "category", dataType: "string" },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new ProductsController();
+
+        const promise = controller.getMaxPrice.apply(
           controller,
           validatedArgs as any
         );

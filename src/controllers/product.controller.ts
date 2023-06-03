@@ -87,23 +87,28 @@ export class ProductsController extends Controller {
 
   @Get("/filter")
   public async filterProducts(
-    @Query() category: string,
     @Query() limit: number,
     @Query() page: number,
+    @Query() category?: string,
     @Query() search?: string,
     @Query() from?: number,
     @Query() to?: number,
     @Query() sort?: string
   ) {
     return ProductService.filterProduct(
-      category,
       limit,
       page,
+      category,
       search,
       from,
       to,
       sort
     );
+  }
+
+  @Get("/max-price")
+  public async getMaxPrice(@Query("category") category?: string) {
+    return ProductService.findMaxPrice(category);
   }
 
   @Get("/{productId}")

@@ -7,6 +7,7 @@ import {
   ERROR_CREATE_PRODUCT,
   ERROR_DELETE_PRODUCT,
   ERROR_FILTER_PRODUCT,
+  ERROR_GET_MAX_PRICE,
   ERROR_GET_NEWEST_PRODUCT,
   ERROR_GET_PRODUCT_FOR_UPDATE,
   ERROR_GET_PRODUCT_PAGINATION,
@@ -14,6 +15,7 @@ import {
   ERROR_PRODUCT_NOT_FOUND,
   ERROR_UPDATE_PRODUCT,
   FILTER_PRODUCT_SUCCESS,
+  GET_MAX_PRICE_SUCCESS,
   GET_NEWEST_PRODUCT_SUCCESS,
   GET_PRODUCT_BY_ID_SUCCESS,
   GET_PRODUCT_FOR_UPDATE_SUCCESS,
@@ -371,10 +373,35 @@ export class ProductService {
     }
   }
 
+  static async countProdutsInCategory(categoryId: string) {
+    const products = await Product.find({ category: categoryId });
+
+    return products.length;
+  }
+
+  static async findMaxPrice(categoryId?: string) {
+    try {
+      const query: { [index: string]: any } = {};
+      if (categoryId) {
+        query.category = new mongoose.Types.ObjectId(categoryId);
+      }
+
+      const product = await Product.find(query)
+        .sort({
+          price: -1,
+        })
+        .limit(1);
+
+      return handlerResSuccess(GET_MAX_PRICE_SUCCESS, product[0].price);
+    } catch (error) {
+      return handleResFailure(ERROR_GET_MAX_PRICE, HttpStatus.BAD_REQUEST);
+    }
+  }
+
   static async filterProduct(
-    categoryId: string,
     limit: number,
     page: number,
+    categoryId?: string,
     searchText?: string,
     priceFrom?: number,
     priceTo?: number,
@@ -386,11 +413,13 @@ export class ProductService {
         query.name = { $regex: searchText, $options: "i" };
       }
 
-      if (priceFrom && priceTo) {
+      if (priceTo) {
         query.price = { $gte: priceFrom, $lte: priceTo };
       }
 
-      query.category = new mongoose.Types.ObjectId(categoryId);
+      if (categoryId) {
+        query.category = new mongoose.Types.ObjectId(categoryId);
+      }
 
       const products = await Product.find(query)
         .populate("category")
