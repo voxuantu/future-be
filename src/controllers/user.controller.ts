@@ -99,6 +99,12 @@ export class UsersController extends Controller {
   }
 
   @Security("jwt", ["user"])
+  @Delete("/cart")
+  public DeleteAllCart(@Request() request: IGetUserAuthInfoRequest) {
+    return UsersService.deleteAllCart(request.user.userId);
+  }
+
+  @Security("jwt", ["user"])
   @Delete("/cart/{productId}")
   public deleteCart(
     @Path() productId: string,
@@ -120,6 +126,7 @@ export class UsersController extends Controller {
       body.action
     );
   }
+
   @Security("jwt", ["user"])
   @Put("/setting")
   public updateInfo(

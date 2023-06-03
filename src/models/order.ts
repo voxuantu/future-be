@@ -17,6 +17,7 @@ export interface IOrder {
   total: number;
   status: OrderStatus;
   shortId: string;
+  paymentMethod: string;
 }
 
 export interface IOrderModel extends IOrder, Document, SchemaTimestampsConfig {}
@@ -36,6 +37,7 @@ export const OrderSchema: Schema = new Schema(
       require: true,
     },
     shortId: { type: String, require: true },
+    paymentMethod: { type: String, require: true },
   },
   { timestamps: true }
 );
