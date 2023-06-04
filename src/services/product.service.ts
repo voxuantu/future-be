@@ -465,13 +465,16 @@ export class ProductService {
   }
   static async getProductForCart(productId: string) {
     const product = await Product.findById(productId).select(
-      "name thumnail price"
+      "name thumbnail price"
     );
+
     if (!product) {
       return null;
     }
+
     const imgUrl = await CloudinaryService.getImageUrl(product.thumbnail);
     product.thumbnail = imgUrl;
+
     return product as IProductModel;
   }
 }

@@ -235,7 +235,7 @@ export class UsersService {
       const existProduct = user.cart.find(
         (item) => item.product.toString() === dto.productId
       );
-      console.log("user.cart: ", user.cart);
+
       const product = await ProductService.getProductForCart(dto.productId);
       if (!product) {
         return handleResFailure(ERROR_PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND);
