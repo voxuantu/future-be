@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ERROR_PRODUCT_NOT_FOUND } from "../constances";
 import {
   CREATE_COMMENT_SUCCESS,
   DELETE_COMMENT_SUCCESS,
@@ -11,7 +12,9 @@ import { CreateCommentDTO } from "../dto/request";
 import { CommentResDTO } from "../dto/response/comment.dto";
 import Comment from "../models/comment";
 import Product from "../models/product";
+import { IUserModel } from "../models/user";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
+import { CloudinaryService } from "./cloudinary.service";
 
 export class CommentService {
   static async createComment(dto: CreateCommentDTO, userId: string) {
@@ -28,9 +31,34 @@ export class CommentService {
         .select("content rate createdAt user")
         .populate("user", "name avatar");
 
+      if (!resComment) {
+        return handleResFailure(ERROR_COMMENT_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+
       await Product.findByIdAndUpdate(dto.productId, {
         $push: { comments: newComment._id },
       });
+
+      const product = await Product.findById(dto.productId);
+
+      if (!product) {
+        return handleResFailure(ERROR_PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+
+      console.log("product.rating: ", product.rating);
+      product.rating =
+        (product.rating * (product.comments.length - 1) + dto.rate) /
+        product.comments.length;
+      console.log("product.rating: ", product.rating);
+
+      await product.save();
+
+      const userAvatar = await CloudinaryService.getImageUrl(
+        (resComment.user as IUserModel).avatar
+      );
+
+      (resComment.user as IUserModel).avatar = userAvatar;
+
       return handlerResSuccess(
         CREATE_COMMENT_SUCCESS,
         resComment as CommentResDTO

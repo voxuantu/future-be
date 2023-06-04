@@ -262,13 +262,17 @@ export class ProductService {
       // Chuyển đổi comment từ ICommentModal sang kiểu CommentResDTO
       const comments: CommentResDTO[] = [];
       for (const comment of product.comments as ICommentModel[]) {
+        const userAvatar = await CloudinaryService.getImageUrl(
+          (comment.user as IUserModel).avatar
+        );
+
         const tempComment: CommentResDTO = {
           _id: comment._id,
           content: comment.content,
           rate: comment.rate,
           user: {
             _id: (comment.user as IUserModel)._id,
-            avatar: (comment.user as IUserModel).avatar,
+            avatar: userAvatar,
             name: (comment.user as IUserModel).name,
           },
           createdAt: comment.createdAt as string,
