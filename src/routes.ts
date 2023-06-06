@@ -363,6 +363,56 @@ const models: TsoaRoute.Models = {
     enums: ["pending", "delivering", "completed"],
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IOrderItemRes: {
+    dataType: "refObject",
+    properties: {
+      _id: { dataType: "string", required: true },
+      price: { dataType: "double", required: true },
+      quantity: { dataType: "double", required: true },
+      product: {
+        dataType: "nestedObjectLiteral",
+        nestedProperties: {
+          thumbnail: { dataType: "string", required: true },
+          name: { dataType: "string", required: true },
+          _id: { dataType: "string", required: true },
+        },
+        required: true,
+      },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IOrderRes: {
+    dataType: "refObject",
+    properties: {
+      _id: { dataType: "string", required: true },
+      address: {
+        dataType: "nestedObjectLiteral",
+        nestedProperties: {
+          receiver: { dataType: "string", required: true },
+          phone: { dataType: "string", required: true },
+          specificAddress: { dataType: "string", required: true },
+          ward: { dataType: "string", required: true },
+          district: { dataType: "string", required: true },
+          province: { dataType: "string", required: true },
+          _id: { dataType: "string", required: true },
+        },
+        required: true,
+      },
+      orderItems: {
+        dataType: "array",
+        array: { dataType: "refObject", ref: "IOrderItemRes" },
+        required: true,
+      },
+      total: { dataType: "double", required: true },
+      status: { ref: "OrderStatus", required: true },
+      shortId: { dataType: "string", required: true },
+      paymentMethod: { dataType: "string", required: true },
+      createdAt: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   ICreateZaloPayOrder: {
     dataType: "refObject",
     properties: {
@@ -1355,6 +1405,47 @@ export function RegisterRoutes(app: Router) {
         const controller = new OrdersController();
 
         const promise = controller.getOrderHistoryfollowStatus.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
+    "/api/v1/orders/:orderId",
+    authenticateMiddleware([{ jwt: ["user"] }]),
+    ...fetchMiddlewares<RequestHandler>(OrdersController),
+    ...fetchMiddlewares<RequestHandler>(
+      OrdersController.prototype.getOrderById
+    ),
+
+    function OrdersController_getOrderById(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        orderId: {
+          in: "path",
+          name: "orderId",
+          required: true,
+          dataType: "string",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new OrdersController();
+
+        const promise = controller.getOrderById.apply(
           controller,
           validatedArgs as any
         );

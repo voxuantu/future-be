@@ -1,5 +1,7 @@
 import { OrderStatus } from "../../constances/enum";
-import { IAddress } from "../../models/address";
+import { IAddress, IAddressModel } from "../../models/address";
+import { IOrderItemModel } from "../../models/order-item";
+import { IProductModel } from "../../models/product";
 import { IUserModel } from "../../models/user";
 
 export interface IOrderHistoryRes {
@@ -15,6 +17,36 @@ export interface IOrderHistoryRes {
     price: number;
   };
   orderItemsLength: number;
+}
+
+export interface IOrderRes {
+  _id: string;
+  address: {
+    _id: string;
+    province: string;
+    district: string;
+    ward: string;
+    specificAddress: string;
+    phone: string;
+    receiver: string;
+  };
+  orderItems: IOrderItemRes[];
+  total: number;
+  status: OrderStatus;
+  shortId: string;
+  paymentMethod: string;
+  createdAt: string;
+}
+
+export interface IOrderItemRes {
+  _id: string;
+  price: number;
+  quantity: number;
+  product: {
+    _id: string;
+    name: string;
+    thumbnail: string;
+  };
 }
 
 export interface IAllOrders {

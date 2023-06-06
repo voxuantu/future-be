@@ -12,6 +12,12 @@ import {
   GET_ALL_ORDERS_SUCCESS,
   GET_ORDER_HISTORY_SUCCESS,
   QUERY_ORDER_STATUS_ZALOPAY_SUCCESS,
+  ERROR_GET_ORDER,
+  ERROR_ORDER_NOT_FOUND,
+  ERROR_ORDER_ITEM_NOT_FOUND,
+  GET_ORDER_SUCCESS,
+  GET_ORDER_ITEM_SUCCESS,
+  ERROR_GET_ITEM_ORDER,
 } from "../constances";
 import { HttpStatus, OrderStatus } from "../constances/enum";
 import {
@@ -24,11 +30,13 @@ import {
 import {
   IAllOrders,
   IOrderHistoryRes,
+  IOrderItemRes,
+  IOrderRes,
   IQueryZaloPayOrderStatusRes,
 } from "../dto/response/order.dto";
 import Order from "../models/order";
 import OrderItem, { IOrderItemModel } from "../models/order-item";
-import Product from "../models/product";
+import Product, { IProductModel } from "../models/product";
 import User from "../models/user";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
 import { generateOrderId } from "../utils/random-string";
@@ -37,6 +45,7 @@ import axios from "axios";
 import CryptoJS from "crypto-js";
 import qs from "qs";
 import { CloudinaryService } from "./cloudinary.service";
+import { log } from "console";
 
 export class OrderService {
   static async createOrder(dto: ICreateOrder, userId: string) {
@@ -90,6 +99,40 @@ export class OrderService {
       return handlerResSuccess<string>(CREATE_ORDER_SUCCESS, newOrder.id);
     } catch (error) {
       return handleResFailure(ERROR_CREATE_ORDER, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  static async getOrderById(orderId: string) {
+    try {
+      const orderFound = await Order.findById(orderId)
+        .populate({
+          path: "orderItems",
+          select: "price quantity product",
+          populate: {
+            path: "product",
+            select: "name thumbnail",
+          },
+        })
+        .populate(
+          "address",
+          "province district ward specificAddress phone receiver"
+        );
+
+      if (!orderFound) {
+        return handleResFailure(ERROR_ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+
+      for (const orderItem of orderFound.orderItems as IOrderItemModel[]) {
+        const imgURL = await CloudinaryService.getImageUrl(
+          (orderItem.product as IProductModel).thumbnail
+        );
+        (orderItem.product as IProductModel).thumbnail = imgURL;
+      }
+
+      return handlerResSuccess(GET_ORDER_SUCCESS, orderFound as IOrderRes);
+    } catch (error) {
+      console.log(error);
+      return handleResFailure(ERROR_GET_ORDER, HttpStatus.BAD_REQUEST);
     }
   }
 

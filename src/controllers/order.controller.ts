@@ -8,6 +8,7 @@ import {
   Tags,
   Get,
   Query,
+  Path,
 } from "tsoa";
 import { OrderService } from "../services/order.service";
 import {
@@ -42,6 +43,12 @@ export class OrdersController extends Controller {
       request.user.userId,
       status
     );
+  }
+
+  @Security("jwt", ["user"])
+  @Get("/{orderId}")
+  public async getOrderById(@Path() orderId: string) {
+    return OrderService.getOrderById(orderId);
   }
 
   @Post("/pay-with-zalopay")

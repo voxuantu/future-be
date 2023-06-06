@@ -555,6 +555,124 @@
 				],
 				"type": "string"
 			},
+			"IOrderItemRes": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"price": {
+						"type": "number",
+						"format": "double"
+					},
+					"quantity": {
+						"type": "number",
+						"format": "double"
+					},
+					"product": {
+						"properties": {
+							"thumbnail": {
+								"type": "string"
+							},
+							"name": {
+								"type": "string"
+							},
+							"_id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"thumbnail",
+							"name",
+							"_id"
+						],
+						"type": "object"
+					}
+				},
+				"required": [
+					"_id",
+					"price",
+					"quantity",
+					"product"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IOrderRes": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"address": {
+						"properties": {
+							"receiver": {
+								"type": "string"
+							},
+							"phone": {
+								"type": "string"
+							},
+							"specificAddress": {
+								"type": "string"
+							},
+							"ward": {
+								"type": "string"
+							},
+							"district": {
+								"type": "string"
+							},
+							"province": {
+								"type": "string"
+							},
+							"_id": {
+								"type": "string"
+							}
+						},
+						"required": [
+							"receiver",
+							"phone",
+							"specificAddress",
+							"ward",
+							"district",
+							"province",
+							"_id"
+						],
+						"type": "object"
+					},
+					"orderItems": {
+						"items": {
+							"$ref": "#/components/schemas/IOrderItemRes"
+						},
+						"type": "array"
+					},
+					"total": {
+						"type": "number",
+						"format": "double"
+					},
+					"status": {
+						"$ref": "#/components/schemas/OrderStatus"
+					},
+					"shortId": {
+						"type": "string"
+					},
+					"paymentMethod": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"_id",
+					"address",
+					"orderItems",
+					"total",
+					"status",
+					"shortId",
+					"paymentMethod",
+					"createdAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ICreateZaloPayOrder": {
 				"properties": {
 					"amount": {
@@ -1972,6 +2090,60 @@
 						"required": true,
 						"schema": {
 							"$ref": "#/components/schemas/OrderStatus"
+						}
+					}
+				]
+			}
+		},
+		"/orders/{orderId}": {
+			"get": {
+				"operationId": "GetOrderById",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"$ref": "#/components/schemas/IOrderRes"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Orders"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "orderId",
+						"required": true,
+						"schema": {
+							"type": "string"
 						}
 					}
 				]
