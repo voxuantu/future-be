@@ -1,24 +1,52 @@
+import { createHmac } from "crypto";
 import {
   CREATE_ORDER_SUCCESS,
+  CREAT_PAYMENT_URL_ZALOPAY_SUCCESS,
   ERROR_CREATE_ORDER,
   ERROR_GET_ALL_ORDERS,
+  ERROR_CREAT_PAYMENT_URL_ZALOPAY,
   ERROR_GET_ORDER_HISTORY,
   ERROR_ORDER_NOT_FOUND,
   ERROR_PRODUCT_NOT_FOUND,
-  ERROR_UPDATE_STATUS,
   ERROR_USER_NOT_FOUND,
   GET_ALL_ORDERS_SUCCESS,
   GET_ORDER_HISTORY_SUCCESS,
+  QUERY_ORDER_STATUS_ZALOPAY_SUCCESS,
+  ERROR_QUERY_ORDER_STATUS_ZALOPAY,
+  ERROR_UPDATE_STATUS,
+  ERROR_USERNAME_ORDER_NOT_FOUND,
+  ERROR_ADDRESS_ORDER_NOT_FOUND,
+  ERROR_ORDER_DETAIL_BY_ID,
+  ERROR_ORDER_DETAIL_BY_ID_NOT_FOUND,
+  ERROR_ORDER_ITEM_NOT_FOUND,
+  GET_ALL_ORDERS_ITEMS_SUCCESS,
 } from "../constances";
 import { HttpStatus, OrderStatus } from "../constances/enum";
-import { ICreateOrder } from "../dto/request";
-import { IAllOrders, IOrderHistoryRes } from "../dto/response/order.dto";
-import Order, { IOrderModel } from "../models/order";
-import OrderItem, { IOrderItemModel } from "../models/order-item";
+import {
+  ICallBackZaloPay,
+  ICreateOrder,
+  ICreateZaloPayOrder,
+  IDataCallbackZalopay,
+  IQueryZaloPayOrderStatus,
+} from "../dto/request";
+import {
+  IAllOrders,
+  IOrderHistoryRes,
+  IOrderRes,
+  IQueryZaloPayOrderStatusRes,
+} from "../dto/response/order.dto";
+import Order from "../models/order";
+import OrderItem, { IOrderItem, IOrderItemModel } from "../models/order-item";
 import Product from "../models/product";
 import User from "../models/user";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
 import { generateOrderId } from "../utils/random-string";
+import moment from "moment";
+import axios from "axios";
+import CryptoJS from "crypto-js";
+import qs from "qs";
+import { CloudinaryService } from "./cloudinary.service";
+import Address from "../models/address";
 
 export class OrderService {
   static async createOrder(dto: ICreateOrder, userId: string) {
@@ -65,10 +93,11 @@ export class OrderService {
         total: totalPrice,
         address: dto.address,
         shortId: generateOrderId(),
+        paymentMethod: dto.paymentMethod,
       });
       await newOrder.save();
 
-      return handlerResSuccess<string>(CREATE_ORDER_SUCCESS, "");
+      return handlerResSuccess<string>(CREATE_ORDER_SUCCESS, newOrder.id);
     } catch (error) {
       return handleResFailure(ERROR_CREATE_ORDER, HttpStatus.BAD_REQUEST);
     }
@@ -103,6 +132,8 @@ export class OrderService {
           );
         }
 
+        const imgURL = await CloudinaryService.getImageUrl(firstProd.thumbnail);
+
         ordersHistoryRes.push({
           _id: order.id,
           shortId: order.shortId,
@@ -110,7 +141,7 @@ export class OrderService {
           total: order.total,
           firstProduct: {
             _id: firstProd.id,
-            thumbnail: firstProd.thumbnail,
+            thumbnail: imgURL,
             name: firstProd.name,
             price: (order.orderItems[0] as IOrderItemModel).price,
             quantity: (order.orderItems[0] as IOrderItemModel).quantity,
@@ -130,101 +161,52 @@ export class OrderService {
   }
   static async getAllOrders(limit: number, page: number) {
     try {
-      const orderArray: IAllOrders[] = [
-        {
-          shortId: "1",
-          address: "2",
-          userId: "3",
-          status: OrderStatus.Delivering,
-          dateCreated: new Date().toLocaleDateString(),
-          total: 12,
-        },
-        {
-          shortId: "2",
-          address: "3",
-          userId: "4",
-          status: OrderStatus.Completed,
-          dateCreated: new Date().toLocaleDateString(),
-          total: 89000,
-        },
-        {
-          shortId: "3",
-          address: "2",
-          userId: "3",
-          status: OrderStatus.Delivering,
-          dateCreated: "11/2/2001",
-          total: 12,
-        },
-        {
-          shortId: "4",
-          address: "3",
-          userId: "4",
-          status: OrderStatus.Completed,
-          dateCreated: "11/2/2001",
-          total: 89000,
-        },
-      ];
+      const orderArray: IAllOrders[] = [];
       const allOrders = await Order.find()
-        .limit(limit)
-        .skip(page * limit);
-      // if (!allOrders) {
-      //   return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.NOT_FOUND);
-      // }
-      allOrders.map((item) =>
+        .skip(page * limit)
+        .limit(limit);
+      if (!allOrders) {
+        return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.NOT_FOUND);
+      }
+      const numOfProds = await Order.count();
+      // tìm tên khách hàng và address theo id và sau đó là bỏ vào array.
+      for (let i = 0; i < allOrders.length; i++) {
+        const order = allOrders[i];
+        const usernameInfo = await User.findById(order.user);
+        if (!usernameInfo) {
+          return handleResFailure(
+            ERROR_USERNAME_ORDER_NOT_FOUND,
+            HttpStatus.NOT_FOUND
+          );
+        }
+        const addressInfo = await Address.findById(order.address);
+        if (!addressInfo) {
+          return handleResFailure(
+            ERROR_ADDRESS_ORDER_NOT_FOUND,
+            HttpStatus.NOT_FOUND
+          );
+        }
         orderArray.push({
-          shortId: item.shortId,
-          address: item.address,
-          userId: item.user,
-          status: item.status,
-          dateCreated: item.createdAt as string,
-          total: item.total,
-        })
-      );
-      return handlerResSuccess<IAllOrders[]>(
-        GET_ALL_ORDERS_SUCCESS,
-        orderArray
-      );
+          shortId: order.shortId,
+          address: `${addressInfo.specificAddress} ,${addressInfo.ward} ,${addressInfo.district} ,${addressInfo.province}`,
+          userName: usernameInfo.name,
+          status: order.status,
+          dateCreated: order.createdAt as string,
+          total: order.total,
+        });
+      }
+      return handlerResSuccess<IOrderRes>(GET_ALL_ORDERS_SUCCESS, {
+        allOrders: orderArray,
+        numOfProds,
+      });
     } catch (error) {
       console.log("error", error);
       return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.BAD_REQUEST);
     }
   }
-  static async getOrdersFollowDate(limit: number, page: number) {
+  static async getOrdersFollowDateNow(limit: number, page: number) {
     try {
-      const orderArray: IAllOrders[] = [
-        // {
-        //   shortId: "1",
-        //   address: "2",
-        //   userId: "3",
-        //   status: OrderStatus.Delivering,
-        //   dateCreated: new Date().toLocaleDateString(),
-        //   total: 12,
-        // },
-        // {
-        //   shortId: "2",
-        //   address: "3",
-        //   userId: "4",
-        //   status: OrderStatus.Completed,
-        //   dateCreated: new Date().toLocaleDateString(),
-        //   total: 89000,
-        // },
-        {
-          shortId: "3",
-          address: "2",
-          userId: "3",
-          status: OrderStatus.Delivering,
-          dateCreated: "11/2/2001",
-          total: 12,
-        },
-        {
-          shortId: "4",
-          address: "3",
-          userId: "4",
-          status: OrderStatus.Completed,
-          dateCreated: "11/2/2001",
-          total: 89000,
-        },
-      ];
+      const orderArray: IAllOrders[] = [];
       const today = new Date();
       today.setUTCHours(0, 0, 0, 0); // Đặt giá trị giờ phút giây của ngày hiện tại về 00:00:00
       const tomorrow = new Date(today);
@@ -237,23 +219,39 @@ export class OrderService {
       })
         .limit(limit)
         .skip(page * limit);
-      // if (!allOrders) {
-      //   return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.NOT_FOUND);
-      // }
-      allOrders.map((item) => {
+      if (!allOrders) {
+        return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.NOT_FOUND);
+      }
+      const numOfProds = allOrders.length;
+      for (let i = 0; i < allOrders.length; i++) {
+        const order = allOrders[i];
+        const usernameInfo = await User.findById(order.user);
+        if (!usernameInfo) {
+          return handleResFailure(
+            ERROR_USERNAME_ORDER_NOT_FOUND,
+            HttpStatus.NOT_FOUND
+          );
+        }
+        const addressInfo = await Address.findById(order.address);
+        if (!addressInfo) {
+          return handleResFailure(
+            ERROR_ADDRESS_ORDER_NOT_FOUND,
+            HttpStatus.NOT_FOUND
+          );
+        }
         orderArray.push({
-          shortId: item.shortId,
-          address: item.address,
-          userId: item.user,
-          status: item.status,
-          dateCreated: item.createdAt as string,
-          total: item.total,
+          shortId: order.shortId,
+          address: `${addressInfo.specificAddress} ,${addressInfo.ward} ,${addressInfo.district} ,${addressInfo.province}`,
+          userName: usernameInfo.name,
+          status: order.status,
+          dateCreated: order.createdAt as string,
+          total: order.total,
         });
+      }
+      return handlerResSuccess<IOrderRes>(GET_ALL_ORDERS_SUCCESS, {
+        allOrders: orderArray,
+        numOfProds,
       });
-      return handlerResSuccess<IAllOrders[]>(
-        GET_ALL_ORDERS_SUCCESS,
-        orderArray
-      );
     } catch (error) {
       console.log("error", error);
       return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.BAD_REQUEST);
@@ -266,32 +264,216 @@ export class OrderService {
         { $set: { status: status } }
       );
       console.log(orderStatus);
-      // if (orderStatus.modifiedCount === 0) {
-      //   return handleResFailure(ERROR_ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
-      // }
-      return handlerResSuccess<string>(
-        GET_ALL_ORDERS_SUCCESS,
-        `update thành công qua quá trình ${status}`
-      );
+      if (orderStatus.modifiedCount === 0) {
+        return handleResFailure(ERROR_ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+      return handlerResSuccess<string>(GET_ALL_ORDERS_SUCCESS, status);
     } catch (error) {
       console.log("error", error);
       return handleResFailure(ERROR_UPDATE_STATUS, HttpStatus.BAD_REQUEST);
     }
   }
-  // static async getOrderItemsById(orderId: number) {
-  //   try {
-  //     const orderItemsId = await Order.findOne({ shortId: { $eq: orderId } });
-  //     if (!orderItemsId) {
-  //       return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
-  //     }
-  //     const orderItemsArrayDetail = Promise.all(
-  //       orderItemsId.orderItems.map(async (item) => {
-  //         const a = await OrderItem.findById(item._id);
-  //       })
-  //     ).then();
-  //   } catch (error) {
-  //     console.log("error", error);
-  //     return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.BAD_REQUEST);
-  //   }
-  // }
+  static async getDetailOrderById(orderId: string) {
+    try {
+      const orderInfoById = await Order.findOne({ shortId: orderId });
+      if (!orderInfoById) {
+        return handleResFailure(
+          ERROR_ORDER_DETAIL_BY_ID_NOT_FOUND,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      const orderItemsIdArray: string[] = orderInfoById.orderItems as string[];
+      const itemsOrderArray: IOrderItem[] = [];
+      for (let i = 0; i < orderItemsIdArray.length; i++) {
+        const orderItem = orderItemsIdArray[i];
+        const orderItemInfo = await OrderItem.findById(orderItem);
+        if (!orderItemInfo) {
+          return handleResFailure(
+            ERROR_ORDER_ITEM_NOT_FOUND,
+            HttpStatus.NOT_FOUND
+          );
+        }
+        const productInfo = await Product.findById(orderItemInfo.product);
+        if (!productInfo) {
+          return handleResFailure(
+            ERROR_PRODUCT_NOT_FOUND,
+            HttpStatus.NOT_FOUND
+          );
+        }
+        itemsOrderArray.push({
+          product: productInfo.name,
+          price: orderItemInfo.price,
+          quantity: orderItemInfo.quantity,
+        });
+      }
+      return handlerResSuccess<IOrderItem[]>(
+        GET_ALL_ORDERS_ITEMS_SUCCESS,
+        itemsOrderArray
+      );
+    } catch (error) {
+      console.log("error", error);
+      return handleResFailure(ERROR_ORDER_DETAIL_BY_ID, HttpStatus.BAD_REQUEST);
+    }
+  }
+  static async createPaymentZaloPayURL(dto: ICreateZaloPayOrder) {
+    try {
+      // APP INFO
+      const config = {
+        app_id: process.env.APP_ID,
+        key1: process.env.KEY1 as string,
+        key2: process.env.KEY2 as string,
+        endpoint: process.env.ENDPOINT_CREATE_ORDER as string,
+      };
+
+      const embed_data = {
+        redirecturl: process.env.REDIRECT_URL,
+      };
+
+      const items: any = [];
+      const transID = dto.order_id;
+      const order: any = {
+        app_id: config.app_id,
+        app_user: "ZaloPayDemo",
+        app_time: Date.now(), // miliseconds
+        amount: dto.amount,
+        app_trans_id: `${moment().format("YYMMDD")}_${transID}`,
+        bank_code: dto.bank_code,
+        embed_data: JSON.stringify(embed_data),
+        item: JSON.stringify(items),
+        callback_url: process.env.CALLBACK_URL,
+        description: `ZaloPayDemo - Thanh toán cho đơn hàng #${transID}`,
+      };
+
+      // appid|app_trans_id|appuser|amount|apptime|embeddata|item
+      const data =
+        config.app_id +
+        "|" +
+        order.app_trans_id +
+        "|" +
+        order.app_user +
+        "|" +
+        order.amount +
+        "|" +
+        order.app_time +
+        "|" +
+        order.embed_data +
+        "|" +
+        order.item;
+      order.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
+
+      const response = await axios.post(config.endpoint, null, {
+        params: order,
+      });
+
+      return handlerResSuccess<string>(
+        CREAT_PAYMENT_URL_ZALOPAY_SUCCESS,
+        response.data.order_url
+      );
+    } catch (error) {
+      console.log("error: ", error);
+      return handleResFailure(
+        ERROR_CREAT_PAYMENT_URL_ZALOPAY,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  static async callbackZaloPay(dto: ICallBackZaloPay) {
+    console.log("dto: ", dto);
+    try {
+      const result: { return_code: number; return_message: string } = {
+        return_code: 0,
+        return_message: "",
+      };
+      const config = {
+        app_id: process.env.APP_ID,
+        key1: process.env.KEY1 as string,
+        key2: process.env.KEY2 as string,
+        endpoint: process.env.ENDPOINT_CREATE_ORDER as string,
+      };
+
+      const dataStr = dto.data;
+      const reqMac = dto.mac;
+
+      const mac = CryptoJS.HmacSHA256(dataStr, config.key2).toString();
+
+      if (reqMac !== mac) {
+        // callback không hợp lệ
+        result.return_code = -1;
+        result.return_message = "mac not equal";
+      } else {
+        // thanh toán thành công
+        // merchant cập nhật trạng thái cho đơn hàng
+        const dataJson = JSON.parse(dataStr) as IDataCallbackZalopay;
+        console.log(
+          "update order's status = success where app_trans_id =",
+          dataJson["app_trans_id"]
+        );
+
+        result.return_code = 1;
+        result.return_message = "success";
+      }
+
+      return result;
+    } catch (error: any) {
+      console.log("error: ", error);
+      return { return_code: 0, return_message: error.message };
+    }
+  }
+
+  static async queryZalopayOrderStatus(app_trans_id: string) {
+    try {
+      const order_id = app_trans_id.split("_")[1];
+
+      const config = {
+        app_id: process.env.APP_ID,
+        key1: process.env.KEY1 as string,
+        key2: process.env.KEY2 as string,
+        endpoint: process.env.ENDPOINT_QUERY_ORDER_STATUS as string,
+      };
+
+      const postData: any = {
+        app_id: config.app_id,
+        app_trans_id, // Input your app_trans_id
+      };
+
+      const data =
+        postData.app_id + "|" + postData.app_trans_id + "|" + config.key1; // appid|app_trans_id|key1
+      postData.mac = CryptoJS.HmacSHA256(data, config.key1).toString();
+
+      const postConfig = {
+        method: "post",
+        url: config.endpoint,
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        data: qs.stringify(postData),
+      };
+
+      const response = await axios(postConfig);
+
+      if (response.data.return_code !== 1) {
+        const order = await Order.findByIdAndDelete(order_id);
+        if (order) {
+          for (let i = 0; i < order.orderItems.length; i++) {
+            const orderItemId = order.orderItems[i];
+            await OrderItem.findByIdAndDelete(orderItemId);
+          }
+        }
+      }
+
+      return handlerResSuccess<IQueryZaloPayOrderStatusRes>(
+        QUERY_ORDER_STATUS_ZALOPAY_SUCCESS,
+        {
+          orderStatus: response.data.return_code,
+        }
+      );
+    } catch (error) {
+      console.log("error: ", error);
+      return handleResFailure(
+        ERROR_QUERY_ORDER_STATUS_ZALOPAY,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
 }

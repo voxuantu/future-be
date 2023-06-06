@@ -21,12 +21,15 @@ export interface IOrderHistoryRes {
 export interface IAllOrders {
   shortId: string;
   address: string | IAddress;
-  userId: string | IUserModel;
+  userName: string | IUserModel;
   total: number;
   dateCreated: string;
   status: OrderStatus;
 }
-
+export interface IOrderRes {
+  allOrders: IAllOrders[];
+  numOfProds: number;
+}
 export interface IOrderItemsDetail {
   orderItems: IOrderItem[];
   totalQuantity: number;
@@ -35,4 +38,18 @@ export interface IOrderItemsDetail {
 export interface IUpdateStatus {
   orderId: string;
   status: OrderStatus;
+}
+
+export interface ICreateMAC {
+  app_id: number;
+  app_trans_id: string;
+  app_user: string;
+  amount: number;
+  app_time: number;
+  embed_data: JSON;
+  item: JSON[];
+}
+
+export interface IQueryZaloPayOrderStatusRes {
+  orderStatus: number;
 }

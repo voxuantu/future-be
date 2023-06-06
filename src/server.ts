@@ -7,6 +7,7 @@ import initMongoDB from "./config/mongodb";
 import { errorHandler } from "./utils/error-handler";
 import cors from "cors";
 import passport from "passport";
+import initCloudinary from "./config/cloudinary";
 
 dotenv.config();
 
@@ -28,6 +29,8 @@ initMongoDB()
     console.log("⚡[Server]: Connect to database success");
 
     initSwagger(app);
+
+    initCloudinary();
 
     RegisterRoutes(app);
 

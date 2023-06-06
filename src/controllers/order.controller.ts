@@ -11,10 +11,16 @@ import {
   Put,
 } from "tsoa";
 import { OrderService } from "../services/order.service";
-import { ICreateOrder } from "../dto/request";
+import {
+  ICallBackZaloPay,
+  ICreateOrder,
+  ICreateZaloPayOrder,
+  IQueryZaloPayOrderStatus,
+} from "../dto/request";
 import { IGetUserAuthInfoRequest } from "../types/express";
 import { OrderStatus } from "../constances/enum";
 import { IUpdateStatus } from "../dto/response/order.dto";
+import { ICreateMAC } from "../dto/response/order.dto";
 
 @Tags("Orders")
 @Route("orders")
@@ -52,7 +58,7 @@ export class OrdersController extends Controller {
     @Query("limit") limit: number,
     @Query("page") page: number
   ) {
-    return OrderService.getOrdersFollowDate(limit, page);
+    return OrderService.getOrdersFollowDateNow(limit, page);
   }
   @Put("/update-status")
   public async updateStatusOrder(
@@ -60,5 +66,23 @@ export class OrdersController extends Controller {
     @Query("status") status: OrderStatus
   ) {
     return OrderService.updateStatusOrder(orderId, status);
+  }
+  @Get("/order-by-id")
+  public async getDetailOrderById(@Query("order-id") orderId: string) {
+    return OrderService.getDetailOrderById(orderId);
+  }
+  @Post("/pay-with-zalopay")
+  public async payWithZalopay(@Body() dto: ICreateZaloPayOrder) {
+    return OrderService.createPaymentZaloPayURL(dto);
+  }
+
+  @Post("/callback-zalo-pay")
+  public async callbackZaloPay(@Body() dto: ICallBackZaloPay) {
+    return OrderService.callbackZaloPay(dto);
+  }
+
+  @Post("/query-zalopay-order-status")
+  public async queryZalopayOrderStatus(@Body() dto: IQueryZaloPayOrderStatus) {
+    return OrderService.queryZalopayOrderStatus(dto.app_trans_id);
   }
 }
