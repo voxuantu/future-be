@@ -622,6 +622,23 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"IRevenueValue": {
+				"properties": {
+					"value": {
+						"type": "number",
+						"format": "double"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"value",
+					"label"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
 			"ProdutResDTO": {
 				"properties": {
 					"_id": {
@@ -2116,6 +2133,57 @@
 						}
 					}
 				}
+			}
+		},
+		"/orders/revenue": {
+			"get": {
+				"operationId": "GetRevenueFollowTime",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"items": {
+														"$ref": "#/components/schemas/IRevenueValue"
+													},
+													"type": "array"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Orders"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "timeReport",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		},
 		"/products": {

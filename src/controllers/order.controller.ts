@@ -58,4 +58,9 @@ export class OrdersController extends Controller {
   public async queryZalopayOrderStatus(@Body() dto: IQueryZaloPayOrderStatus) {
     return OrderService.queryZalopayOrderStatus(dto.app_trans_id);
   }
+
+  @Get("/revenue")
+  public getRevenueFollowTime(@Query() timeReport: string) {
+    return OrderService.getRevenueFollowTime(timeReport);
+  }
 }

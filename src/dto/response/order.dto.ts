@@ -38,3 +38,14 @@ export interface ICreateMAC {
 export interface IQueryZaloPayOrderStatusRes {
   orderStatus: number;
 }
+
+export interface IRevenueValue {
+  value: number;
+  label: string;
+}
+
+export interface IOrderRevenue {
+  _id: string;
+  total: number;
+  createdAt: Date;
+}

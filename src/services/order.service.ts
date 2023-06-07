@@ -12,6 +12,8 @@ import {
   GET_ALL_ORDERS_SUCCESS,
   GET_ORDER_HISTORY_SUCCESS,
   QUERY_ORDER_STATUS_ZALOPAY_SUCCESS,
+  ERROR_GET_REVENUE_FOLLOW_TIME,
+  GET_REVENUE_FOLLOW_TIME_SUCCESS,
 } from "../constances";
 import { HttpStatus, OrderStatus } from "../constances/enum";
 import {
@@ -24,7 +26,9 @@ import {
 import {
   IAllOrders,
   IOrderHistoryRes,
+  IOrderRevenue,
   IQueryZaloPayOrderStatusRes,
+  IRevenueValue,
 } from "../dto/response/order.dto";
 import Order from "../models/order";
 import OrderItem, { IOrderItemModel } from "../models/order-item";
@@ -37,6 +41,7 @@ import axios from "axios";
 import CryptoJS from "crypto-js";
 import qs from "qs";
 import { CloudinaryService } from "./cloudinary.service";
+import { subtractDays } from "../utils/date";
 
 export class OrderService {
   static async createOrder(dto: ICreateOrder, userId: string) {
@@ -332,6 +337,90 @@ export class OrderService {
       console.log("error: ", error);
       return handleResFailure(
         ERROR_QUERY_ORDER_STATUS_ZALOPAY,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  static async getRevenueFollowTime(timeReport: string) {
+    try {
+      let query: { [index: string]: any } = {};
+
+      if (timeReport === "month") {
+        const firstDayOfYear = new Date(new Date().getFullYear(), 0, 1);
+        const lastDayOfYear = new Date(new Date().getFullYear(), 11, 31);
+        query = {
+          createdAt: { $gte: firstDayOfYear, $lte: lastDayOfYear },
+        };
+      } else if (timeReport === "week") {
+        const today = new Date();
+        const aWeekAgo = subtractDays(today, 6);
+        query = {
+          createdAt: { $gte: aWeekAgo, $lte: today },
+        };
+      }
+
+      let orders: IOrderRevenue[] = [];
+
+      orders = await Order.aggregate([
+        {
+          $match: {
+            status: "completed",
+            ...query,
+          },
+        },
+        {
+          $project: {
+            total: 1,
+            createdAt: 1,
+          },
+        },
+      ]);
+
+      if (timeReport === "month") {
+        const monthRevenue: IRevenueValue[] = [];
+
+        for (let month = 0; month < 12; month++) {
+          const monthOrderRevenue = orders.reduce((monthTotal, currOrder) => {
+            if (currOrder.createdAt.getMonth() === month) {
+              return monthTotal + currOrder.total;
+            }
+            return monthTotal;
+          }, 0);
+          monthRevenue.push({
+            label: (month + 1).toString(),
+            value: monthOrderRevenue,
+          });
+        }
+
+        return handlerResSuccess(GET_REVENUE_FOLLOW_TIME_SUCCESS, monthRevenue);
+      } else if (timeReport === "week") {
+        const weekRevenue: IRevenueValue[] = [];
+        const today = new Date();
+
+        for (let day = 0; day < 7; day++) {
+          const date = subtractDays(today, day);
+          const dateTotalRevenue = orders.reduce((total, currOrder) => {
+            if (currOrder.createdAt.getDate() === date.getDate()) {
+              return total + currOrder.total;
+            }
+            return total;
+          }, 0);
+
+          weekRevenue.push({
+            value: dateTotalRevenue,
+            label:
+              date.getDate().toString() +
+              "/" +
+              (date.getMonth() + 1).toString(),
+          });
+        }
+        return handlerResSuccess(GET_REVENUE_FOLLOW_TIME_SUCCESS, weekRevenue);
+      }
+    } catch (error) {
+      console.log("error: ", error);
+      return handleResFailure(
+        ERROR_GET_REVENUE_FOLLOW_TIME,
         HttpStatus.BAD_REQUEST
       );
     }

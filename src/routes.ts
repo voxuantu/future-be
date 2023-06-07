@@ -399,6 +399,15 @@ const models: TsoaRoute.Models = {
     additionalProperties: false,
   },
   // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  IRevenueValue: {
+    dataType: "refObject",
+    properties: {
+      value: { dataType: "double", required: true },
+      label: { dataType: "string", required: true },
+    },
+    additionalProperties: false,
+  },
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
   ProdutResDTO: {
     dataType: "refObject",
     properties: {
@@ -1475,6 +1484,46 @@ export function RegisterRoutes(app: Router) {
         const controller = new OrdersController();
 
         const promise = controller.queryZalopayOrderStatus.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.get(
+    "/api/v1/orders/revenue",
+    ...fetchMiddlewares<RequestHandler>(OrdersController),
+    ...fetchMiddlewares<RequestHandler>(
+      OrdersController.prototype.getRevenueFollowTime
+    ),
+
+    function OrdersController_getRevenueFollowTime(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        timeReport: {
+          in: "query",
+          name: "timeReport",
+          required: true,
+          dataType: "string",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new OrdersController();
+
+        const promise = controller.getRevenueFollowTime.apply(
           controller,
           validatedArgs as any
         );
