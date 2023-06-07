@@ -11,6 +11,7 @@ import {
   Put,
   Delete,
   Query,
+  Security,
 } from "tsoa";
 import { ProductService } from "../services";
 import { CreateProductDTO, UpdateProductDTO } from "../dto/request/product.dto";
@@ -109,6 +110,12 @@ export class ProductsController extends Controller {
   @Get("/max-price")
   public async getMaxPrice(@Query("category") category?: string) {
     return ProductService.findMaxPrice(category);
+  }
+
+  @Security("jwt", ["admin"])
+  @Get("/count-products")
+  public countProducts() {
+    return ProductService.countProducts();
   }
 
   @Get("/{productId}")

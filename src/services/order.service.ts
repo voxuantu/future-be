@@ -12,6 +12,8 @@ import {
   GET_ALL_ORDERS_SUCCESS,
   GET_ORDER_HISTORY_SUCCESS,
   QUERY_ORDER_STATUS_ZALOPAY_SUCCESS,
+  GET_REVENUE_OF_CURRENT_YEAR_SUCCESS,
+  ERROR_GET_REVENUE_OF_CURRENT_YEAR,
   ERROR_GET_REVENUE_FOLLOW_TIME,
   GET_REVENUE_FOLLOW_TIME_SUCCESS,
 } from "../constances";
@@ -154,6 +156,7 @@ export class OrderService {
       return handleResFailure(ERROR_GET_ORDER_HISTORY, HttpStatus.BAD_REQUEST);
     }
   }
+
   static async getAllOrders() {
     try {
       const orderArray: IAllOrders[] = [];
@@ -337,6 +340,53 @@ export class OrderService {
       console.log("error: ", error);
       return handleResFailure(
         ERROR_QUERY_ORDER_STATUS_ZALOPAY,
+        HttpStatus.BAD_REQUEST
+      );
+    }
+  }
+
+  static async getRevenueOfCurrentYear() {
+    try {
+      const now = new Date().getFullYear();
+
+      const orders = (await Order.aggregate([
+        {
+          $project: {
+            status: "$status",
+            orderItems: "$orderItems",
+            year: { $year: "$createdAt" },
+          },
+        },
+        { $match: { year: now, status: "completed" } },
+        { $unwind: "$orderItems" },
+        {
+          $lookup: {
+            from: "orderitems",
+            foreignField: "_id",
+            localField: "orderItems",
+            as: "orderItems",
+          },
+        },
+        { $unwind: "$orderItems" },
+        {
+          $group: {
+            _id: "$_id",
+            sum: {
+              $sum: {
+                $multiply: ["$orderItems.price", "$orderItems.quantity"],
+              },
+            },
+          },
+        },
+      ])) as { _id: string; sum: number }[];
+
+      return handlerResSuccess(
+        GET_REVENUE_OF_CURRENT_YEAR_SUCCESS,
+        orders.reduce((prev, curr) => prev + curr.sum, 0)
+      );
+    } catch (error) {
+      return handleResFailure(
+        ERROR_GET_REVENUE_OF_CURRENT_YEAR,
         HttpStatus.BAD_REQUEST
       );
     }

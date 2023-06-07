@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import mongoose from "mongoose";
 import {
+  COUNT_PRODUCT_SUCCESS,
   CREATE_PRODUCT_SUCCESS,
   DELETE_PRODUCT_SUCCESS,
   ERROR_CATEGORY_NOT_FOUND,
+  ERROR_COUNT_PRODUCT,
   ERROR_CREATE_PRODUCT,
   ERROR_DELETE_PRODUCT,
   ERROR_FILTER_PRODUCT,
@@ -467,6 +469,7 @@ export class ProductService {
       return handleResFailure(ERROR_FILTER_PRODUCT, HttpStatus.BAD_REQUEST);
     }
   }
+
   static async getProductForCart(productId: string) {
     const product = await Product.findById(productId).select(
       "name thumbnail price"
@@ -480,5 +483,15 @@ export class ProductService {
     product.thumbnail = imgUrl;
 
     return product as IProductModel;
+  }
+
+  static async countProducts() {
+    try {
+      const numberOfProducts = (await Product.find({})).length;
+
+      return handlerResSuccess(COUNT_PRODUCT_SUCCESS, numberOfProducts);
+    } catch (error) {
+      return handleResFailure(ERROR_COUNT_PRODUCT, HttpStatus.BAD_REQUEST);
+    }
   }
 }

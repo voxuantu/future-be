@@ -48,6 +48,12 @@ export class UsersController extends Controller {
     return UsersService.getMyAddresses(request.user.userId);
   }
 
+  @Security("jwt", ["admin"])
+  @Get("/count-user")
+  public async countUser() {
+    return UsersService.countUsers();
+  }
+
   @Security("jwt", ["user"])
   @Get()
   public getUser(@Request() request: IGetUserAuthInfoRequest) {

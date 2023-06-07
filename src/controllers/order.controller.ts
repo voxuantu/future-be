@@ -59,8 +59,15 @@ export class OrdersController extends Controller {
     return OrderService.queryZalopayOrderStatus(dto.app_trans_id);
   }
 
+  @Security("jwt", ["admin"])
   @Get("/revenue")
   public getRevenueFollowTime(@Query() timeReport: string) {
     return OrderService.getRevenueFollowTime(timeReport);
+  }
+
+  @Security("jwt", ["admin"])
+  @Get("/revenue-current-year")
+  public async getRevenueOfCurrentYear() {
+    return OrderService.getRevenueOfCurrentYear();
   }
 }

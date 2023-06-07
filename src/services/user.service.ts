@@ -22,6 +22,8 @@ import {
   UPDATE_QUANTITY_SUCCESS,
   ERROR_DELETE_ALL_CART,
   DELETE_ALL_CART_SUCCESS,
+  COUNT_USERS_SUCCESS,
+  COUNT_USERS_ERROR,
 } from "../constances";
 import { HttpStatus } from "../constances/enum";
 import {
@@ -328,6 +330,16 @@ export class UsersService {
     } catch (error) {
       console.log("error: ", error);
       return handleResFailure(ERROR_DELETE_ALL_CART, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  static async countUsers() {
+    try {
+      const numberOfUsers = (await User.find({})).length;
+
+      return handlerResSuccess(COUNT_USERS_SUCCESS, numberOfUsers);
+    } catch (error) {
+      return handleResFailure(COUNT_USERS_ERROR, HttpStatus.BAD_REQUEST);
     }
   }
 }
