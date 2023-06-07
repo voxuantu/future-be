@@ -111,6 +111,11 @@ export class ProductsController extends Controller {
     return ProductService.findMaxPrice(category);
   }
 
+  @Get("/count-products")
+  public countProducts() {
+    return ProductService.countProducts();
+  }
+
   @Get("/{productId}")
   public async getProductById(@Path() productId: string) {
     return ProductService.getProductById(productId);

@@ -58,4 +58,9 @@ export class OrdersController extends Controller {
   public async queryZalopayOrderStatus(@Body() dto: IQueryZaloPayOrderStatus) {
     return OrderService.queryZalopayOrderStatus(dto.app_trans_id);
   }
+
+  @Get("/revenue-current-year")
+  public async getRevenueOfCurrentYear() {
+    return OrderService.getRevenueOfCurrentYear();
+  }
 }
