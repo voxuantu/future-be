@@ -20,6 +20,8 @@ import {
   UPDATE_USER_SUCESS,
   GET_WISHLIST_SUCCESS,
   UPDATE_QUANTITY_SUCCESS,
+  ERROR_DELETE_ALL_CART,
+  DELETE_ALL_CART_SUCCESS,
   COUNT_USERS_SUCCESS,
   COUNT_USERS_ERROR,
 } from "../constances";
@@ -235,7 +237,7 @@ export class UsersService {
       const existProduct = user.cart.find(
         (item) => item.product.toString() === dto.productId
       );
-      console.log("user.cart: ", user.cart);
+
       const product = await ProductService.getProductForCart(dto.productId);
       if (!product) {
         return handleResFailure(ERROR_PRODUCT_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -311,6 +313,23 @@ export class UsersService {
     } catch (error) {
       console.log("error: ", error);
       return handleResFailure(ERROR_UPDATE_QUANTITY, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  static async deleteAllCart(userId: string) {
+    try {
+      const user = await User.findById(userId);
+      if (!user) {
+        return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+
+      user.cart = [];
+      await user.save();
+
+      return handlerResSuccess(DELETE_ALL_CART_SUCCESS, "");
+    } catch (error) {
+      console.log("error: ", error);
+      return handleResFailure(ERROR_DELETE_ALL_CART, HttpStatus.BAD_REQUEST);
     }
   }
 

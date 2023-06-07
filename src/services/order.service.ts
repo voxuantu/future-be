@@ -85,6 +85,7 @@ export class OrderService {
         total: totalPrice,
         address: dto.address,
         shortId: generateOrderId(),
+        paymentMethod: dto.paymentMethod,
       });
       await newOrder.save();
 

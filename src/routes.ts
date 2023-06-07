@@ -330,6 +330,7 @@ const models: TsoaRoute.Models = {
         required: true,
       },
       address: { dataType: "string", required: true },
+      paymentMethod: { dataType: "string", required: true },
     },
     additionalProperties: false,
   },
@@ -2360,6 +2361,47 @@ export function RegisterRoutes(app: Router) {
         const controller = new UsersController();
 
         const promise = controller.addToCart.apply(
+          controller,
+          validatedArgs as any
+        );
+        promiseHandler(controller, promise, response, undefined, next);
+      } catch (err) {
+        return next(err);
+      }
+    }
+  );
+  // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+  app.delete(
+    "/api/v1/users/cart",
+    authenticateMiddleware([{ jwt: ["user"] }]),
+    ...fetchMiddlewares<RequestHandler>(UsersController),
+    ...fetchMiddlewares<RequestHandler>(
+      UsersController.prototype.DeleteAllCart
+    ),
+
+    function UsersController_DeleteAllCart(
+      request: any,
+      response: any,
+      next: any
+    ) {
+      const args = {
+        request: {
+          in: "request",
+          name: "request",
+          required: true,
+          dataType: "object",
+        },
+      };
+
+      // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+      let validatedArgs: any[] = [];
+      try {
+        validatedArgs = getValidatedArgs(args, request, response);
+
+        const controller = new UsersController();
+
+        const promise = controller.DeleteAllCart.apply(
           controller,
           validatedArgs as any
         );

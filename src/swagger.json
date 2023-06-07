@@ -474,11 +474,15 @@
 					},
 					"address": {
 						"type": "string"
+					},
+					"paymentMethod": {
+						"type": "string"
 					}
 				},
 				"required": [
 					"orderItems",
-					"address"
+					"address",
+					"paymentMethod"
 				],
 				"type": "object",
 				"additionalProperties": false
@@ -3128,6 +3132,49 @@
 						}
 					}
 				}
+			},
+			"delete": {
+				"operationId": "DeleteAllCart",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"properties": {
+												"data": {
+													"type": "string"
+												},
+												"message": {
+													"type": "string"
+												}
+											},
+											"required": [
+												"data",
+												"message"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Users"
+				],
+				"security": [
+					{
+						"jwt": [
+							"user"
+						]
+					}
+				],
+				"parameters": []
 			}
 		},
 		"/users/{userId}": {
