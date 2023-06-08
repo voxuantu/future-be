@@ -45,12 +45,15 @@ export function expressAuthentication(
               );
             }
           } else if (decoded.role[0] === "admin") {
-            const admin = await AdminService.findAdminById(decoded.userId);
-            if (!admin) {
+            try {
+              await AdminService.findAdminById(decoded.userId);
+            } catch (error) {
               return reject(
                 new HttpException(HttpStatus.NOT_FOUND, "User not exist")
               );
             }
+            // if (!admin) {
+            // }
           }
           resolve(decoded);
         }

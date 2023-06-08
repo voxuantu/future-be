@@ -1379,6 +1379,34 @@
 				}
 			}
 		},
+		"/admin/validate": {
+			"get": {
+				"operationId": "ValidateAdmin",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "boolean"
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Admin"
+				],
+				"security": [
+					{
+						"jwt": [
+							"admin"
+						]
+					}
+				],
+				"parameters": []
+			}
+		},
 		"/admin/login": {
 			"post": {
 				"operationId": "Login",

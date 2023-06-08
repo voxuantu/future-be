@@ -22,6 +22,13 @@ export class AdminController extends Controller {
   public getAdminById(@Request() request: IGetUserAuthInfoRequest) {
     return AdminService.findAdminById(request.user.userId);
   }
+
+  @Security("jwt", ["admin"])
+  @Get("/validate")
+  public validateAdmin() {
+    return true;
+  }
+
   @Post()
   public createAdmin(@Body() dto: ICreateAdmin) {
     return AdminService.create(dto);
