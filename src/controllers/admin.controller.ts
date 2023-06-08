@@ -13,6 +13,7 @@ import {
 import { AdminLogin, ICreateAdmin, IUpdateAdmin } from "../dto/request";
 import { AdminService } from "../services/admin.service";
 import { IGetUserAuthInfoRequest } from "../types/express";
+import { handlerResSuccess } from "../utils/handle-response";
 
 @Tags("Admin")
 @Route("admin")
@@ -25,8 +26,9 @@ export class AdminController extends Controller {
 
   @Security("jwt", ["admin"])
   @Get("/validate")
-  public validateAdmin() {
-    return true;
+  public validateAdmin(@Request() request: IGetUserAuthInfoRequest) {
+    console.log(request.user.userId);
+    return handlerResSuccess("VALIDATE_SUCCESS", true);
   }
 
   @Post()
