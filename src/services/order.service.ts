@@ -6,12 +6,20 @@ import {
   ERROR_GET_ALL_ORDERS,
   ERROR_CREAT_PAYMENT_URL_ZALOPAY,
   ERROR_GET_ORDER_HISTORY,
+  ERROR_ORDER_NOT_FOUND,
   ERROR_PRODUCT_NOT_FOUND,
-  ERROR_QUERY_ORDER_STATUS_ZALOPAY,
   ERROR_USER_NOT_FOUND,
   GET_ALL_ORDERS_SUCCESS,
   GET_ORDER_HISTORY_SUCCESS,
   QUERY_ORDER_STATUS_ZALOPAY_SUCCESS,
+  ERROR_QUERY_ORDER_STATUS_ZALOPAY,
+  ERROR_UPDATE_STATUS,
+  ERROR_USERNAME_ORDER_NOT_FOUND,
+  ERROR_ADDRESS_ORDER_NOT_FOUND,
+  ERROR_ORDER_DETAIL_BY_ID,
+  ERROR_ORDER_DETAIL_BY_ID_NOT_FOUND,
+  ERROR_ORDER_ITEM_NOT_FOUND,
+  GET_ALL_ORDERS_ITEMS_SUCCESS,
   GET_REVENUE_OF_CURRENT_YEAR_SUCCESS,
   ERROR_GET_REVENUE_OF_CURRENT_YEAR,
   ERROR_GET_REVENUE_FOLLOW_TIME,
@@ -28,12 +36,13 @@ import {
 import {
   IAllOrders,
   IOrderHistoryRes,
+  IOrderRes,
   IOrderRevenue,
   IQueryZaloPayOrderStatusRes,
   IRevenueValue,
 } from "../dto/response/order.dto";
 import Order from "../models/order";
-import OrderItem, { IOrderItemModel } from "../models/order-item";
+import OrderItem, { IOrderItem, IOrderItemModel } from "../models/order-item";
 import Product from "../models/product";
 import User from "../models/user";
 import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
@@ -43,6 +52,7 @@ import axios from "axios";
 import CryptoJS from "crypto-js";
 import qs from "qs";
 import { CloudinaryService } from "./cloudinary.service";
+import Address from "../models/address";
 import { subtractDays } from "../utils/date";
 
 export class OrderService {
@@ -156,33 +166,162 @@ export class OrderService {
       return handleResFailure(ERROR_GET_ORDER_HISTORY, HttpStatus.BAD_REQUEST);
     }
   }
-
-  static async getAllOrders() {
+  static async getAllOrders(limit: number, page: number) {
     try {
       const orderArray: IAllOrders[] = [];
-      const allOrders = await Order.find();
+      const allOrders = await Order.find()
+        .skip(page * limit)
+        .limit(limit);
       if (!allOrders) {
-        return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+        return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.NOT_FOUND);
       }
-      allOrders.map((item) =>
+      const numOfProds = await Order.count();
+      // tìm tên khách hàng và address theo id và sau đó là bỏ vào array.
+      for (let i = 0; i < allOrders.length; i++) {
+        const order = allOrders[i];
+        const usernameInfo = await User.findById(order.user);
+        if (!usernameInfo) {
+          return handleResFailure(
+            ERROR_USERNAME_ORDER_NOT_FOUND,
+            HttpStatus.NOT_FOUND
+          );
+        }
+        const addressInfo = await Address.findById(order.address);
+        if (!addressInfo) {
+          return handleResFailure(
+            ERROR_ADDRESS_ORDER_NOT_FOUND,
+            HttpStatus.NOT_FOUND
+          );
+        }
         orderArray.push({
-          shortId: item.shortId,
-          address: item.address,
-          userId: item.user,
-          status: item.status,
-          total: item.total,
-        })
-      );
-      return handlerResSuccess<IAllOrders[]>(
-        GET_ALL_ORDERS_SUCCESS,
-        orderArray
-      );
+          shortId: order.shortId,
+          address: `${addressInfo.specificAddress} ,${addressInfo.ward} ,${addressInfo.district} ,${addressInfo.province}`,
+          userName: usernameInfo.name,
+          status: order.status,
+          dateCreated: order.createdAt as string,
+          total: order.total,
+        });
+      }
+      return handlerResSuccess<IOrderRes>(GET_ALL_ORDERS_SUCCESS, {
+        allOrders: orderArray,
+        numOfProds,
+      });
     } catch (error) {
       console.log("error", error);
       return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.BAD_REQUEST);
     }
   }
-
+  static async getOrdersFollowDateNow(limit: number, page: number) {
+    try {
+      const orderArray: IAllOrders[] = [];
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0); // Đặt giá trị giờ phút giây của ngày hiện tại về 00:00:00
+      const tomorrow = new Date(today);
+      tomorrow.setUTCDate(tomorrow.getUTCDate() + 1); // Tăng ngày lên 1 để xác định đến cuối ngày
+      const allOrders = await Order.find({
+        createdAt: {
+          $gte: today,
+          $lt: tomorrow,
+        },
+      })
+        .limit(limit)
+        .skip(page * limit);
+      if (!allOrders) {
+        return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.NOT_FOUND);
+      }
+      const numOfProds = allOrders.length;
+      for (let i = 0; i < allOrders.length; i++) {
+        const order = allOrders[i];
+        const usernameInfo = await User.findById(order.user);
+        if (!usernameInfo) {
+          return handleResFailure(
+            ERROR_USERNAME_ORDER_NOT_FOUND,
+            HttpStatus.NOT_FOUND
+          );
+        }
+        const addressInfo = await Address.findById(order.address);
+        if (!addressInfo) {
+          return handleResFailure(
+            ERROR_ADDRESS_ORDER_NOT_FOUND,
+            HttpStatus.NOT_FOUND
+          );
+        }
+        orderArray.push({
+          shortId: order.shortId,
+          address: `${addressInfo.specificAddress} ,${addressInfo.ward} ,${addressInfo.district} ,${addressInfo.province}`,
+          userName: usernameInfo.name,
+          status: order.status,
+          dateCreated: order.createdAt as string,
+          total: order.total,
+        });
+      }
+      return handlerResSuccess<IOrderRes>(GET_ALL_ORDERS_SUCCESS, {
+        allOrders: orderArray,
+        numOfProds,
+      });
+    } catch (error) {
+      console.log("error", error);
+      return handleResFailure(ERROR_GET_ALL_ORDERS, HttpStatus.BAD_REQUEST);
+    }
+  }
+  static async updateStatusOrder(orderId: string, status: OrderStatus) {
+    try {
+      const orderStatus = await Order.updateOne(
+        { shortId: { $eq: orderId } },
+        { $set: { status: status } }
+      );
+      console.log(orderStatus);
+      if (orderStatus.modifiedCount === 0) {
+        return handleResFailure(ERROR_ORDER_NOT_FOUND, HttpStatus.NOT_FOUND);
+      }
+      return handlerResSuccess<string>(GET_ALL_ORDERS_SUCCESS, status);
+    } catch (error) {
+      console.log("error", error);
+      return handleResFailure(ERROR_UPDATE_STATUS, HttpStatus.BAD_REQUEST);
+    }
+  }
+  static async getDetailOrderById(orderId: string) {
+    try {
+      const orderInfoById = await Order.findOne({ shortId: orderId });
+      if (!orderInfoById) {
+        return handleResFailure(
+          ERROR_ORDER_DETAIL_BY_ID_NOT_FOUND,
+          HttpStatus.BAD_REQUEST
+        );
+      }
+      const orderItemsIdArray: string[] = orderInfoById.orderItems as string[];
+      const itemsOrderArray: IOrderItem[] = [];
+      for (let i = 0; i < orderItemsIdArray.length; i++) {
+        const orderItem = orderItemsIdArray[i];
+        const orderItemInfo = await OrderItem.findById(orderItem);
+        if (!orderItemInfo) {
+          return handleResFailure(
+            ERROR_ORDER_ITEM_NOT_FOUND,
+            HttpStatus.NOT_FOUND
+          );
+        }
+        const productInfo = await Product.findById(orderItemInfo.product);
+        if (!productInfo) {
+          return handleResFailure(
+            ERROR_PRODUCT_NOT_FOUND,
+            HttpStatus.NOT_FOUND
+          );
+        }
+        itemsOrderArray.push({
+          product: productInfo.name,
+          price: orderItemInfo.price,
+          quantity: orderItemInfo.quantity,
+        });
+      }
+      return handlerResSuccess<IOrderItem[]>(
+        GET_ALL_ORDERS_ITEMS_SUCCESS,
+        itemsOrderArray
+      );
+    } catch (error) {
+      console.log("error", error);
+      return handleResFailure(ERROR_ORDER_DETAIL_BY_ID, HttpStatus.BAD_REQUEST);
+    }
+  }
   static async createPaymentZaloPayURL(dto: ICreateZaloPayOrder) {
     try {
       // APP INFO
