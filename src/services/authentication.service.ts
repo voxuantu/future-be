@@ -16,7 +16,7 @@ import { handleResFailure, handlerResSuccess } from "../utils/handle-response";
 import { Response as ExResponse } from "express";
 import nodemailer from "nodemailer";
 import { UserAuthenticate } from "../dto/response";
-import { hashPasswords } from "../utils/hash-password";
+import { comparePassword, hashPasswords } from "../utils/hash-password";
 
 export class AuthenticationService {
   static generateToken(user: ISignJWT) {
@@ -36,12 +36,7 @@ export class AuthenticationService {
       if (!user) {
         return handleResFailure(ERROR_USER_NOT_FOUND, HttpStatus.NOT_FOUND);
       }
-      const validPassword =
-        accountParams.password === user.password ||
-        hashPasswords(accountParams.password) === user.password
-          ? true
-          : false;
-      if (!validPassword) {
+      if (!(await comparePassword(accountParams.password, user.password))) {
         return handleResFailure(ERROR_PASSWORD, HttpStatus.NOT_FOUND);
       }
       // console.log(validPassword);
